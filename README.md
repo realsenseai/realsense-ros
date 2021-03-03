@@ -13,7 +13,8 @@ When upgrading the base version (from Intel), keep NoMagic's version unchanged.
 
 ### Changelog:
 
-
+#### 0.1.0
+- Bugfix: Publish missing `/diagnostics` messages for aligned depth streams.
 
 # ROS Wrapper for Intel&reg; RealSense&trade; Devices
 These are packages for using Intel RealSense cameras (D400 series SR300 camera and T265 Tracking Module) with ROS.

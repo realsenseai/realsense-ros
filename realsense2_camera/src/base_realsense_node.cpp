@@ -1055,6 +1055,60 @@ void BaseRealSenseNode::setupPublishers()
     }
 }
 
+void BaseRealSenseNode::publishAlignedDepthToOthers(rs2::frameset frames, const ros::Time& t)
+{
+    for (auto it = frames.begin(); it != frames.end(); ++it)
+    {
+        auto frame = (*it);
+        auto stream_type = frame.get_profile().stream_type();
+
+        if (RS2_STREAM_DEPTH == stream_type)
+            continue;
+
+        auto stream_index = frame.get_profile().stream_index();
+        if (stream_index > 1)
+        {
+            continue;
+        }
+        stream_index_pair sip{stream_type, stream_index};
+        auto& info_publisher = _depth_aligned_info_publisher.at(sip);
+        auto& image_publisher = _depth_aligned_image_publishers.at(sip);
+
+        image_publisher.second->tick();
+        if(0 != info_publisher.getNumSubscribers() ||
+           0 != image_publisher.first.getNumSubscribers())
+        {
+            std::shared_ptr<rs2::align> align;
+            try{
+                align = _align.at(stream_type);
+            }
+            catch(const std::out_of_range& e)
+            {
+                ROS_DEBUG_STREAM("Allocate align filter for:" << rs2_stream_to_string(sip.first) << sip.second);
+                align = (_align[stream_type] = std::make_shared<rs2::align>(stream_type));
+            }
+            rs2::frameset processed = frames.apply_filter(*align);
+            std::vector<rs2::frame> frames_to_publish;
+            frames_to_publish.push_back(processed.get_depth_frame());   // push_back(aligned_depth_frame)
+            for (std::vector<NamedFilter>::const_iterator filter_it = _filters.begin(); filter_it != _filters.end(); filter_it++)
+            {
+                if (filter_it->_name == "colorizer")
+                {
+                    frames_to_publish.push_back(filter_it->_filter->process(frames_to_publish.back()));  //push_back(colorized)
+                    break;
+                }
+            }
+
+            publishFrame(frames_to_publish.back(), t, sip,
+                         _depth_aligned_image,
+                         _depth_aligned_info_publisher,
+                         _depth_aligned_image_publishers, _depth_aligned_seq,
+                         _depth_aligned_camera_info, _optical_frame_id,
+                         _depth_aligned_encoding);
+        }
+    }
+}
+
 void BaseRealSenseNode::enable_devices()
 {
     for (auto& elem : IMAGE_STREAMS)
@@ -2540,6 +2594,10 @@ void BaseRealSenseNode::publish_frequency_update()
     {
         image_publisher.second.second->update();
         std::this_thread::sleep_for(timespan);
+    }
+    for (auto& image_publisher : _depth_aligned_image_publishers)
+    {
+        image_publisher.second.second->update();
     }
 }
 
