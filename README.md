@@ -1,3 +1,20 @@
+# NoMagic ROS Realsense fork
+
+This repository was forked from the original Intel Realsense repository to introduce business required changes.
+
+The main branch is `nomagic-development`.
+
+Please use lightweight git tags to mark NoMagic releases using the following form `2.2.21-{NoMagic's semantic version}`,
+for example `2.2.21-1.0.0`: `git tag <tagname>`
+
+Make sure to explicitly push out git tags: `git push origin <tagname>`
+
+When upgrading the base version (from Intel), keep NoMagic's version unchanged. 
+
+### Changelog:
+
+
+
 # ROS Wrapper for Intel&reg; RealSense&trade; Devices
 These are packages for using Intel RealSense cameras (D400 series SR300 camera and T265 Tracking Module) with ROS.
 
