@@ -13,6 +13,11 @@ When upgrading the base version (from Intel), keep NoMagic's version unchanged.
 
 ### Changelog:
 
+#### 0.1.1
+
+- Bugfix: Add delay between publishing `/diagnostics` messages to avoid loosing them in the publisher's queue.
+It actually happened during testing and caused false-positive health-check failure. 
+
 #### 0.1.0
 - Bugfix: Publish missing `/diagnostics` messages for aligned depth streams.
 
