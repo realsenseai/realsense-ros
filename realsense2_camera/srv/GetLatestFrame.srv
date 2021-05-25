@@ -1,0 +1,10 @@
+---
+sensor_msgs/Image image
+float64 frame_timestamp
+float64 request_timestamp
+float64 response_timestamp
+
+float64 wait_for_frames_duration
+float64 reset_temporal_filter_duration
+float64 filtering_duration
+float64 depth_alignment_duration

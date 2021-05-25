@@ -75,6 +75,7 @@ add_message_files(
 add_service_files(
     FILES
     DeviceInfo.srv
+    GetLatestFrame.srv
 )
 
 generate_messages(

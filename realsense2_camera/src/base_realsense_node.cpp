@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <mutex>
+#include <chrono>
 
 #include <dynamic_reconfigure/IntParameter.h>
 #include <dynamic_reconfigure/Reconfigure.h>
@@ -88,7 +89,8 @@ BaseRealSenseNode::BaseRealSenseNode(ros::NodeHandle& nodeHandle,
     _pnh(privateNodeHandle), _dev(dev), _json_file_path(""),
     _serial_no(serial_no),
     _is_initialized_time_base(false),
-    _namespace(getNamespaceStr())
+    _namespace(getNamespaceStr()),
+    nomagic_muxer([&](rs2::frame f, rs2::frame_source& src) { nomagicMuxerCallback(f, src);})
 {
     // Types for depth stream
     _format[RS2_STREAM_DEPTH] = RS2_FORMAT_Z16;
@@ -241,8 +243,8 @@ void BaseRealSenseNode::publishTopics()
 {
     getParameters();
     setupDevice();
-    setupFilters();
     registerHDRoptions();
+    setupFilters(_filters);
     registerDynamicReconfigCb(_node_handle);
     setupErrorCallback();
     enable_devices();
@@ -254,6 +256,7 @@ void BaseRealSenseNode::publishTopics()
     publishIntrinsics();
     startMonitoring();
     publishServices();
+    nomagicSetup();
     ROS_INFO_STREAM("RealSense Node Is Up!");
 }
 
@@ -815,6 +818,8 @@ void BaseRealSenseNode::getParameters()
     _pnh.param("angular_velocity_cov", _angular_velocity_cov, static_cast<double>(0.01));
     _pnh.param("hold_back_imu_for_frames", _hold_back_imu_for_frames, HOLD_BACK_IMU_FOR_FRAMES);
     _pnh.param("publish_odom_tf", _publish_odom_tf, PUBLISH_ODOM_TF);
+
+    nomagicGetParameters();
 }
 
 void BaseRealSenseNode::setupDevice()
@@ -1236,7 +1241,7 @@ void BaseRealSenseNode::enable_devices()
     }
 }
 
-void BaseRealSenseNode::setupFilters()
+void BaseRealSenseNode::setupFilters(std::vector<NamedFilter>& filters)
 {
     std::vector<std::string> filters_str;
     boost::split(filters_str, _filters_str, [](char c){return c == ',';});
@@ -1259,17 +1264,17 @@ void BaseRealSenseNode::setupFilters()
         else if ((*s_iter) == "spatial")
         {
             ROS_INFO("Add Filter: spatial");
-            _filters.push_back(NamedFilter("spatial", std::make_shared<rs2::spatial_filter>()));
+            filters.push_back(NamedFilter("spatial", std::make_shared<rs2::spatial_filter>()));
         }
         else if ((*s_iter) == "temporal")
         {
             ROS_INFO("Add Filter: temporal");
-            _filters.push_back(NamedFilter("temporal", std::make_shared<rs2::temporal_filter>()));
+            filters.push_back(NamedFilter("temporal", std::make_shared<rs2::temporal_filter>()));
         }
         else if ((*s_iter) == "hole_filling")
         {
             ROS_INFO("Add Filter: hole_filling");
-            _filters.push_back(NamedFilter("hole_filling", std::make_shared<rs2::hole_filling_filter>()));
+            filters.push_back(NamedFilter("hole_filling", std::make_shared<rs2::hole_filling_filter>()));
         }
         else if ((*s_iter) == "decimation")
         {
@@ -1292,8 +1297,8 @@ void BaseRealSenseNode::setupFilters()
     if (use_disparity_filter)
     {
         ROS_INFO("Add Filter: disparity");
-        _filters.insert(_filters.begin(), NamedFilter("disparity_start", std::make_shared<rs2::disparity_transform>()));
-        _filters.push_back(NamedFilter("disparity_end", std::make_shared<rs2::disparity_transform>(false)));
+        filters.insert(filters.begin(), NamedFilter("disparity_start", std::make_shared<rs2::disparity_transform>()));
+        filters.push_back(NamedFilter("disparity_end", std::make_shared<rs2::disparity_transform>(false)));
         ROS_INFO("Done Add Filter: disparity");
     }
     if (use_hdr_filter)
@@ -1306,7 +1311,7 @@ void BaseRealSenseNode::setupFilters()
     if (use_decimation_filter)
     {
       ROS_INFO("Add Filter: decimation");
-      _filters.insert(_filters.begin(),NamedFilter("decimation", std::make_shared<rs2::decimation_filter>()));
+      filters.insert(filters.begin(),NamedFilter("decimation", std::make_shared<rs2::decimation_filter>()));
     }
     if (_align_depth)
     {
@@ -1333,7 +1338,7 @@ void BaseRealSenseNode::setupFilters()
         _pointcloud_filter = std::make_shared<rs2::pointcloud>(_pointcloud_texture.first, _pointcloud_texture.second);
         _filters.push_back(NamedFilter("pointcloud", _pointcloud_filter));
     }
-    ROS_INFO("num_filters: %d", static_cast<int>(_filters.size()));
+    ROS_INFO("num_filters: %d", static_cast<int>(filters.size()));
 }
 
 cv::Mat& BaseRealSenseNode::fix_depth_scale(const cv::Mat& from_image, cv::Mat& to_image)
@@ -1723,7 +1728,10 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
             {
                 clip_depth(original_depth_frame, _clipping_distance);
             }
-
+//          nomagicStoreFramesetForLazyProcessing(frameset);
+            nomagic_muxer.invoke(frame);
+            bool apply_filters_now = nomagicFramesetHasSubscribers(frameset) || !nomagic_lazy_filtering;
+            if (apply_filters_now) {
             ROS_DEBUG("num_filters: %d", static_cast<int>(_filters.size()));
             for (std::vector<NamedFilter>::const_iterator filter_it = _filters.begin(); filter_it != _filters.end(); filter_it++)
             {
@@ -1733,6 +1741,7 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
                 if ((filter_it->_name == "align_to_color") && (!is_color_frame))
                     continue;
                 frameset = filter_it->_filter->process(frameset);
+            }
             }
 
             ROS_DEBUG("List of frameset after applying filters: size: %d", static_cast<int>(frameset.size()));
@@ -2555,12 +2564,14 @@ void BaseRealSenseNode::startMonitoring()
         std::mutex mu;
         std::unique_lock<std::mutex> lock(mu);
         while(_is_running) {
-            _cv_monitoring.wait_for(lock, std::chrono::milliseconds(time_interval), [&]{return !_is_running;});
+            auto next_wakeup = std::chrono::steady_clock::now() + std::chrono::milliseconds(time_interval);
             if (_is_running)
             {
                 publish_temperature();
                 publish_frequency_update();
+                nomagic_frameset_fragmentation_diagnostics.force_update();
             }
+            _cv.wait_until(lock, next_wakeup, [&]{return !_is_running;});
         }
     };
     _monitoring_t = std::make_shared<std::thread>(func);
@@ -2640,3 +2651,488 @@ bool BaseRealSenseNode::getDeviceInfo(realsense2_camera::DeviceInfo::Request&,
     res.sensors = sensors_names.str().substr(0, sensors_names.str().size()-1);
     return true;
 }
+/****************************** NOMAGIC ******************************/
+
+struct Clock
+{
+    using InternalClock = std::chrono::steady_clock;
+
+    Clock() : start(InternalClock::now()) {}
+    void restart() {
+        start = InternalClock::now();
+    }
+
+    double getElapsedSecs() {
+        return static_cast<std::chrono::duration<double>>(InternalClock::now() - start).count();
+    }
+
+private:
+    InternalClock::time_point start;
+};
+
+void BaseRealSenseNode::nomagicSetupService(stream_index_pair stream, bool is_aligned_depth)
+{
+    // name + [index]: color, depth, infra1, infra2, etc.
+    std::string stream_name = (is_aligned_depth ? "aligned_depth_to_" : "") + STREAM_NAME(stream);
+    std::string full_service_name = stream_name + "/get_latest_frame";
+
+    auto& service_container = is_aligned_depth
+                            ? nomagic_get_latest_aligned_frame_servers
+                            : nomagic_get_latest_frame_servers;
+
+    // Trampoline to pass stream parameter to the callback.
+    boost::function<bool(GetLatestFrame::Request&, GetLatestFrame::Response&)> callback =
+            [=](GetLatestFrame::Request& request, GetLatestFrame::Response& response) {
+        return nomagicGetLatestFrameCallback(stream, is_aligned_depth, request, response);
+    };
+
+    service_container.insert({stream, _node_handle.advertiseService(full_service_name, callback)});
+
+    ROS_INFO_STREAM("[NOMAGIC] Successfully started service " << full_service_name);
+}
+
+void BaseRealSenseNode::nomagicSetup()
+{
+    // The minimal number of frames to make the temporal filter work reasonably == 9
+    // where reasonable == having persistence settings working as expected
+    // and reasonable != equivalent to filtering (and thus accumulating) every frame.
+    // Details: librealsense/src/proc/temporal-filter.cpp
+    nomagic_frameset_queue.resize(nomagic_lazy_filtering ? nomagic_lazy_filtering_frame_history_size : 1);
+
+    for (auto& stream : IMAGE_STREAMS) {
+        if (!_enable[stream]) {
+            continue;
+        }
+
+        nomagic_expected_streams.insert(stream);
+        nomagicSetupService(stream, false);
+
+        bool advertise_aligned_depth = (_align_depth && (stream != DEPTH) && (stream != CONFIDENCE) && stream.second < 2);
+        if (advertise_aligned_depth) {
+            nomagicSetupService(stream, true);
+        }
+    }
+
+    // Create separate filters to avoid temporal filter state data races
+    setupFilters(nomagic_filters);
+
+    // Setup diagnostics
+    nomagic_frameset_fragmentation_diagnostics.add("[NOMAGIC] Framesets Fragmentation Status",
+                                                   this, &BaseRealSenseNode::nomagicFramesetsDiagnosticsCallback);
+    nomagic_frameset_fragmentation_diagnostics.setHardwareID(_serial_no);
+
+    // Setup muxer
+    nomagic_muxer.start([&](rs2::frame frame) {
+        nomagicStoreFramesetForLazyProcessing(frame.as<rs2::frameset>());
+    });
+}
+
+void BaseRealSenseNode::nomagicMuxerCallback(rs2::frame frame, rs2::frame_source& src)
+{
+    auto frameset = frame.as<rs2::frameset>();
+    auto missing_streams = nomagicFindMissingStreamsInFrameset(frameset);
+    frameset.keep();
+
+
+
+    if (frameset.get_frame_timestamp_domain() != RS2_TIMESTAMP_DOMAIN_GLOBAL_TIME) {
+        ROS_WARN("[NOMAGIC] Frameset timestamp has invalid domain, published timestamps and durations may be skewed");
+    }
+
+    // Update stats
+    {
+        std::lock_guard<std::mutex> lock(nomagic_diagnostics_mutex);
+        nomagic_received_framesets_last_period += 1;
+        nomagic_incomplete_framesets_last_period += missing_streams.empty() ? 0 : 1;
+        nomagic_missing_depth_framesets_last_period += missing_streams.find(DEPTH) != missing_streams.end() ? 1 : 0;
+        nomagic_missing_color_framesets_last_period += missing_streams.find(COLOR) != missing_streams.end() ? 1 : 0;
+    }
+
+    // Update nomagic_latest_frame_buffer with arrived frames (possibly from an incomplete frameset)
+    for (auto&& f : frameset) {
+        auto stream_index = std::make_pair(f.get_profile().stream_type(), f.get_profile().stream_index());
+        nomagic_latest_frame_buffer[stream_index] = frameset;
+    }
+
+    // No new depth frame means we're done here.
+    if (missing_streams.find(DEPTH) != missing_streams.end()) {
+        return;
+    }
+
+    // On every depth-positive frameset build a synthetic frameset based on the latest frames from the buffer.
+    std::vector<rs2::frame> frames_vec;
+    for (auto&& stream_index : nomagic_expected_streams) {
+        if (nomagic_latest_frame_buffer.find(stream_index) == nomagic_latest_frame_buffer.end()) {
+            continue;  // Given stream did not yet arrive.
+        }
+        for (auto&& f : nomagic_latest_frame_buffer.at(stream_index)) {
+            auto f_stream_index = std::make_pair(f.get_profile().stream_type(), f.get_profile().stream_index());
+            if (stream_index == f_stream_index) {
+                frames_vec.push_back(f);
+                break;
+            }
+        }
+    }
+
+    if (frames_vec.size() != nomagic_expected_streams.size()) {
+        // This is expected on startup, however if it continues after a few seconds,
+        // it may indicate a problem on the earlier stage of processing.
+        ROS_WARN("[NOMAGIC] Dropping muxed frame: observed size: %lu, expected size: %lu",
+                 frames_vec.size(),
+                 nomagic_expected_streams.size());
+        return;
+    }
+
+    // At this point we know that we have a frameset with a fresh depth frame
+    // and (possibly historical) other streams.
+    for (auto&& image_publisher : _depth_aligned_image_publishers) {
+        if (missing_streams.find(image_publisher.first) != missing_streams.end()) {
+            // If we find (color/infra) stream in missing, we know that we did not tick
+            // aligned_depth fps counter in frame_callback path, so we need to do it here.
+            image_publisher.second.second->tick();
+        }
+    }
+
+    src.frame_ready(src.allocate_composite_frame(frames_vec));
+}
+
+bool BaseRealSenseNode::nomagicFramesetHasSubscribers(const rs2::frameset& frameset)
+{
+    for (auto&& f : frameset) {
+        auto stream_type = f.get_profile().stream_type();
+        auto stream_index = f.get_profile().stream_index();
+        stream_index_pair stream = {stream_type, stream_index};
+        auto& info_publisher = _info_publisher.at(stream);
+        auto& image_publisher = _image_publishers.at(stream);
+
+        bool has_subscribers = (info_publisher.getNumSubscribers() != 0)
+                            || (image_publisher.first.getNumSubscribers() != 0);
+        if (has_subscribers) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// This callback is implemented assuming that ROS service callbacks are serialized,
+// which seems to be true for this node at the moment of writing.
+// Refer to http://wiki.ros.org/nodelet#Threading_Model to find out how to verify it.
+bool BaseRealSenseNode::nomagicGetLatestFrameCallback(stream_index_pair stream, bool is_aligned_depth,
+                                                      GetLatestFrame::Request& request,
+                                                      GetLatestFrame::Response& response)
+{
+    response.request_timestamp = nomagicGetUnixTimestamp();
+    ROS_INFO("[NOMAGIC] get_latest_frame: stream=%s_%d aligned_depth=%d",
+             rs2_stream_to_string(stream.first), stream.second, is_aligned_depth);
+    Clock clock;
+
+    // If nomagic_lazy_filtering, queue will have == 1 frameset
+    // Otherwise, there will be >= 1 frameset
+    clock.restart();
+    auto queue = nomagicGetNonEmptyFramesetQueue();
+    response.wait_for_frames_duration = clock.getElapsedSecs();
+    ROS_INFO("[NOMAGIC] Queue contains %lu frames:", queue.size());
+
+    for (auto&& frameset : queue) {
+        ROS_INFO("[NOMAGIC] %s", nomagicFramesetDescriptionString(frameset).c_str());
+    }
+
+    // Here we're assuming that the timestamps are in the same domain.
+    // If that's no the case, it will be visible in the logs printed above
+    double actual_timespan = (queue.back().get_timestamp() - queue.front().get_timestamp()) / 1000.0;
+    double expected_timespan =
+            static_cast<double>(queue.size() - 1) / (is_aligned_depth ? _fps[DEPTH] : _fps[stream]);
+    ROS_INFO("[NOMAGIC] Buffer time span: %fs (expected: %fs)", actual_timespan, expected_timespan);
+
+    // Parameter stream means usually the type of the returned frame (color/depth/infra1/infra2)
+    // However, when is_aligned_depth, we will return depth aligned to {stream}
+
+    rs2::frame final_frame;
+    // If we're not requested for aligned depth,
+    // RGB and Infra frames don't need any processing:
+    if (!is_aligned_depth && stream != DEPTH) {
+        rs2::frameset frameset = nomagic_frameset_queue.back();
+        final_frame = nomagicFramesetToFrame(stream, frameset);
+    }
+    else {
+        // If nomagic_lazy_filtering, we need to clean the temporal filter state
+        // as it may contain old data from the previous request.
+        if (nomagic_lazy_filtering) {
+            clock.restart();
+            nomagicResetTemporalFilter();
+            response.reset_temporal_filter_duration = clock.getElapsedSecs();
+        }
+
+        // If nomagic_lazy_filtering, we apply filters for all the frames we have kept.
+        // Otherwise, the queue will be of size == 1 and filtering will be done only for the most recent frame
+        // (It will repeat the computations done in the frame_callback, but this makes the implementation simpler)
+        clock.restart();
+        rs2::frameset frameset = nomagicApplyFilters(std::move(queue));
+        response.filtering_duration = clock.getElapsedSecs();
+
+        // Transform the frameset into a frame, aligning the depth if needed.
+        if (is_aligned_depth) {
+            clock.restart();
+            final_frame = nomagicGetDepthAlignedTo(stream, frameset);
+            response.depth_alignment_duration = clock.getElapsedSecs();
+        }
+        else {
+            final_frame = nomagicFramesetToFrame(stream, frameset);
+        }
+    }
+
+    response.image = *nomagicFrameToMessage(is_aligned_depth ? DEPTH : stream, final_frame);
+    response.frame_timestamp = final_frame.get_timestamp() / 1000.0;
+    response.response_timestamp = nomagicGetUnixTimestamp();
+    return true;
+}
+
+rs2::frameset BaseRealSenseNode::nomagicApplyFilters(boost::circular_buffer<rs2::frameset>&& queue)
+{
+    rs2::frameset frameset;
+    int frames_processed = 0;
+    while (!queue.empty()) {
+        frameset = queue.front(); queue.pop_front();
+
+        // Decide if we apply spatial filter for this frame:
+        bool is_inner_frame = !(frames_processed == 0 || frames_processed == static_cast<int>(queue.capacity()) - 1);
+        bool skip_spatial = nomagic_skip_spatial_filter_for_inner_frames && is_inner_frame;
+
+        for (const NamedFilter& named_filter : nomagic_filters) {
+            if (named_filter._name != "spatial" && named_filter._name != "temporal") {
+                continue; // Skip unknown filters (like pointcloud)
+            }
+            if (skip_spatial && named_filter._name == "spatial") {
+                continue;
+            }
+            // Accumulate history in the temporal filter
+            frameset.apply_filter(*named_filter._filter);
+            ROS_INFO("[NOMAGIC] Applied filter %s", named_filter._name.c_str());
+        }
+        frames_processed += 1;
+    }
+    ROS_INFO("[NOMAGIC] Filtered %d most recent frames", frames_processed);
+    ROS_INFO("[NOMAGIC] Frameset after filtering: %s", nomagicFramesetDescriptionString(frameset).c_str());
+    return frameset;
+
+}
+
+rs2::frame BaseRealSenseNode::nomagicGetDepthAlignedTo(stream_index_pair stream, rs2::frameset frameset)
+{
+    // This code is a modified and refactored chunk of publishAlignedDepthToOthers
+    ROS_INFO("[NOMAGIC] Computing depth aligned to %s%d from frameset %s",
+              rs2_stream_to_string(stream.first), stream.second, nomagicFramesetDescriptionString(frameset).c_str());
+
+    // Skip depth (makes no sense to align depth to depth)
+    // Skip 'sibling' streams like infra2, because ros-realsense does so for an unknown reason.
+    if (RS2_STREAM_DEPTH == stream.first || stream.second > 1) {
+        ROS_WARN("[NOMAGIC] Attempted an unexpected align to depth operation. Check source code for details");
+        return nomagicFramesetToFrame(stream, frameset);
+    }
+
+    // Make sure align filter is allocated.
+    std::shared_ptr<rs2::align> align;
+    try {
+        align = _align.at(stream.first);
+    }
+    catch(const std::out_of_range& e) {
+        ROS_DEBUG("[NOMAGIC] Allocated align filter for: %s_%d", rs2_stream_to_string(stream.first), stream.second);
+        align = (_align[stream.first] = std::make_shared<rs2::align>(stream.first));
+    }
+
+    // Apply alignment filter
+    rs2::frame aligned_depth = frameset.apply_filter(*align).as<rs2::frameset>().get_depth_frame();
+
+    // Apply colorizer filter if present
+    for (const auto & _filter : nomagic_filters) {
+        if (_filter._name == "colorizer") {
+            ROS_INFO("[NOMAGIC] Applying colorizer filter");
+            return _filter._filter->process(aligned_depth);
+        }
+    }
+
+    return aligned_depth;
+}
+
+sensor_msgs::ImagePtr BaseRealSenseNode::nomagicFrameToMessage(stream_index_pair stream, rs2::frame frame)
+{
+    // This code is a modified and refactored chunk of publishFrame.
+    assert(frame.is<rs2::video_frame>());
+
+    auto vframe = frame.as<rs2::video_frame>();
+    auto width = vframe.get_width();
+    auto height = vframe.get_height();
+    auto bpp = vframe.get_bytes_per_pixel();
+    auto& buffer = _image[stream];
+
+    buffer.create(height, width, buffer.type()); // This is lazy and won't reallocate if not needed.
+    buffer.data = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(frame.get_data()));
+
+    if (frame.is<rs2::depth_frame>()) {
+        // Note: fix_depth_scale returns it's second argument
+        buffer = fix_depth_scale(buffer, _depth_scaled_image[stream]);
+    }
+
+    sensor_msgs::ImagePtr img;
+    img = cv_bridge::CvImage(std_msgs::Header(), _encoding.at(stream.first), buffer).toImageMsg();
+    img->width = width;
+    img->height = height;
+    img->is_bigendian = false;
+    img->step = width * bpp;
+    img->header.frame_id = _optical_frame_id.at(stream); // Not sure about this, but probably it does not matter for us.
+    img->header.stamp = ros::Time::now(); // This is a simplification, does not handle the case when _sync_frames == false
+
+    ROS_INFO("[NOMAGIC] Generated frame: (w=%u, h=%u, enc=%s, ptr=%p)",
+          img->width, img->height, img->encoding.c_str(), img->data.data());
+
+    return img;
+}
+
+void BaseRealSenseNode::nomagicResetTemporalFilter()
+{
+    ROS_INFO("[NOMAGIC] Resetting temporal filter's state");
+    // Temporal filter resets after changing any of its parameters (even to the same value).
+    for (const NamedFilter& named_filter : nomagic_filters) {
+        if (named_filter._name == "temporal") {
+            auto value = named_filter._filter->get_option(RS2_OPTION_FILTER_SMOOTH_ALPHA);
+            named_filter._filter->set_option(RS2_OPTION_FILTER_SMOOTH_ALPHA, value);
+            return;
+        }
+    }
+}
+
+std::set<stream_index_pair> BaseRealSenseNode::nomagicFindMissingStreamsInFrameset(const rs2::frameset& frameset)
+{
+    auto required = nomagic_expected_streams;
+    for (auto frame : frameset) {
+        auto stream_type = frame.get_profile().stream_type();
+        auto stream_index = frame.get_profile().stream_index();
+        required.erase(std::make_pair(stream_type, stream_index));
+    }
+    return required;
+}
+
+void BaseRealSenseNode::nomagicStoreFramesetForLazyProcessing(rs2::frameset frameset)
+{
+    auto missing = nomagicFindMissingStreamsInFrameset(frameset);
+    if (!missing.empty()) {
+        std::stringstream missingStr;
+        for (auto&& stream : missing) {
+            missingStr << rs2_stream_to_string(stream.first) << stream.second << ", ";
+        }
+        // It is natural to see these on startup before receiving a complete frameset.
+        // If seen later, it indicates a bug in the earlier processing stage, most likely in nomagicMuxerCallback(...)
+        ROS_WARN("[NOMAGIC] Received an incomplete frameset, missing: %s", missingStr.str().c_str());
+        return;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(nomagic_frameset_queue_mutex);
+        if (missing.empty()) {
+            frameset.keep();
+            nomagic_frameset_queue.push_back(frameset);
+        }
+
+    }
+}
+
+boost::circular_buffer<rs2::frameset> BaseRealSenseNode::nomagicGetNonEmptyFramesetQueue()
+{
+    int times_waited = 0;
+    while (true) {
+        {
+            std::lock_guard<std::mutex> lock(nomagic_frameset_queue_mutex);
+            if (!nomagic_frameset_queue.empty()) {
+                return nomagic_frameset_queue;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        times_waited += 1;
+        if (times_waited > 1) {
+            // This message may indicate too high CPU load (or some mysterious concurrency bug ;))
+            ROS_WARN("[NOMAGIC] Waited for locking frameset queue %d times", times_waited);
+        }
+    }
+}
+
+rs2::frame BaseRealSenseNode::nomagicFramesetToFrame(stream_index_pair stream, rs2::frameset frameset)
+{
+    ROS_INFO("[NOMAGIC] Getting %s_%d from the frameset %s",
+              rs2_stream_to_string(stream.first), stream.second, nomagicFramesetDescriptionString(frameset).c_str());
+
+    for (auto frame : frameset) {
+        auto stream_type = frame.get_profile().stream_type();
+        auto stream_index = frame.get_profile().stream_index();
+        if (stream == std::make_pair(stream_type, stream_index)) {
+            return frame;
+        }
+    }
+    // This sad situation means most likely that we hadn't have the requested stream in the queue
+    // This may be caused by the librealsense not delivering some streams (e.g. due to USB frame drops)
+    // However, it may also indicate a logic error in the calling code (e.g. requesting depth from a rgb frame).
+    throw std::runtime_error("[NOMAGIC] Stream frame not found in the frameset");
+}
+
+#define NOMAGIC_GET_PARAM(name)                                               \
+    if (!_pnh.param(#name, name, name)) {                                     \
+        ROS_WARN("[NOMAGIC] Failed to retrieve parameter: %s", #name); \
+    }                                                                         \
+    ROS_INFO_STREAM("[NOMAGIC] Parameter: " << #name << ": " << name)
+void BaseRealSenseNode::nomagicGetParameters()
+{
+    NOMAGIC_GET_PARAM(nomagic_lazy_filtering_frame_history_size);
+    NOMAGIC_GET_PARAM(nomagic_skip_spatial_filter_for_inner_frames);
+    NOMAGIC_GET_PARAM(nomagic_lazy_filtering);
+}
+
+std::string BaseRealSenseNode::nomagicFramesetDescriptionString(const rs2::frameset& frameset)
+{
+    std::stringstream str;
+    str << "(";
+    for (auto&& frame : frameset) {
+        auto stream_type = frame.get_profile().stream_type();
+        auto stream_index = frame.get_profile().stream_index();
+        str << rs2_stream_to_string(stream_type) << "_" << stream_index
+        << " ok=" << static_cast<bool>(frame) << "" << ", ";
+    }
+
+    auto timestamp_secs = frameset.get_timestamp() / 1000.0;
+    auto timestamp_domain = rs2_timestamp_domain_to_string(frameset.get_frame_timestamp_domain());
+    str << std::setprecision(20) << timestamp_secs << " " << timestamp_domain;
+
+    str << ")";
+    return str.str();
+}
+
+void BaseRealSenseNode::nomagicFramesetsDiagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& status)
+{
+    static Clock period_clock;
+    status.summary(0, "Statistics of framesets received from the camera");
+    // Publish NOMAGIC stats on total/incomplete framesets
+    {
+        std::lock_guard<std::mutex> lock(nomagic_frameset_queue_mutex);
+        status.add("period", period_clock.getElapsedSecs());
+
+        status.add("received_framesets", nomagic_received_framesets_last_period);
+        nomagic_received_framesets_last_period = 0;
+
+        status.add("incomplete_framesets", nomagic_incomplete_framesets_last_period);
+        nomagic_incomplete_framesets_last_period = 0;
+
+        status.add("missing_color_framesets", nomagic_missing_color_framesets_last_period);
+        nomagic_missing_color_framesets_last_period = 0;
+
+        status.add("missing_depth_framesets", nomagic_missing_depth_framesets_last_period);
+        nomagic_missing_depth_framesets_last_period = 0;
+
+        period_clock.restart();
+    }
+}
+
+double BaseRealSenseNode::nomagicGetUnixTimestamp()
+{
+    std::chrono::duration<double> timestamp = std::chrono::high_resolution_clock::now().time_since_epoch();
+    return timestamp.count();
+}
+
+#undef NOMAGIC_GET_PARAM

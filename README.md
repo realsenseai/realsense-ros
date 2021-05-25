@@ -13,10 +13,21 @@ When upgrading the base version (from Intel), keep NoMagic's version unchanged.
 
 ### Changelog:
 
+#### 0.2.0
+
+- Feature: implemented get_latest_frame service using lazy filtering.
+Note: to enable it, pass roslaunch argument nomagic_lazy_filtering:=true
+Warning: This change causes filtering to be done only when depth image topics is subscribed.
+Warning: Make sure that image topics are either used continuously (no subscribe, get image, unsubscribe pattern) or not at all. 
+
 #### 0.1.1
 
-- Bugfix: Add delay between publishing `/diagnostics` messages to avoid loosing them in the publisher's queue.
+- Bugfix: Fix dropping `/diagnostics` messages.
+The bug is caused by the size of the publisher's queue of the aformentioned topic in the implementation of diagnostic_updater.
 It actually happened during testing and caused false-positive health-check failure. 
+Too many calls to update diagnostics seems to overflow the outcoming message queue.
+To avoid this problem, this version introduces short sleeps in the thread that generates diagnostics
+and discontinues using diagnostic_updater::Updater::update() (which is lazy) in favor of the eager version - force_update() 
 
 #### 0.1.0
 - Bugfix: Publish missing `/diagnostics` messages for aligned depth streams.

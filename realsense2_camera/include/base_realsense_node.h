@@ -19,6 +19,9 @@
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <condition_variable>
 
+#include <realsense2_camera/GetLatestFrame.h>
+#include <boost/circular_buffer.hpp>
+
 #include <queue>
 #include <mutex>
 #include <atomic>
@@ -45,7 +48,7 @@ namespace realsense2_camera
 
       void update()
       {
-        diagnostic_updater_.update();
+        diagnostic_updater_.force_update();  // Explanation: the changelog for version 0.1.1 in README
       }
 
       double expected_frequency_;
@@ -63,7 +66,7 @@ namespace realsense2_camera
             void update(double crnt_temperaure)
             {
                 _crnt_temp = crnt_temperaure;
-                _updater.update();
+                _updater.force_update(); // Explanation: the changelog for version 0.1.1 in README
             }
 
         private:
@@ -201,7 +204,7 @@ namespace realsense2_camera
         void setupErrorCallback();
         void setupPublishers();
         void enable_devices();
-        void setupFilters();
+        void setupFilters(std::vector<NamedFilter>&);
         void setupStreams();
         bool setBaseTime(double frame_time, rs2_timestamp_domain time_domain);
         double frameSystemTimeSec(rs2::frame frame);
@@ -339,6 +342,51 @@ namespace realsense2_camera
 
         sensor_msgs::PointCloud2 _msg_pointcloud;
         std::vector< unsigned int > _valid_pc_indices;
+
+        // NOMAGIC
+
+        int  nomagic_lazy_filtering_frame_history_size = 9;
+        bool nomagic_skip_spatial_filter_for_inner_frames = true;
+        bool nomagic_lazy_filtering = false;
+
+        std::map<stream_index_pair, ros::ServiceServer> nomagic_get_latest_frame_servers;
+        std::map<stream_index_pair, ros::ServiceServer> nomagic_get_latest_aligned_frame_servers;
+        std::set<stream_index_pair> nomagic_expected_streams;
+        std::vector<NamedFilter> nomagic_filters;
+
+        // The nomagic_frameset_queue is written from the librealsense callback thread (frame_callback)
+        // and read (copied) from ROS service thread (nomagicGetLatestFrameCallback)
+        std::mutex nomagic_frameset_queue_mutex;
+            boost::circular_buffer<rs2::frameset> nomagic_frameset_queue;
+
+        diagnostic_updater::Updater nomagic_frameset_fragmentation_diagnostics;
+        std::mutex nomagic_diagnostics_mutex;
+            int nomagic_received_framesets_last_period = 0;
+            int nomagic_incomplete_framesets_last_period = 0;
+            int nomagic_missing_depth_framesets_last_period = 0;
+            int nomagic_missing_color_framesets_last_period = 0;
+
+
+        rs2::processing_block nomagic_muxer;
+        std::map<stream_index_pair, rs2::frameset> nomagic_latest_frame_buffer;
+
+        void nomagicSetup();
+        void nomagicGetParameters();
+        void nomagicResetTemporalFilter();
+        bool nomagicFramesetHasSubscribers(const rs2::frameset& frameset);
+        void nomagicStoreFramesetForLazyProcessing(rs2::frameset);
+        bool nomagicGetLatestFrameCallback(stream_index_pair stream, bool is_aligned_depth, GetLatestFrame::Request& request, GetLatestFrame::Response& response);
+        void nomagicSetupService(stream_index_pair stream, bool is_aligned_depth);
+        rs2::frame nomagicGetDepthAlignedTo(stream_index_pair stream, rs2::frameset frameset);
+        rs2::frame nomagicFramesetToFrame(stream_index_pair stream, rs2::frameset frameset);
+        std::string nomagicFramesetDescriptionString(const rs2::frameset& frameset);
+        rs2::frameset nomagicApplyFilters(boost::circular_buffer<rs2::frameset>&& queue);
+        sensor_msgs::ImagePtr nomagicFrameToMessage(stream_index_pair stream, rs2::frame frame);
+        boost::circular_buffer<rs2::frameset> nomagicGetNonEmptyFramesetQueue();
+        std::set<stream_index_pair> nomagicFindMissingStreamsInFrameset(const rs2::frameset& frameset);
+        void nomagicFramesetsDiagnosticsCallback(diagnostic_updater::DiagnosticStatusWrapper& status);
+        void nomagicMuxerCallback(rs2::frame frame, rs2::frame_source& src);
+        double nomagicGetUnixTimestamp();
     };//end class
 
 }

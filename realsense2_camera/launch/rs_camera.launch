@@ -50,12 +50,12 @@
   <arg name="ordered_pc"                default="false"/>
 
   <arg name="enable_sync"               default="false"/>
-  <arg name="align_depth"               default="false"/>
+  <arg name="align_depth"               default="true"/>
 
   <arg name="publish_tf"                default="true"/>
   <arg name="tf_publish_rate"           default="0"/>
 
-  <arg name="filters"                   default=""/>
+  <arg name="filters"                   default="spatial"/>
   <arg name="clip_distance"             default="-2"/>
   <arg name="linear_accel_cov"          default="0.01"/>
   <arg name="initial_reset"             default="false"/>
@@ -72,6 +72,10 @@
   <arg name="stereo_module/gain/2"      default="16"/>
   
   
+
+  <arg name="nomagic_lazy_filtering_frame_history_size"    default="9"/>
+  <arg name="nomagic_skip_spatial_filter_for_inner_frames" default="true"/>
+  <arg name="nomagic_lazy_filtering"                       default="false"/>
 
   <group ns="$(arg camera)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
@@ -145,6 +149,11 @@
       <arg name="allow_no_texture_points"  value="$(arg allow_no_texture_points)"/>
       <arg name="ordered_pc"               value="$(arg ordered_pc)"/>
       
+
+      <arg name="nomagic_lazy_filtering_frame_history_size"    value="$(arg nomagic_lazy_filtering_frame_history_size)"/>
+      <arg name="nomagic_skip_spatial_filter_for_inner_frames" value="$(arg nomagic_skip_spatial_filter_for_inner_frames)"/>
+      <arg name="nomagic_lazy_filtering"                       value="$(arg nomagic_lazy_filtering)"/>
+
     </include>
   </group>
 </launch>
