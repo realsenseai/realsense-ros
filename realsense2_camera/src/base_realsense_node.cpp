@@ -3000,6 +3000,56 @@ void BaseRealSenseNode::nomagicResetTemporalFilter()
         }
     }
 }
+bool BaseRealSenseNode::nomagicAnyDepthHasSubscribers(
+    const rs2::frameset &frameset) {
+  for (auto &&f : frameset) {
+    auto stream_type = f.get_profile().stream_type();
+    auto stream_index = f.get_profile().stream_index();
+    stream_index_pair stream = {stream_type, stream_index};
+    bool has_subscribers = false;
+    if (stream == DEPTH) {
+      auto &info_publisher = _info_publisher.at(stream);
+      auto &image_publisher = _image_publishers.at(stream);
+      has_subscribers = (info_publisher.getNumSubscribers() != 0) ||
+                        (image_publisher.first.getNumSubscribers() != 0);
+    } else if (_align_depth && stream_index < 1) {
+      auto &aligned_info_publisher = _depth_aligned_info_publisher.at(stream);
+      auto &aligned_image_publisher =
+          _depth_aligned_image_publishers.at(stream);
+
+      has_subscribers =
+          (aligned_info_publisher.getNumSubscribers() != 0) ||
+          (aligned_image_publisher.first.getNumSubscribers() != 0);
+    }
+    if (has_subscribers)
+      return true;
+  }
+  return false;
+}
+
+// This callback is implemented assuming that ROS service callbacks are
+// serialized, which seems to be true for this node at the moment of writing.
+// Refer to http://wiki.ros.org/nodelet#Threading_Model to find out how to
+// verify it.
+bool BaseRealSenseNode::nomagicGetLatestFrameCallback(
+    stream_index_pair stream, bool is_aligned_depth,
+    GetLatestFrame::Request &request, GetLatestFrame::Response &response) {
+  response.request_timestamp = nomagicGetUnixTimestamp();
+  ROS_INFO("[NOMAGIC] get_latest_frame: stream=%s_%d aligned_depth=%d",
+           rs2_stream_to_string(stream.first), stream.second, is_aligned_depth);
+  Clock clock;
+
+  // If nomagic_lazy_filtering, queue will have == 1 frameset
+  // Otherwise, there will be >= 1 frameset
+  clock.restart();
+  auto queue = nomagicGetNonEmptyFramesetQueue();
+  response.wait_for_frames_duration = clock.getElapsedSecs();
+  ROS_INFO("[NOMAGIC] Queue contains %lu frames:", queue.size());
+
+  for (auto &&frameset : queue) {
+    ROS_INFO("[NOMAGIC] %s",
+             nomagicFramesetDescriptionString(frameset).c_str());
+  }
 
 std::set<stream_index_pair> BaseRealSenseNode::nomagicFindMissingStreamsInFrameset(const rs2::frameset& frameset)
 {
