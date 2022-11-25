@@ -370,7 +370,7 @@ private:
   void nomagicSetup();
   void nomagicGetParameters();
   void nomagicResetTemporalFilter();
-  bool nomagicFramesetHasSubscribers(const rs2::frameset &frameset);
+  bool nomagicAnyDepthHasSubscribers(const rs2::frameset &frameset);
   void nomagicStoreFramesetForLazyProcessing(rs2::frameset);
   bool nomagicGetLatestFrameCallback(stream_index_pair stream,
                                      bool is_aligned_depth,

@@ -1604,7 +1604,7 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame) {
       //            nomagicStoreFramesetForLazyProcessing(frameset);
       nomagic_muxer.invoke(frame);
       bool apply_filters_now =
-          nomagicFramesetHasSubscribers(frameset) || !nomagic_lazy_filtering;
+          nomagicAnyDepthHasSubscribers(frameset) || !nomagic_lazy_filtering;
       if (apply_filters_now) {
         ROS_DEBUG("num_filters: %d", static_cast<int>(_filters.size()));
         for (std::vector<NamedFilter>::const_iterator filter_it =
@@ -2653,20 +2653,29 @@ void BaseRealSenseNode::nomagicMuxerCallback(rs2::frame frame,
   src.frame_ready(src.allocate_composite_frame(frames_vec));
 }
 
-bool BaseRealSenseNode::nomagicFramesetHasSubscribers(
+bool BaseRealSenseNode::nomagicAnyDepthHasSubscribers(
     const rs2::frameset &frameset) {
   for (auto &&f : frameset) {
     auto stream_type = f.get_profile().stream_type();
     auto stream_index = f.get_profile().stream_index();
     stream_index_pair stream = {stream_type, stream_index};
-    auto &info_publisher = _info_publisher.at(stream);
-    auto &image_publisher = _image_publishers.at(stream);
+    bool has_subscribers = false;
+    if (stream == DEPTH) {
+      auto &info_publisher = _info_publisher.at(stream);
+      auto &image_publisher = _image_publishers.at(stream);
+      has_subscribers = (info_publisher.getNumSubscribers() != 0) ||
+                        (image_publisher.first.getNumSubscribers() != 0);
+    } else if (_align_depth && stream_index < 1) {
+      auto &aligned_info_publisher = _depth_aligned_info_publisher.at(stream);
+      auto &aligned_image_publisher =
+          _depth_aligned_image_publishers.at(stream);
 
-    bool has_subscribers = (info_publisher.getNumSubscribers() != 0) ||
-                           (image_publisher.first.getNumSubscribers() != 0);
-    if (has_subscribers) {
-      return true;
+      has_subscribers =
+          (aligned_info_publisher.getNumSubscribers() != 0) ||
+          (aligned_image_publisher.first.getNumSubscribers() != 0);
     }
+    if (has_subscribers)
+      return true;
   }
   return false;
 }
