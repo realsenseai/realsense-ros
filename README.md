@@ -13,6 +13,9 @@ When upgrading the base version (from Intel), keep NoMagic's version unchanged.
 
 ### Changelog:
 
+#### 0.2.1
+- Bugfix: fix lazy filtering - use lazy filtering only when depth or aligned depth is subscribed. (Previously filtering was also enabled when color was subscribed)
+
 #### 0.2.0
 
 - Feature: implemented get_latest_frame service using lazy filtering.
