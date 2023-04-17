@@ -114,7 +114,6 @@
   <arg name="nomagic_lazy_filtering"                       default="false"/>
 
 
-
   <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="$(arg output)" required="$(arg required)" respawn="$(arg respawn)"/>
   <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)" respawn="$(arg respawn)">
     <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
