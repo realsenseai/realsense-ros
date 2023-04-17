@@ -346,11 +346,11 @@ def main():
                  {'name': 'vis_avg_2', 'type': 'vis_avg', 'params': {'rosbag_filename': outdoors_filename}},
                  {'name': 'depth_avg_1', 'type': 'depth_avg', 'params': {'rosbag_filename': outdoors_filename}},
                  {'name': 'depth_w_cloud_1', 'type': 'depth_avg', 'params': {'rosbag_filename': outdoors_filename, 'enable_pointcloud': 'true'}},
-                 {'name': 'points_cloud_1', 'type': 'pointscloud_avg', 'params': {'rosbag_filename': outdoors_filename, 'enable_pointcloud': 'true'}},
-                 {'name': 'align_depth_color_1', 'type': 'align_depth_color', 'params': {'rosbag_filename': outdoors_filename, 'align_depth': 'true'}},
-                 {'name': 'align_depth_ir1_1', 'type': 'align_depth_ir1', 'params': {'rosbag_filename': outdoors_filename, 'align_depth': 'true'}},
+                #  {'name': 'points_cloud_1', 'type': 'pointscloud_avg', 'params': {'rosbag_filename': outdoors_filename, 'enable_pointcloud': 'true'}},
+                #  {'name': 'align_depth_color_1', 'type': 'align_depth_color', 'params': {'rosbag_filename': outdoors_filename, 'align_depth': 'true'}},
+                #  {'name': 'align_depth_ir1_1', 'type': 'align_depth_ir1', 'params': {'rosbag_filename': outdoors_filename, 'align_depth': 'true'}},
                  {'name': 'depth_avg_decimation_1', 'type': 'depth_avg_decimation', 'params': {'rosbag_filename': outdoors_filename, 'filters': 'decimation'}},
-                 {'name': 'align_depth_ir1_decimation_1', 'type': 'align_depth_ir1_decimation', 'params': {'rosbag_filename': outdoors_filename, 'filters': 'decimation', 'align_depth': 'true'}},
+                #  {'name': 'align_depth_ir1_decimation_1', 'type': 'align_depth_ir1_decimation', 'params': {'rosbag_filename': outdoors_filename, 'filters': 'decimation', 'align_depth': 'true'}},
                 #  {'name': 'static_tf_1', 'type': 'static_tf', 'params': {'rosbag_filename': outdoors_filename}},   # Not working in Travis...
                 #  {'name': 'accel_up_1', 'type': 'accel_up', 'params': {'rosbag_filename': './records/D435i_Depth_and_IMU_Stands_still.bag'}},  # Keeps failing on Travis CI. See https://github.com/IntelRealSense/realsense-ros/pull/1504#issuecomment-744226704
                  ]

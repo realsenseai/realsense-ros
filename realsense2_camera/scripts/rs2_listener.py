@@ -2,6 +2,7 @@ import sys
 import time
 import rospy
 from sensor_msgs.msg import Image as msg_Image
+from sensor_msgs.msg import CompressedImage as msg_CompressedImage
 from sensor_msgs.msg import PointCloud2 as msg_PointCloud2
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import Imu as msg_Imu
@@ -38,7 +39,7 @@ class CWaitForMessage:
         self.result = None
 
         self.break_timeout = False
-        self.timeout = params.get('timeout_secs', -1)
+        self.timeout = params.get('timeout_secs', -1) * 1e-3
         self.seq = params.get('seq', -1)
         self.time = params.get('time', None)
         self.node_name = params.get('node_name', 'rs2_listener')
@@ -216,7 +217,8 @@ class CWaitForMessage:
         self.prev_msg_data = data
 
         self.prev_time = time.time()
-        if any([self.seq > 0 and data.header.seq >= self.seq,
+        if any([self.seq < 0 and self.time is None, 
+                self.seq > 0 and data.header.seq >= self.seq,
                 self.time and data.header.stamp.secs == self.time['secs'] and data.header.stamp.nsecs == self.time['nsecs']]):
             self.result = data
             self.sub.unregister()
@@ -256,6 +258,8 @@ def main():
         except NameError as e:
             print ('theora_image_transport is not installed. \nType "sudo apt-get install ros-kinetic-theora-image-transport" to enable registering on messages of type theora.')
             raise
+    elif 'compressed' in wanted_topic:
+        msg_type = msg_CompressedImage
     else:
         msg_type = msg_Image
 
@@ -274,6 +278,10 @@ def main():
         msg_params.setdefault('topic', wanted_topic)
         res = msg_retriever.wait_for_message(msg_params, msg_type)
         rospy.loginfo('Got message: %s' % res.header)
+        if (hasattr(res, 'encoding')):
+            print ('res.encoding:', res.encoding)
+        if (hasattr(res, 'format')):
+            print ('res.format:', res.format)
     else:
         themes = [wanted_topic]
         res = msg_retriever.wait_for_messages(themes)

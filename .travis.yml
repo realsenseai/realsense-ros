@@ -13,7 +13,7 @@ before_install:
   - echo _python:$_python
   - echo _ros_dist:$_ros_dist
   - sudo apt-key adv --keyserver hkp://keys.gnupg.net:80 --recv-key C8B3A55A6F3EFCDE
-  - sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo $(lsb_release -sc) main"
+  - sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main"
   - sudo apt-get update -qq
   - sudo apt-get install librealsense2-dkms --allow-unauthenticated -y
   - sudo apt-get install librealsense2-dev --allow-unauthenticated -y
@@ -28,11 +28,6 @@ install:
   - sudo rosdep init
   - rosdep update
   - echo "source /opt/ros/$_ros_dist/setup.bash" >> ~/.bashrc
-  - sudo apt-get install ros-$_ros_dist-cv-bridge -y
-  - sudo apt-get install ros-$_ros_dist-image-transport
-  - sudo apt-get install ros-$_ros_dist-tf -y
-  - sudo apt-get install ros-$_ros_dist-diagnostic-updater -y
-  - sudo apt-get install ros-$_ros_dist-ddynamic-reconfigure -y
   - if [[ $(lsb_release -sc) == "bionic" ]] || [[ $(lsb_release -sc) == "focal" ]]; then
     sudo apt-get install libeigen3-dev;
     fi
@@ -44,6 +39,8 @@ install:
   - cd ~/catkin_ws/src/
   - catkin_init_workspace
   - cd ..
+  - rosdep install --from-paths src --ignore-src -r -y
+  - sudo apt purge ros-$_ros_dist-librealsense2
   - catkin_make clean
   - catkin_make -DCATKIN_ENABLE_TESTING=False -DCMAKE_BUILD_TYPE=Release
   - catkin_make install
@@ -51,9 +48,9 @@ install:
   - source ~/.bashrc
 
     # download data:
-  - bag_filename="http://realsense-hw-public.s3.amazonaws.com/rs-tests/TestData/outdoors_1color.bag";
+  - bag_filename="https://librealsense.intel.com/rs-tests/TestData/outdoors_1color.bag";
   - wget $bag_filename -P "records/"
-  - bag_filename="http://realsense-hw-public.s3-eu-west-1.amazonaws.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
+  - bag_filename="https://librealsense.intel.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
   - wget $bag_filename -P "records/"
   
   # Run test:

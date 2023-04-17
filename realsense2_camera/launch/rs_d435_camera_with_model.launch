@@ -43,6 +43,7 @@
   <arg name="clip_distance"             default="-2"/>
   <arg name="linear_accel_cov"          default="0.01"/>
   <arg name="initial_reset"             default="false"/>
+  <arg name="reconnect_timeout"         default="6.0"/>
   <arg name="unite_imu_method"          default=""/>
   <arg name="topic_odom_in"             default="odom_in"/>
   <arg name="calib_odom_file"           default=""/>
@@ -93,6 +94,7 @@
       <arg name="clip_distance"            value="$(arg clip_distance)"/>
       <arg name="linear_accel_cov"         value="$(arg linear_accel_cov)"/>
       <arg name="initial_reset"            value="$(arg initial_reset)"/>
+      <arg name="reconnect_timeout"        value="$(arg reconnect_timeout)"/>
       <arg name="unite_imu_method"         value="$(arg unite_imu_method)"/>
       <arg name="topic_odom_in"            value="$(arg topic_odom_in)"/>
       <arg name="calib_odom_file"          value="$(arg calib_odom_file)"/>

@@ -36,7 +36,7 @@ class ImageListener:
             if (not self.pix_grade is None):
                 line += ' Grade: %2d' % self.pix_grade
             line += '\r'
-            sys.stdout.write(line+)
+            sys.stdout.write(line)
             sys.stdout.flush()
 
         except CvBridgeError as e:
@@ -81,16 +81,16 @@ def main():
     depth_image_topic = '/camera/depth/image_rect_raw'
     depth_info_topic = '/camera/depth/camera_info'
 
-    print ()
+    print ('')
     print ('show_center_depth.py')
     print ('--------------------')
     print ('App to demontrate the usage of the /camera/depth topics.')
-    print ()
+    print ('')
     print ('Application subscribes to %s and %s topics.' % (depth_image_topic, depth_info_topic))
     print ('Application then calculates and print the range to the closest object.')
     print ('If intrinsics data is available, it also prints the 3D location of the object')
     print ('If a confedence map is also available in the topic %s, it also prints the confidence grade.' % depth_image_topic.replace('depth', 'confidence'))
-    print ()
+    print ('')
     
     listener = ImageListener(depth_image_topic, depth_info_topic)
     rospy.spin()

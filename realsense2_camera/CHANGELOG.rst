@@ -2,6 +2,59 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.3.2 (2021-11-15)
+------------------
+* publish metadata
+* Add service: device_info
+* add wait_for_device_timeout parameter
+* Add reconnect_timeout parameter
+* show warning when requested profile cannot be selected.
+* send only 4 distortion coeffs when using equidistant
+* fixed missing std namespace
+* Removing spaces when iterating filters
+* Contributors: Collin Avidano, Gintaras, Jacco van der Spek, doronhi
+
+2.3.1 (2021-07-01)
+------------------
+* add respawn option
+* add udev rules to debian installation
+* Add support for L535
+* Fix occasional missing diagnostic messages
+* Contributors: Alex Fernandes Neves, doronhi
+
+2.3.0 (2021-05-05)
+------------------
+* Fix pointcloud message size when no texture is added.
+* Added filling correct Tx, Ty values in projection matrix of right camera.
+* Fixed frame_id of right sensor to match left sensor in a stereo pair.pair
+* Contributors: Pavlo Kolomiiets, doronhi
+
+2.2.24 (2021-04-21)
+-------------------
+* Enabling pointcloud while align_depth is set to true creates a pointcloud aligned to color image.
+* Removed option to align depth to other streams other then color.
+* Contributors: doronhi
+
+2.2.23 (2021-03-24)
+-------------------
+* Remove the following tests for known playback issue with librealsense2 version 2.43.0: points_cloud_1, align_depth_color_1, align_depth_ir1_1, align_depth_ir1_decimation_1.
+* Add filter: HDR_merge
+* add default values to infra stream in rs_camera.launch as non are defined in librealsense2.
+* fix bug: selection of profile disregarded stream index.
+* fix initialization of colorizer inner image
+* Contributors: doronhi
+
+2.2.22 (2021-02-18)
+-------------------
+* Add reset service.
+* fix timestamp domain issues
+  - Add offset to ros_time only if device uses hardware-clock. Otherwise use device time - either system_time or global_time.
+  - Warn of a hardware timestamp possible loop.
+* Choose the default profile in case of an invalid request.
+* Avoid aligning confidence image.
+* Add an option for an Ordered PointCloud.
+* Contributors: Isaac I.Y. Saito, Itamar Eliakim, Marc Alban, doronhi
+
 2.2.21 (2020-12-31)
 -------------------
 * Publish depth confidence image for supporting devices (L515)

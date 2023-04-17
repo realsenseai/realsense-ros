@@ -21,6 +21,7 @@
 #include <eigen3/Eigen/Geometry>
 #include <fstream>
 #include <thread>
+#include <std_srvs/Empty.h>
 
 namespace realsense2_camera
 {
@@ -65,12 +66,15 @@ namespace realsense2_camera
         void change_device_callback(rs2::event_information& info);
         void getDevice(rs2::device_list list);
         virtual void onInit() override;
+        void initialize(const ros::WallTimerEvent &ignored);
         void tryGetLogSeverity(rs2_log_severity& severity) const;
+        void reset();
+        bool handleReset(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
         static std::string parse_usb_port(std::string line);
         bool toggle_sensor_callback(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
 
         rs2::device _device;
-        std::unique_ptr<InterfaceRealSenseNode> _realSenseNode;
+        std::shared_ptr<InterfaceRealSenseNode> _realSenseNode;
         rs2::context _ctx;
         std::string _serial_no;
         std::string _usb_port_id;
@@ -79,6 +83,8 @@ namespace realsense2_camera
         std::thread _query_thread;
         bool _is_alive;
         ros::ServiceServer toggle_sensor_srv;
+        ros::WallTimer _init_timer;
+        ros::ServiceServer _reset_srv;
 
     };
 }//end namespace

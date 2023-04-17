@@ -13,8 +13,7 @@ aluminum peripherial evaluation case.
   <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
   <xacro:include filename="$(find realsense2_description)/urdf/_usb_plug.urdf.xacro" />
 
-  <xacro:macro name="sensor_d435" params="parent *origin name:=camera use_nominal_extrinsics:=false">
-    <xacro:arg name="add_plug" default="false" />
+  <xacro:macro name="sensor_d435" params="parent *origin name:=camera use_nominal_extrinsics:=false add_plug:=false use_mesh:=true">
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
     <!-- The following values are approximate, and the camera node
@@ -59,12 +58,20 @@ aluminum peripherial evaluation case.
 
     <link name="${name}_link">
       <visual>
-        <!-- the mesh origin is at front plate in between the two infrared camera axes -->
-        <origin xyz="${d435_zero_depth_to_glass + d435_glass_to_front} ${-d435_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
-        <geometry>
-          <!-- <box size="${d435_cam_width} ${d435_cam_height} ${d435_cam_depth}"/> -->
-	        <mesh filename="package://realsense2_description/meshes/d435.dae" />
-        </geometry>
+        <xacro:if value="${use_mesh}">
+          <!-- the mesh origin is at front plate in between the two infrared camera axes -->
+          <origin xyz="${d435_zero_depth_to_glass + d435_glass_to_front} ${-d435_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+          <geometry>
+            <mesh filename="package://realsense2_description/meshes/d435.dae" />
+          </geometry>
+        </xacro:if>
+        <xacro:unless value="${use_mesh}">
+          <origin xyz="0 ${-d435_cam_depth_py} 0" rpy="0 0 0"/>
+          <geometry>
+            <box size="${d435_cam_depth} ${d435_cam_width} ${d435_cam_height}"/>
+          </geometry>
+          <material name="aluminum"/>
+        </xacro:unless>     
       </visual>
       <collision>
         <origin xyz="0 ${-d435_cam_depth_py} 0" rpy="0 0 0"/>
@@ -143,7 +150,7 @@ aluminum peripherial evaluation case.
       <link name="${name}_color_optical_frame"/>
     </xacro:if>
 
-    <xacro:if value="$(arg add_plug)">
+    <xacro:if value="${add_plug}">
       <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
         <origin xyz="${d435_cam_mount_from_center_offset - 0.02095} ${-d435_cam_depth_py - 0.0353} 0" rpy="0 0 0"/>
       </xacro:usb_plug>

@@ -12,7 +12,7 @@ aluminum peripherial evaluation case.
   <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
   <xacro:include filename="$(find realsense2_description)/urdf/_usb_plug.urdf.xacro" />
 
-  <xacro:macro name="sensor_d415" params="parent *origin  name:=camera  use_nominal_extrinsics:=false  add_plug:=false">
+  <xacro:macro name="sensor_d415" params="parent *origin  name:=camera  use_nominal_extrinsics:=false add_plug:=false use_mesh:=true">
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
     <!-- The following values are approximate, and the camera node
@@ -52,12 +52,19 @@ aluminum peripherial evaluation case.
 
     <link name="${name}_link">
       <visual>
-      <origin xyz="${d415_cam_mount_from_center_offset} ${-d415_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
-        <geometry>
-          <!-- <box size="${d415_cam_width} ${d415_cam_height} ${d415_cam_depth}"/> -->
-	         <mesh filename="package://realsense2_description/meshes/d415.stl" />
-        </geometry>
-        <material name="aluminum"/>
+        <xacro:if value="${use_mesh}">
+          <origin xyz="${d415_cam_mount_from_center_offset} ${-d415_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+          <geometry>
+            <mesh filename="package://realsense2_description/meshes/d415.stl" />
+          </geometry>
+          <material name="aluminum"/>
+        </xacro:if>
+        <xacro:unless value="${use_mesh}">
+          <origin xyz="0 ${-d415_cam_depth_py} 0" rpy="0 0 0"/>
+          <geometry>
+            <box size="${d415_cam_depth} ${d415_cam_width} ${d415_cam_height}"/>
+          </geometry>
+        </xacro:unless>     
       </visual>
       <collision>
         <origin xyz="0 ${-d415_cam_depth_py} 0" rpy="0 0 0"/>
@@ -66,8 +73,8 @@ aluminum peripherial evaluation case.
         </geometry>
       </collision>
       <inertial>
+        <mass value="0.072" />
         <!-- The following are not reliable values, and should not be used for modeling -->
-        <mass value="0.564" />
         <origin xyz="0 0 0" />
         <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257" />
       </inertial>
@@ -136,7 +143,7 @@ aluminum peripherial evaluation case.
       <link name="${name}_color_optical_frame"/>
     </xacro:if>
 
-    <xacro:if value="$(arg add_plug)">
+    <xacro:if value="${add_plug}">
       <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
         <origin xyz="${d415_cam_mount_from_center_offset - 0.01587} ${-d415_cam_depth_py - 0.0358} 0" rpy="0 0 0"/>
       </xacro:usb_plug>

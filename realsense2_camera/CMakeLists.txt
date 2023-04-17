@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     sensor_msgs
     std_msgs
+    std_srvs
     nodelet
     cv_bridge
     image_transport
@@ -40,7 +41,7 @@ endif()
 if (WIN32)
 find_package(realsense2 CONFIG REQUIRED)
 else()
-find_package(realsense2 2.41.0)
+find_package(realsense2 2.50.0)
 endif()
 
 if(NOT realsense2_FOUND)
@@ -68,10 +69,12 @@ add_message_files(
     FILES
     IMUInfo.msg
     Extrinsics.msg
+    Metadata.msg
     )
 
 add_service_files(
     FILES
+    DeviceInfo.srv
     GetLatestFrame.srv
 )
 

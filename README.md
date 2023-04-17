@@ -40,11 +40,9 @@ These are packages for using Intel RealSense cameras (D400 series SR300 camera a
 
 This version supports Kinetic, Melodic and Noetic distributions.
 
-For running in ROS2-Eloquent environment please switch to the [eloquent branch](https://github.com/IntelRealSense/realsense-ros/tree/eloquent). </br>
-For running in ROS2-Foxy environment please switch to the [foxy branch](https://github.com/IntelRealSense/realsense-ros/tree/foxy).
+For running in ROS2 environment please switch to the [ros2 branch](https://github.com/IntelRealSense/realsense-ros/tree/ros2). </br>
 
-
-LibRealSense supported version: v2.41.0 (see [realsense2_camera release notes](https://github.com/IntelRealSense/realsense-ros/releases))
+LibRealSense2 supported version: v2.50.0 (see [realsense2_camera release notes](https://github.com/IntelRealSense/realsense-ros/releases))
 
 ## Installation Instructions
 
@@ -65,29 +63,15 @@ LibRealSense supported version: v2.41.0 (see [realsense2_camera release notes](h
 
     realsense2_camera is available as a debian package of ROS distribution. It can be installed by typing:
     
-    ```
-    export ROS_VER=kinetic 
-    ```
-    or
-    ```
-    export ROS_VER=melodic 
-    ```
-    or
-    ```
-    export ROS_VER=noetic 
-    ```
-    
-    Then install the ros packages using the environment variable created above:
-    
-    ```sudo apt-get install ros-$ROS_VER-realsense2-camera```
+    ```sudo apt-get install ros-$ROS_DISTRO-realsense2-camera```
 
-    This will install both realsense2_camera and its dependents, including librealsense2 library.
+    This will install both realsense2_camera and its dependents, including librealsense2 library and matching udev-rules.
 
     Notice:
     * The version of librealsense2 is almost always behind the one availeable in RealSense&trade; official repository.
     * librealsense2 is not built to use native v4l2 driver but the less stable RS-USB protocol. That is because the last is more general and operational on a larger variety of platforms.
     * realsense2_description is available as a separate debian package of ROS distribution. It includes the 3D-models of the devices and is necessary for running launch files that include these models (i.e. rs_d435_camera_with_model.launch). It can be installed by typing:
-    `sudo apt-get install ros-$ROS_VER-realsense2-description`
+    `sudo apt-get install ros-$ROS_DISTRO-realsense2-description`
 
   *Windows*
 
@@ -100,9 +84,11 @@ LibRealSense supported version: v2.41.0 (see [realsense2_camera release notes](h
    ### Step 1: Install the latest Intel&reg; RealSense&trade; SDK 2.0
 
     *Ubuntu*
-
-    * Install from [Debian Package](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md#installing-the-packages)
-      - In that case treat yourself as a developer. Make sure you follow the instructions to also install librealsense2-dev and librealsense-dkms packages.
+    
+    Install librealsense2 debian package:
+    * Jetson users - use the [Jetson Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_jetson.md)
+    * Otherwise, install from [Linux Debian Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md#installing-the-packages)
+      - In that case treat yourself as a developer. Make sure you follow the instructions to also install librealsense2-dev and librealsense2-dkms packages.
 
     *Windows* 
     Install using vcpkg
@@ -110,7 +96,7 @@ LibRealSense supported version: v2.41.0 (see [realsense2_camera release notes](h
         `vcpkg install realsense2:x64-windows` 
 
    #### OR
-   - #### Build from sources by downloading the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.41.0) and follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
+   - #### Build from sources by downloading the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.50.0) and follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
 
    ### Step 2: Install Intel&reg; RealSense&trade; ROS from Sources
@@ -174,8 +160,10 @@ The published topics differ according to the device and parameters.
 After running the above command with D435i attached, the following list of topics will be available (This is a partial list. For full one type `rostopic list`):
 - /camera/color/camera_info
 - /camera/color/image_raw
+- /camera/color/metadata
 - /camera/depth/camera_info
 - /camera/depth/image_rect_raw
+- /camera/depth/metadata
 - /camera/extrinsics/depth_to_color
 - /camera/extrinsics/depth_to_infra1
 - /camera/extrinsics/depth_to_infra2
@@ -184,8 +172,10 @@ After running the above command with D435i attached, the following list of topic
 - /camera/infra2/camera_info
 - /camera/infra2/image_rect_raw
 - /camera/gyro/imu_info
+- /camera/gyro/metadata
 - /camera/gyro/sample
 - /camera/accel/imu_info
+- /camera/accel/metadata
 - /camera/accel/sample
 - /diagnostics
 
@@ -209,12 +199,18 @@ The following parameters are available by the wrapper:
 
 - **rosbag_filename**: Will publish topics from rosbag file.
 - **initial_reset**: On occasions the device was not closed properly and due to firmware issues needs to reset. If set to true, the device will reset prior to usage.
-- **align_depth**: If set to true, will publish additional topics with the all the images aligned to the depth image.</br>
-The topics are of the form: ```/camera/aligned_depth_to_color/image_raw``` etc.
+- **reconnect_timeout**: When the driver cannot connect to the device try to reconnect after this timeout (in seconds).
+- **align_depth**: If set to true, will publish additional topics for the "aligned depth to color" image.: ```/camera/aligned_depth_to_color/image_raw```, ```/camera/aligned_depth_to_color/camera_info```.</br>
+The pointcloud, if enabled, will be built based on the aligned_depth_to_color image.</br>
 - **filters**: any of the following options, separated by commas:</br>
  - ```colorizer```: will color the depth image. On the depth topic an RGB image will be published, instead of the 16bit depth values .
- - ```pointcloud```: will add a pointcloud topic `/camera/depth/color/points`. The texture of the pointcloud can be modified in rqt_reconfigure (see below) or using the parameters: `pointcloud_texture_stream` and `pointcloud_texture_index`. Run rqt_reconfigure to see available values for these parameters.</br>
- The depth FOV and the texture FOV are not similar. By default, pointcloud is limited to the section of depth containing the texture. You can have a full depth to pointcloud, coloring the regions beyond the texture with zeros, by setting `allow_no_texture_points` to true.
+ - ```pointcloud```: will add a pointcloud topic `/camera/depth/color/points`.
+    * The texture of the pointcloud can be modified in rqt_reconfigure (see below) or using the parameters: `pointcloud_texture_stream` and `pointcloud_texture_index`. Run rqt_reconfigure to see available values for these parameters.</br>
+    * The depth FOV and the texture FOV are not similar. By default, pointcloud is limited to the section of depth containing the texture. You can have a full depth to pointcloud, coloring the regions beyond the texture with zeros, by setting `allow_no_texture_points` to true.
+    * pointcloud is of an unordered format by default. This can be changed by setting `ordered_pc` to true.
+- ```hdr_merge```: Allows depth image to be created by merging the information from 2 consecutive frames, taken with different exposure and gain values. The way to set exposure and gain values for each sequence in runtime is by first selecting the sequence id, using rqt_reconfigure `stereo_module/sequence_id` parameter and then modifying the `stereo_module/gain`, and `stereo_module/exposure`.</br> To view the effect on the infrared image for each sequence id use the `sequence_id_filter/sequence_id` parameter.</br> To initialize these parameters in start time use the following parameters:</br>
+  `stereo_module/exposure/1`, `stereo_module/gain/1`, `stereo_module/exposure/2`, `stereo_module/gain/2`</br>
+  \* For in-depth review of the subject please read the accompanying [white paper](https://dev.intelrealsense.com/docs/high-dynamic-range-with-stereoscopic-depth-cameras).
 
  - The following filters have detailed descriptions in : https://github.com/IntelRealSense/librealsense/blob/master/doc/post-processing-filters.md
    - ```disparity``` - convert depth to disparity before applying other filters and back.
@@ -223,9 +219,10 @@ The topics are of the form: ```/camera/aligned_depth_to_color/image_raw``` etc.
    - ```hole_filling``` - apply hole-filling filter.
    - ```decimation``` - reduces depth scene complexity.
 - **enable_sync**: gathers closest frames of different sensors, infra red, color and depth, to be sent with the same timetag. This happens automatically when such filters as pointcloud are enabled.
-- ***<stream_type>*_width**, ***<stream_type>*_height**, ***<stream_type>*_fps**: <stream_type> can be any of *infra, color, fisheye, depth, gyro, accel, pose*. Sets the required format of the device. If the specified combination of parameters is not available by the device, the stream will not be published. Setting a value to 0, will choose the first format in the inner list. (i.e. consistent between runs but not defined). Note: for gyro accel and pose, only _fps option is meaningful.
-- **enable_*<stream_name>***: Choose whether to enable a specified stream or not. Default is true. <stream_name> can be any of *infra1, infra2, color, depth, fisheye, fisheye1, fisheye2, gyro, accel, pose*.
+- ***<stream_type>*_width**, ***<stream_type>*_height**, ***<stream_type>*_fps**: <stream_type> can be any of *infra, color, fisheye, depth, gyro, accel, pose, confidence*. Sets the required format of the device. If the specified combination of parameters is not available by the device, the stream will be replaced with the default for that stream. Setting a value to 0, will choose the first format in the inner list. (i.e. consistent between runs but not defined).</br>*Note: for gyro accel and pose, only _fps option is meaningful.
+- **enable_*<stream_name>***: Choose whether to enable a specified stream or not. Default is true for images and false for orientation streams. <stream_name> can be any of *infra1, infra2, color, depth, fisheye, fisheye1, fisheye2, gyro, accel, pose, confidence*.
 - **tf_prefix**: By default all frame's ids have the same prefix - `camera_`. This allows changing it per camera.
+- ***<stream_name>*_frame_id**, ***<stream_name>*_optical_frame_id**, **aligned_depth_to_*<stream_name>*_frame_id**: Specify the different frame_id for the different frames. Especially important when using multiple cameras.
 - **base_frame_id**: defines the frame_id all static transformations refers to.
 - **odom_frame_id**: defines the origin coordinate system in ROS convention (X-Forward, Y-Left, Z-Up). pose topic defines the pose relative to that system.
 - **All the rest of the frame_ids can be found in the template launch file: [nodelet.launch.xml](./realsense2_camera/launch/includes/nodelet.launch.xml)**
@@ -246,6 +243,10 @@ Setting *unite_imu_method* creates a new topic, *imu*, that replaces the default
   - **NOTE** To enable the Infrared stream, you should enable `enable_infra:=true` NOT `enable_infra1:=true` nor `enable_infra2:=true`
   - **NOTE** This feature is only supported by Realsense sensors with RGB streams available from the `infra` cameras, which can be checked by observing the output of `rs-enumerate-devices`
 
+### Available services:
+- reset : Cause a hardware reset of the device. Usage: `rosservice call /camera/realsense2_camera/reset`
+- enable : Start/Stop all streaming sensors. Usage example: `rosservice call /camera/enable False"`
+- device_info : retrieve information about the device - serial_number, firmware_version etc. Type `osservice type /camera/realsense2_camera/device_info | rossrv show` for the full list. Call example: `rosservice call /camera/realsense2_camera/device_info`
 
 ### Point Cloud
 Here is an example of how to start the camera node and make it publish the point cloud using the pointcloud option.
@@ -336,8 +337,8 @@ roslaunch realsense2_description view_d415_model.launch
 Unit-tests are based on bag files saved on S3 server. These can be downloaded using the following commands:
 ```bash
 cd catkin_ws
-wget "http://realsense-hw-public.s3.amazonaws.com/rs-tests/TestData/outdoors.bag" -P "records/"
-wget "http://realsense-hw-public.s3-eu-west-1.amazonaws.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag" -P "records/"
+wget "https://librealsense.intel.com/rs-tests/TestData/outdoors.bag" -P "records/"
+wget "https://librealsense.intel.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag" -P "records/"
 ```
 Then, unit-tests can be run using the following command (use either python or python3):
 ```bash

@@ -8,6 +8,7 @@
   <arg name="tf_prefix_camera1"         default="$(arg camera1)"/>
   <arg name="tf_prefix_camera2"         default="$(arg camera2)"/>
   <arg name="initial_reset"             default="false"/>
+  <arg name="reconnect_timeout"         default="6.0"/>
   <arg name="enable_fisheye"            default="false"/>
   <arg name="color_width"               default="640"/>
   <arg name="color_height"              default="480"/>
@@ -23,6 +24,7 @@
       <arg name="serial_no"             value="$(arg serial_no_camera1)"/>
       <arg name="tf_prefix"         		value="$(arg tf_prefix_camera1)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
+      <arg name="reconnect_timeout"     value="$(arg reconnect_timeout)"/>
       <arg name="enable_fisheye1"       value="$(arg enable_fisheye)"/>
       <arg name="enable_fisheye2"       value="$(arg enable_fisheye)"/>
       <arg name="topic_odom_in"         value="$(arg topic_odom_in)"/>
@@ -37,6 +39,7 @@
       <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
       <arg name="tf_prefix"		          value="$(arg tf_prefix_camera2)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
+      <arg name="reconnect_timeout"     value="$(arg reconnect_timeout)"/>
       <arg name="align_depth"           value="true"/>
       <arg name="filters"               value="pointcloud"/>
       <arg name="color_width"           value="$(arg color_width)"/>

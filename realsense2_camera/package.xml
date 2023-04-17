@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>realsense2_camera</name>
-  <version>2.2.21</version>
+  <version>2.3.2</version>
   <description>RealSense Camera package allowing access to Intel T265 Tracking module and SR300 and D400 3D cameras</description>
-  <maintainer email="sergey.dorodnicov@intel.com">Sergey Dorodnicov</maintainer>
   <maintainer email="doron.hirshberg@intel.com">Doron Hirshberg</maintainer>
   <license>Apache 2.0</license>
   
@@ -13,6 +12,7 @@
   <author email="sergey.dorodnicov@intel.com">Sergey Dorodnicov</author>
   <author email="doron.hirshberg@intel.com">Doron Hirshberg</author>
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
   <depend>eigen</depend>
   <depend>image_transport</depend>
   <depend>cv_bridge</depend>
@@ -22,6 +22,7 @@
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>message_runtime</depend>
   <depend>tf</depend>
   <depend>ddynamic_reconfigure</depend>

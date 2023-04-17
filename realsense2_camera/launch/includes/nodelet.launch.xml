@@ -9,6 +9,7 @@
   <arg name="rosbag_filename"     default=""/>
   <arg name="required"            default="false"/>
   <arg name="output"              default="screen"/>  <!-- [ screen | log ]-->
+  <arg name="respawn"             default="false"/>
 
   <arg name="fisheye_width"       default="0"/>
   <arg name="fisheye_height"      default="0"/>
@@ -49,6 +50,8 @@
   <arg name="enable_pointcloud"   default="false"/>
   <arg name="pointcloud_texture_stream" default="RS2_STREAM_COLOR"/>  <!-- use RS2_STREAM_ANY to avoid using texture -->
   <arg name="pointcloud_texture_index"  default="0"/>
+  <arg name="allow_no_texture_points"  default="false"/>
+  <arg name="ordered_pc"               default="false"/>
 
   <arg name="enable_sync"         default="false"/>
   <arg name="align_depth"         default="false"/>
@@ -91,21 +94,28 @@
   <arg name="topic_odom_in"            default="$(arg tf_prefix)/odom_in"/>
   <arg name="calib_odom_file"          default=""/>
   <arg name="publish_odom_tf"          default="true"/>
+
+  <arg name="stereo_module/exposure/1" default="7500"/>
+  <arg name="stereo_module/gain/1"     default="16"/>
+  <arg name="stereo_module/exposure/2" default="1"/>
+  <arg name="stereo_module/gain/2"     default="16"/>
+
   <arg name="filters"                  default=""/>
   <arg name="clip_distance"            default="-1"/>
   <arg name="linear_accel_cov"         default="0.01"/>
   <arg name="initial_reset"            default="false"/>
+  <arg name="reconnect_timeout"        default= "6.0"/>
+  <arg name="wait_for_device_timeout"  default= "-1.0"/>
   <arg name="unite_imu_method"         default="none"/> <!-- Options are: [none, copy, linear_interpolation] -->
-  <arg name="allow_no_texture_points"  default="false"/>
+  
 
   <arg name="nomagic_lazy_filtering_frame_history_size"    default="9"/>
   <arg name="nomagic_skip_spatial_filter_for_inner_frames" default="true"/>
   <arg name="nomagic_lazy_filtering"                       default="false"/>
 
 
-
-  <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="$(arg output)" required="$(arg required)"/>
-  <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)">
+  <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="$(arg output)" required="$(arg required)" respawn="$(arg respawn)"/>
+  <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)" respawn="$(arg respawn)">
     <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
     <param name="usb_port_id"              type="str"  value="$(arg usb_port_id)"/>
     <param name="device_type"              type="str"  value="$(arg device_type)"/>
@@ -115,6 +125,9 @@
     <param name="enable_pointcloud"        type="bool" value="$(arg enable_pointcloud)"/>
     <param name="pointcloud_texture_stream" type="str" value="$(arg pointcloud_texture_stream)"/>
     <param name="pointcloud_texture_index"  type="int" value="$(arg pointcloud_texture_index)"/>
+    <param name="allow_no_texture_points"  type="bool"   value="$(arg allow_no_texture_points)"/>
+    <param name="ordered_pc"               type="bool"   value="$(arg ordered_pc)"/>
+
     <param name="enable_sync"              type="bool" value="$(arg enable_sync)"/>
     <param name="align_depth"              type="bool" value="$(arg align_depth)"/>
 
@@ -192,12 +205,18 @@
     <param name="topic_odom_in"            type="str"  value="$(arg topic_odom_in)"/>
     <param name="calib_odom_file"          type="str"    value="$(arg calib_odom_file)"/>
     <param name="publish_odom_tf"          type="bool" value="$(arg publish_odom_tf)"/>
+    <param name="stereo_module/exposure/1" type="int"  value="$(arg stereo_module/exposure/1)"/>
+    <param name="stereo_module/gain/1"     type="int"  value="$(arg stereo_module/gain/1)"/>
+    <param name="stereo_module/exposure/2" type="int"  value="$(arg stereo_module/exposure/2)"/>
+    <param name="stereo_module/gain/2"     type="int"  value="$(arg stereo_module/gain/2)"/>
+
     <param name="filters"                  type="str"    value="$(arg filters)"/>
     <param name="clip_distance"            type="double" value="$(arg clip_distance)"/>
     <param name="linear_accel_cov"         type="double" value="$(arg linear_accel_cov)"/>
     <param name="initial_reset"            type="bool"   value="$(arg initial_reset)"/>
+    <param name="reconnect_timeout"        type="double" value="$(arg reconnect_timeout)"/>
+    <param name="wait_for_device_timeout"  type="double" value="$(arg wait_for_device_timeout)"/>
     <param name="unite_imu_method"         type="str"    value="$(arg unite_imu_method)"/>
-    <param name="allow_no_texture_points"  type="bool"   value="$(arg allow_no_texture_points)"/>
 
     <param name="nomagic_lazy_filtering_frame_history_size"    type="int"  value="$(arg nomagic_lazy_filtering_frame_history_size)"/>
     <param name="nomagic_skip_spatial_filter_for_inner_frames" type="bool" value="$(arg nomagic_skip_spatial_filter_for_inner_frames)"/>
