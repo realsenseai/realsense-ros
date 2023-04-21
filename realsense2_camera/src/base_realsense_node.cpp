@@ -1693,7 +1693,7 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame) {
       //          nomagicStoreFramesetForLazyProcessing(frameset);
       nomagic_muxer.invoke(frame);
       bool apply_filters_now =
-          nomagicAnyDepthHasSubscribers(frameset) || !nomagic_lazy_filtering;
+          nomagicAnyDepthHasSubscribers(frameset) || !nomagic_lazy_filtering || 0 != _pointcloud_publisher.getNumSubscribers();
       if (apply_filters_now) {
         ROS_DEBUG("num_filters: %d", static_cast<int>(_filters.size()));
         for (std::vector<NamedFilter>::const_iterator filter_it =
