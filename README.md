@@ -4,14 +4,21 @@ This repository was forked from the original Intel Realsense repository to intro
 
 The main branch is `nomagic-development`.
 
+For FRAMOS D415e camera, the branch is `nomagic-development-framos`.
+
 Please use lightweight git tags to mark NoMagic releases using the following form `2.2.21-{NoMagic's semantic version}`,
 for example `2.2.21-1.0.0`: `git tag <tagname>`
+
+Tags for FRAMOS D415e camera are using the following convention: `{tagname}-framos`, e.g.: `2.3.2-0.3.0-framos`
 
 Make sure to explicitly push out git tags: `git push origin <tagname>`
 
 When upgrading the base version (from Intel), keep NoMagic's version unchanged. 
 
 ### Changelog:
+
+#### 0.3.1
+- Fixed a bug which caused the hdr filter to not be created correctly
 
 #### 0.3.0 
 - Bumped realsense-ros to 2.3.2, added D405 support
