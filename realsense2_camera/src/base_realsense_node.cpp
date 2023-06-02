@@ -256,8 +256,8 @@ void BaseRealSenseNode::setupErrorCallback() {
 void BaseRealSenseNode::publishTopics() {
   getParameters();
   setupDevice();
-  registerHDRoptions();
   setupFilters(_filters);
+  registerHDRoptions();
   registerDynamicReconfigCb(_node_handle);
   setupErrorCallback();
   enable_devices();
