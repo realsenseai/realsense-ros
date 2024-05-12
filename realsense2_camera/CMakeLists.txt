@@ -144,6 +144,7 @@ set(SOURCES
     src/profile_manager.cpp
     src/image_publisher.cpp
     src/tfs.cpp
+    src/safety_services.cpp
   )
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
@@ -199,7 +200,8 @@ set(INCLUDES
     include/named_filter.h
     include/ros_param_backend.h
     include/profile_manager.h
-    include/image_publisher.h)
+    include/image_publisher.h
+    include/json.hpp)
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   list(APPEND INCLUDES include/gl_window.h)

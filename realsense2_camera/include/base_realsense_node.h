@@ -32,6 +32,8 @@
 #include "realsense2_camera_msgs/msg/metadata.hpp"
 #include "realsense2_camera_msgs/msg/rgbd.hpp"
 #include "realsense2_camera_msgs/srv/device_info.hpp"
+#include "realsense2_camera_msgs/srv/safety_preset_read.hpp"
+#include "realsense2_camera_msgs/srv/safety_preset_write.hpp"
 #include <librealsense2/hpp/rs_processing.hpp>
 #include <librealsense2/rs_advanced_mode.hpp>
 
@@ -58,7 +60,9 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
+#include "json.hpp"
 
+using nlohmann::json;
 using realsense2_camera_msgs::msg::Extrinsics;
 using realsense2_camera_msgs::msg::IMUInfo;
 using realsense2_camera_msgs::msg::RGBD;
@@ -151,6 +155,10 @@ namespace realsense2_camera
         std::vector<rs2_option> _monitor_options;
         rclcpp::Logger _logger;
         rclcpp::Service<realsense2_camera_msgs::srv::DeviceInfo>::SharedPtr _device_info_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetRead>::SharedPtr _safety_preset_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetWrite>::SharedPtr _safety_preset_write_srv;
+
+
         std::shared_ptr<Parameters> _parameters;
         std::list<std::string> _parameters_names;
 
@@ -159,6 +167,14 @@ namespace realsense2_camera
         void calcAndAppendTransformMsgs(const rs2::stream_profile& profile, const rs2::stream_profile& base_profile);
         void getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res);
+
+        void SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res);
+        void SafetyPresetWriteService(const realsense2_camera_msgs::srv::SafetyPresetWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyPresetWrite::Response::SharedPtr res);
+        rs2_safety_preset json_to_safety_preset(json &json_data);
+        json safety_preset_to_json(rs2_safety_preset &sp);
+
         tf2::Quaternion rotationMatrixToQuaternion(const float rotation[9]) const;
         void append_static_tf_msg(const rclcpp::Time& t,
                                const float3& trans,
@@ -267,6 +283,7 @@ namespace realsense2_camera
         void startUpdatedSensors();
         void stopRequiredSensors();
         void publishServices();
+        void publishSafetyServices();
         void startPublishers(const std::vector<rs2::stream_profile>& profiles, const RosSensor& sensor);
         void startRGBDPublisherIfNeeded();
         void stopPublishers(const std::vector<rs2::stream_profile>& profiles);
@@ -338,6 +355,7 @@ namespace realsense2_camera
         std::shared_ptr<PointcloudFilter> _pc_filter;
         std::vector<std::shared_ptr<NamedFilter>> _filters;
         std::vector<rs2::sensor> _dev_sensors;
+        rs2::sensor* _safety_sensor;
         std::vector<std::unique_ptr<RosSensor>> _available_ros_sensors;
 
         std::map<rs2_stream, std::shared_ptr<rs2::align>> _align;
