@@ -169,6 +169,7 @@ namespace realsense2_camera
                                  const std::string& child_frame_id);
         void eraseTransformMsgs(const stream_index_pair& sip, const rs2::stream_profile& profile);
         void setup();
+        template<class T> void performActionInServiceMode(T action);
 
     private:
         class CimuData
