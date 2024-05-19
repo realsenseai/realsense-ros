@@ -35,7 +35,6 @@ void BaseRealSenseNode::setup()
     monitoringProfileChanges();
     updateSensors();
     publishServices();
-    publishSafetyServices();
 }
 
 void BaseRealSenseNode::monitoringProfileChanges()
@@ -80,8 +79,37 @@ void BaseRealSenseNode::monitoringProfileChanges()
     _monitoring_pc = std::make_shared<std::thread>(func);
 }
 
+template<class T>
+void BaseRealSenseNode::performActionInServiceMode(T action)
+{
+    auto safety_mode = RS2_SAFETY_MODE_RUN;
+
+    // Deleter to revert the safety mode to its original value.
+    auto deleter_to_revert_safety_mode = std::unique_ptr<rs2_safety_mode, std::function<void(rs2_safety_mode*)>>(&safety_mode,
+                                    [&](rs2_safety_mode* revert_safety_mode_to){
+                                            if (revert_safety_mode_to && _safety_sensor)
+                                            {
+                                                _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, *revert_safety_mode_to);
+                                            }
+                                        });
+
+    if (_safety_sensor)
+    {
+        safety_mode = static_cast<rs2_safety_mode>(_safety_sensor->get_option(RS2_OPTION_SAFETY_MODE));
+        if (safety_mode != RS2_SAFETY_MODE_SERVICE)
+        {
+            _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
+        }
+    }
+
+    action();
+}
+
 void BaseRealSenseNode::setAvailableSensors()
 {
+    _dev_sensors = _dev.query_sensors();
+    setSafetySensorIfAvailable();
+
     if (!_json_file_path.empty())
     {
         if (_dev.is<rs400::advanced_mode>())
@@ -94,7 +122,13 @@ void BaseRealSenseNode::setAvailableSensors()
                 std::string json_file_content = ss.str();
 
                 auto adv = _dev.as<rs400::advanced_mode>();
-                adv.load_json(json_file_content);
+
+                // Preset can only be loaded in SERVICE mode.
+                performActionInServiceMode([&]()
+                {
+                    adv.load_json(json_file_content);
+                });
+
                 ROS_INFO_STREAM("JSON file is loaded! (" << _json_file_path << ")");
             }
             else
@@ -150,46 +184,19 @@ void BaseRealSenseNode::setAvailableSensors()
 
     std::function<void()> hardware_reset_func = [this](){hardwareResetRequest();};
 
-    _dev_sensors = _dev.query_sensors();
-    
-    // Find if the Safety Sensor is available.
-    auto iter = std::find_if(_dev_sensors.begin(), _dev_sensors.end(), 
-                            [](rs2::sensor sensor){return sensor.is<rs2::safety_sensor>();});
-    if (iter != _dev_sensors.end())
-    {
-        _safety_sensor = &(*iter);
-    }
-
     for(auto&& sensor : _dev_sensors)
     {
         const std::string module_name(rs2_to_ros(sensor.get_info(RS2_CAMERA_INFO_NAME)));
         std::unique_ptr<RosSensor> rosSensor;
         if (sensor.is<rs2::depth_sensor>())
         {
-            auto safety_mode = RS2_SAFETY_MODE_RUN;
-
-            // Deleter to revert the safety mode to its original value.
-            auto deleter_to_revert_safety_mode = std::unique_ptr<rs2_safety_mode, std::function<void(rs2_safety_mode*)>>(&safety_mode, 
-                                            [&](rs2_safety_mode* revert_safety_mode_to){
-                                                    if (revert_safety_mode_to && _safety_sensor)
-                                                    {
-                                                        _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, *revert_safety_mode_to);
-                                                    }
-                                                });
-
-            // Few Depth controls can only be updated when the safety mode is set to SERVICE.
-            // So, during INIT, setting the safety mode to SERVICE and reverting back to its original value later.
-            if (_safety_sensor)
-            {
-                safety_mode = static_cast<rs2_safety_mode>(_safety_sensor->get_option(RS2_OPTION_SAFETY_MODE));
-                if (safety_mode != RS2_SAFETY_MODE_SERVICE)
-                {
-                    _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
-                }
-            }
-
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
-            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+
+            // Few Depth controls can only be updated in the SERVICE mode.
+            performActionInServiceMode([&]()
+            {
+                rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+            });
         }
         else if (sensor.is<rs2::color_sensor>() ||
             sensor.is<rs2::safety_sensor>() ||
@@ -568,6 +575,7 @@ void BaseRealSenseNode::publishServices()
                         realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res)
                         {getDeviceInfo(req, res);});
 
+    publishSafetyServices();
 }
 
 void BaseRealSenseNode::getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr,
@@ -589,4 +597,3 @@ void BaseRealSenseNode::getDeviceInfo(const realsense2_camera_msgs::srv::DeviceI
     res->sensors = sensors_names.str().substr(0, sensors_names.str().size()-1);
     res->physical_port = _dev.supports(RS2_CAMERA_INFO_PHYSICAL_PORT) ? _dev.get_info(RS2_CAMERA_INFO_PHYSICAL_PORT) : "";
 }
-
