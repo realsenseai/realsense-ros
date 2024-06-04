@@ -575,7 +575,10 @@ void BaseRealSenseNode::publishServices()
                         realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res)
                         {getDeviceInfo(req, res);});
 
-    publishSafetyServices();
+    if(_safety_sensor)
+    {
+        publishSafetyServices();
+    }
 }
 
 void BaseRealSenseNode::getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr,
