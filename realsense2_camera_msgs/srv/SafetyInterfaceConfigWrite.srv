@@ -1,5 +1,4 @@
-string preset
-uint8 index
+string safety_interface_config
 ---
 bool success
 string error_message
