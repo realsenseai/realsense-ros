@@ -82,33 +82,23 @@ void BaseRealSenseNode::monitoringProfileChanges()
 template<class T>
 void BaseRealSenseNode::performActionInServiceMode(T action)
 {
-    rs2::sensor* safety_sensor = nullptr;
-
-    // Find if the Safety Sensor is available.
-    auto iter = std::find_if(_dev_sensors.begin(), _dev_sensors.end(),
-                            [](rs2::sensor sensor){return sensor.is<rs2::safety_sensor>();});
-    if (iter != _dev_sensors.end())
-    {
-        safety_sensor = &(*iter);
-    }
-
     auto safety_mode = RS2_SAFETY_MODE_RUN;
 
     // Deleter to revert the safety mode to its original value.
     auto deleter_to_revert_safety_mode = std::unique_ptr<rs2_safety_mode, std::function<void(rs2_safety_mode*)>>(&safety_mode,
                                     [&](rs2_safety_mode* revert_safety_mode_to){
-                                            if (revert_safety_mode_to && safety_sensor)
+                                            if (revert_safety_mode_to && _safety_sensor)
                                             {
-                                                safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, *revert_safety_mode_to);
+                                                _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, *revert_safety_mode_to);
                                             }
                                         });
 
-    if (safety_sensor)
+    if (_safety_sensor)
     {
-        safety_mode = static_cast<rs2_safety_mode>(safety_sensor->get_option(RS2_OPTION_SAFETY_MODE));
+        safety_mode = static_cast<rs2_safety_mode>(_safety_sensor->get_option(RS2_OPTION_SAFETY_MODE));
         if (safety_mode != RS2_SAFETY_MODE_SERVICE)
         {
-            safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
+            _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
         }
     }
 
@@ -118,6 +108,7 @@ void BaseRealSenseNode::performActionInServiceMode(T action)
 void BaseRealSenseNode::setAvailableSensors()
 {
     _dev_sensors = _dev.query_sensors();
+    setSafetySensorIfAvailable();
 
     if (!_json_file_path.empty())
     {
@@ -583,6 +574,11 @@ void BaseRealSenseNode::publishServices()
             [&](const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
                         realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res)
                         {getDeviceInfo(req, res);});
+
+    if(_safety_sensor)
+    {
+        publishSafetyServices();
+    }
 }
 
 void BaseRealSenseNode::getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr,

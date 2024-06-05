@@ -59,6 +59,10 @@
 #include <atomic>
 #include <thread>
 
+//Safety Camera
+#include "realsense2_camera_msgs/srv/safety_preset_read.hpp"
+#include "realsense2_camera_msgs/srv/safety_preset_write.hpp"
+
 using realsense2_camera_msgs::msg::Extrinsics;
 using realsense2_camera_msgs::msg::IMUInfo;
 using realsense2_camera_msgs::msg::RGBD;
@@ -170,6 +174,14 @@ namespace realsense2_camera
         void eraseTransformMsgs(const stream_index_pair& sip, const rs2::stream_profile& profile);
         void setup();
         template<class T> void performActionInServiceMode(T action);
+
+        //Safety Camera
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetRead>::SharedPtr _safety_preset_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetWrite>::SharedPtr _safety_preset_write_srv;
+        void SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res);
+        void SafetyPresetWriteService(const realsense2_camera_msgs::srv::SafetyPresetWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyPresetWrite::Response::SharedPtr res);
 
     private:
         class CimuData
@@ -358,6 +370,12 @@ namespace realsense2_camera
 
         std::shared_ptr<diagnostic_updater::Updater> _diagnostics_updater;
         rs2::stream_profile _base_profile;
+
+        //Safety Camera
+        rs2::sensor* _safety_sensor;
+        void setSafetySensorIfAvailable();
+        void publishSafetyServices();
+
 
 #if defined (ACCELERATE_GPU_WITH_GLSL)
         GLwindow _app;

@@ -144,6 +144,7 @@ set(SOURCES
     src/profile_manager.cpp
     src/image_publisher.cpp
     src/tfs.cpp
+    src/safety.cpp
   )
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
