@@ -62,6 +62,8 @@
 //Safety Camera
 #include "realsense2_camera_msgs/srv/safety_preset_read.hpp"
 #include "realsense2_camera_msgs/srv/safety_preset_write.hpp"
+#include "realsense2_camera_msgs/srv/safety_interface_config_read.hpp"
+#include "realsense2_camera_msgs/srv/safety_interface_config_write.hpp"
 
 using realsense2_camera_msgs::msg::Extrinsics;
 using realsense2_camera_msgs::msg::IMUInfo;
@@ -178,10 +180,17 @@ namespace realsense2_camera
         //Safety Camera
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetRead>::SharedPtr _safety_preset_read_srv;
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetWrite>::SharedPtr _safety_preset_write_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigRead>::SharedPtr _safety_interface_config_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite>::SharedPtr _safety_interface_config_write_srv;
         void SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res);
         void SafetyPresetWriteService(const realsense2_camera_msgs::srv::SafetyPresetWrite::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::SafetyPresetWrite::Response::SharedPtr res);
+        void SafetyInterfaceConfigReadService(const realsense2_camera_msgs::srv::SafetyInterfaceConfigRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyInterfaceConfigRead::Response::SharedPtr res);
+        void SafetyInterfaceConfigWriteService(const realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Response::SharedPtr res);
+
 
     private:
         class CimuData
