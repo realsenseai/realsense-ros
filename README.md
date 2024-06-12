@@ -822,7 +822,7 @@ Each of the above filters have it's own parameters, following the naming convent
   - Write safety preset at given index.
   - Note that writing safety presets is applicable only in Safey Service Mode
   - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetWrite` for the full request/response fields.
-  - Only for commnad line usage, user should escape all " with \". Using ros2 services API from rclcpp/rclpy doesn't need escaping.
+  - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping.
     <details>
     <summary>Click to see full call example</summary>
 
@@ -976,7 +976,7 @@ Each of the above filters have it's own parameters, following the naming convent
   - Write safety interface config at given index.
   - Note that writing safety interface config is applicable only in Safey Service Mode
   - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite` for the full request/response fields.
-    - Only for commnad line usage, user should escape all " with \". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
 
     <details>
     <summary>Click to see full call example</summary>
