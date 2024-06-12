@@ -636,25 +636,307 @@ Each of the above filters have it's own parameters, following the naming convent
 
 ## Available services
   
-- device_info : retrieve information about the device - serial_number, firmware_version etc. Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list. Call example: `ros2 service call /camera/camera/device_info realsense2_camera_msgs/srv/DeviceInfo`
+### device_info :
+  - retrieve information about the device - serial_number, firmware_version etc.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list.
+  - Call example: `ros2 service call /camera/camera/device_info realsense2_camera_msgs/srv/DeviceInfo`
 
-- safety_preset_read:
+### safety_preset_read:
   - Read safety preset at a given index.
   - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetRead` for the full request/response fields.
-  - Call example: `ros2 service call /robot1/c_333622320169/safety_preset_read realsense2_camera_msgs/srv/SafetyPresetRead "{index: 63}"`
-  - Result example:
-  ```
-  realsense2_camera_msgs.srv.SafetyPresetRead_Response(
-  success=True,
-  error_message='',
-  preset=
-  '
-  {
-    "safety_preset":
+  - Call example: `ros2 service call /camera/camera/safety_preset_read realsense2_camera_msgs/srv/SafetyPresetRead "{index: 63}"`
+
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    ```
+    realsense2_camera_msgs.srv.SafetyPresetRead_Response(
+    success=True,
+    error_message='',
+    preset=
+    '
     {
-        "platform_config": 
+      "safety_preset":
+      {
+          "platform_config": 
+          {
+              "transformation_link":
+              {
+                  "rotation":
+                  [
+                      [ 0.0,  0.0,  1.0],
+                      [-1.0,  0.0,  0.0],
+                      [ 0.0, -1.0,  0.0]
+                  ],
+                  "translation": [0.0, 0.0, 0.27]
+              },
+              "robot_height": 1.0
+          },
+          "safety_zones": 
+          {
+              "danger_zone":
+              {
+                  "zone_polygon":
+                  {
+                      "p0": {"x": 0.5, "y":  0.1},
+                      "p1": {"x": 0.8, "y":  0.1},
+                      "p2": {"x": 0.8, "y": -0.1},
+                      "p3": {"x": 0.5, "y": -0.1}
+                  },
+                  "safety_trigger_confidence": 1
+              },
+              "warning_zone":
+              {
+                  "zone_polygon":
+                  {
+                      "p0": {"x": 0.8, "y":  0.1},
+                      "p1": {"x": 1.2, "y":  0.1},
+                      "p2": {"x": 1.2, "y": -0.1},
+                      "p3": {"x": 0.8, "y": -0.1}
+                  },
+                  "safety_trigger_confidence": 1
+              }
+          },
+          "masking_zones": 
+          {
+              "0":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0,   "j": 0},
+                      "p1": {"i": 0,   "j": 320},
+                      "p2": {"i": 200, "j": 320},
+                      "p3": {"i": 200, "j": 0}
+                  }
+              },
+              "1":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              },
+              "2":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              },
+              "3":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              },
+              "4":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              },
+              "5":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              },
+              "6":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              },
+              "7":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interesets":
+                  {
+                      "p0": {"i": 0, "j": 0},
+                      "p1": {"i": 0, "j": 0},
+                      "p2": {"i": 0, "j": 0},
+                      "p3": {"i": 0, "j": 0}
+                  }
+              }
+          },
+          "environment": 
+          {
+              "safety_trigger_duration" : 1,
+              "zero_safety_monitoring" : 0,
+              "hara_history_continuation": 0,
+              "angular_velocity" : 0,
+              "payload_weight" : 0,
+              "surface_inclination" : 15,
+              "surface_height" : 0.05,
+              "diagnostic_zone_fill_rate_threshold" : 255,
+              "floor_fill_threshold" : 255,
+              "depth_fill_threshold" : 255,
+              "diagnostic_zone_height_median_threshold" : 255,
+              "vision_hara_persistency" : 1,
+              "crypto_signature" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+      }
+    }'
+    )
+    ```
+    </details>
+
+### safety_preset_write:
+  - Write safety preset at given index.
+  - Note that writing safety presets is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetWrite` for the full request/response fields.
+  - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping.
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `
+    ros2 service call /camera/camera/safety_preset_write realsense2_camera_msgs/srv/SafetyPresetWrite "{preset: ' {\"safety_preset\": {\"platform_config\": {\"transformation_link\": {\"rotation\": [[0.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [0.0, -1.0, 0.0]], \"translation\": [0.0, 0.0, 0.28]}, \"robot_height\": 1.0}, \"safety_zones\": {\"danger_zone\": {\"zone_polygon\": {\"p0\": {\"x\": 0.5, \"y\": 0.1}, \"p1\": {\"x\": 0.8, \"y\": 0.1}, \"p2\": {\"x\": 0.8, \"y\": -0.1}, \"p3\": {\"x\": 0.5, \"y\": -0.1}}, \"safety_trigger_confidence\": 1}, \"warning_zone\": {\"zone_polygon\": {\"p0\": {\"x\": 0.8, \"y\": 0.1}, \"p1\": {\"x\": 1.2, \"y\": 0.1}, \"p2\": {\"x\": 1.2, \"y\": -0.1}, \"p3\": {\"x\": 0.8, \"y\": -0.1}}, \"safety_trigger_confidence\": 1}}, \"masking_zones\": {\"0\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 320}, \"p2\": {\"i\": 200, \"j\": 320}, \"p3\": {\"i\": 200, \"j\": 0}}}, \"1\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"2\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"3\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"4\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"5\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"6\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"7\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}}, \"environment\": {\"safety_trigger_duration\": 1, \"zero_safety_monitoring\": 0, \"hara_history_continuation\": 0, \"angular_velocity\": 0, \"payload_weight\": 0, \"surface_inclination\": 15, \"surface_height\": 0.05, \"diagnostic_zone_fill_rate_threshold\": 255, \"floor_fill_threshold\": 255, \"depth_fill_threshold\": 255, \"diagnostic_zone_height_median_threshold\": 255, \"vision_hara_persistency\": 1, \"crypto_signature\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}}}', index: 63}"
+    `
+
+    </details>
+
+  - [JSON safety preset example](realsense2_camera/examples/safety_configs/safety_preset_example.json)
+  - Result example: `realsense2_camera_msgs.srv.SafetyPresetWrite_Response(success=True, error_message='')`
+
+### safety_interface_config_read:
+  - Read safety interface config.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/safety_interface_config_read realsense2_camera_msgs/srv/SafetyInterfaceConfigRead
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    ```
+    response:
+    realsense2_camera_msgs.srv.SafetyInterfaceConfigRead_Response(success=True, error_message='', safety_interface_config= '{
+      "safety_interface_config":
         {
-            "transformation_link":
+            "m12_safety_pins_configuration": 
+            {
+                "power":
+                {
+                    "direction": 0,
+                    "functionality": 1
+                },
+                "ossd1_b":
+                {
+                    "direction": 1,
+                    "functionality": 3
+                },
+                "ossd1_a":
+                {
+                    "direction": 1,
+                    "functionality": 2
+                },
+                "gpio_0":
+                {
+                    "direction": 0,
+                    "functionality": 16
+                },
+                "gpio_1":
+                {
+                    "direction": 0,
+                    "functionality": 17
+                },
+                "gpio_2":
+                {
+                    "direction": 0,
+                    "functionality": 18
+                },
+                "gpio_3":
+                {
+                    "direction": 0,
+                    "functionality": 19
+                },
+                "preset3_a":
+                {
+                    "direction": 0,
+                    "functionality": 12
+                },
+                "preset3_b":
+                {
+                    "direction": 0,
+                    "functionality": 13
+                },
+                "preset4_a":
+                {
+                    "direction": 0,
+                    "functionality": 14
+                },
+                "preset1_b":
+                {
+                    "direction": 0,
+                    "functionality": 9
+                },
+                "preset1_a":
+                {
+                    "direction": 0,
+                    "functionality": 8
+                },
+                "preset2_b":
+                {
+                    "direction": 0,
+                    "functionality": 11
+                },
+                "gpio_4":
+                {
+                    "direction": 1,
+                    "functionality": 21
+                },
+                "preset2_a":
+                {
+                    "direction": 0,
+                    "functionality": 10
+                },
+                "preset4_b":
+                {
+                    "direction": 0,
+                    "functionality": 15
+                },
+                "ground":
+                {
+                    "direction": 0,
+                    "functionality": 0
+                }
+            },
+            "gpio_stabilization_interval" : 150,
+            "camera_position":
             {
                 "rotation":
                 [
@@ -664,158 +946,48 @@ Each of the above filters have it's own parameters, following the naming convent
                 ],
                 "translation": [0.0, 0.0, 0.27]
             },
-            "robot_height": 1.0
-        },
-        "safety_zones": 
-        {
-            "danger_zone":
+            "occupancy_grid_params":
             {
-                "zone_polygon":
-                {
-                    "p0": {"x": 0.5, "y":  0.1},
-                    "p1": {"x": 0.8, "y":  0.1},
-                    "p2": {"x": 0.8, "y": -0.1},
-                    "p3": {"x": 0.5, "y": -0.1}
-                },
-                "safety_trigger_confidence": 1
+                "grid_cell_seed" : 100,
+                "close_range_quorum" : 150,
+                "mid_range_quorum" : 100,
+                "long_range_quorum" : 50
             },
-            "warning_zone":
+            "smcu_arbitration_params":
             {
-                "zone_polygon":
-                {
-                    "p0": {"x": 0.8, "y":  0.1},
-                    "p1": {"x": 1.2, "y":  0.1},
-                    "p2": {"x": 1.2, "y": -0.1},
-                    "p3": {"x": 0.8, "y": -0.1}
-                },
-                "safety_trigger_confidence": 1
-            }
-        },
-        "masking_zones": 
-        {
-            "0":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0,   "j": 0},
-                    "p1": {"i": 0,   "j": 320},
-                    "p2": {"i": 200, "j": 320},
-                    "p3": {"i": 200, "j": 0}
-                }
+                "l_0_total_threshold": 0,
+                "l_0_sustained_rate_threshold": 20,
+                "l_1_total_threshold": 0,
+                "l_1_sustained_rate_threshold": 20,
+                "l_4_total_threshold": 0,
+                "hkr_stl_timeout": 40,
+                "mcu_stl_timeout": 40,
+                "sustained_aicv_frame_drops": 0,
+                "ossd_self_test_pulse_width": 23
             },
-            "1":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            },
-            "2":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            },
-            "3":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            },
-            "4":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            },
-            "5":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            },
-            "6":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            },
-            "7":
-            {
-                "attributes": 1,
-                "minimal_range": 0,
-                "region_of_interesets":
-                {
-                    "p0": {"i": 0, "j": 0},
-                    "p1": {"i": 0, "j": 0},
-                    "p2": {"i": 0, "j": 0},
-                    "p3": {"i": 0, "j": 0}
-                }
-            }
-        },
-        "environment": 
-        {
-            "safety_trigger_duration" : 1,
-            "linear_velocity" : 0,
-            "angular_velocity" : 0,
-            "payload_weight" : 0,
-            "surface_inclination" : 15,
-            "surface_height" : 0.05,
-            "diagnostic_zone_fill_rate_threshold" : 255,
-            "floor_fill_threshold" : 255,
-            "depth_fill_threshold" : 255,
-            "diagnostic_zone_height_median_threshold" : 255,
-            "vision_hara_persistency" : 1,
-            "crypto_signature" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         }
-    }
-  }'
-  )
-  ```
-- safety_preset_write:
-  - Write safety preset at given index.
-  - Note that writing safety presets is applicable only in Safey Service Mode
-  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetWrite` for the full request/response fields.
-  - Call example: `ros2 service call /robot1/c_333622320169/safety_preset_write realsense2_camera_msgs/srv/SafetyPresetWrite "{preset: 'cat realsense2_camera/examples/safety_configs/safety_preset_example.json', index: 63}"`
-  - [Json safety preset example](realsense2_camera/examples/safety_configs/safety_preset_example.json)
-  - Result example: `realsense2_camera_msgs.srv.SafetyPresetWrite_Response(success=True, error_message='')`
+    }')
+    ```
+    </details>
+
+### safety_interface_config_write:
+  - Write safety interface config at given index.
+  - Note that writing safety interface config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `
+    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27000001072883606]},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"gpio_stabilization_interval\":150,\"m12_safety_pins_configuration\":{\"gpio_0\":{\"direction\":0,\"functionality\":16},\"gpio_1\":{\"direction\":0,\"functionality\":17},\"gpio_2\":{\"direction\":1,\"functionality\":4},\"gpio_3\":{\"direction\":1,\"functionality\":5},\"gpio_4\":{\"direction\":1,\"functionality\":21},\"ground\":{\"direction\":0,\"functionality\":0},\"ossd1_a\":{\"direction\":1,\"functionality\":2},\"ossd1_b\":{\"direction\":1,\"functionality\":3},\"power\":{\"direction\":0,\"functionality\":1},\"preset1_a\":{\"direction\":0,\"functionality\":8},\"preset1_b\":{\"direction\":0,\"functionality\":9},\"preset2_a\":{\"direction\":0,\"functionality\":10},\"preset2_b\":{\"direction\":0,\"functionality\":11},\"preset3_a\":{\"direction\":0,\"functionality\":12},\"preset3_b\":{\"direction\":0,\"functionality\":13},\"preset4_a\":{\"direction\":0,\"functionality\":14},\"preset4_b\":{\"direction\":0,\"functionality\":15}},\"occupancy_grid_params\":{\"close_range_quorum\":82,\"grid_cell_seed\":55,\"long_range_quorum\":53,\"mid_range_quorum\":143},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"smcu_arbitration_params\":{\"hkr_stl_timeout\":40,\"l_0_sustained_rate_threshold\":20,\"l_0_total_threshold\":0,\"l_1_sustained_rate_threshold\":20,\"l_1_total_threshold\":0,\"l_4_total_threshold\":0,\"mcu_stl_timeout\":40,\"ossd_self_test_pulse_width\":1,\"sustained_aicv_frame_drops\":50}}}'}"
+    `
+    </details>
+
+  - [JSON safety interface config example](realsense2_camera/examples/safety_configs/safety_interface_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.SafetyInterfaceConfigWrite_Response(success=True, error_message='')`
 
 
 <hr>
