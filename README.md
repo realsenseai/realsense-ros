@@ -636,7 +636,7 @@ Each of the above filters have it's own parameters, following the naming convent
 
 ## Available services
   
-### device_info :
+### device_info:
   - retrieve information about the device - serial_number, firmware_version etc.
   - Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list.
   - Call example: `ros2 service call /camera/camera/device_info realsense2_camera_msgs/srv/DeviceInfo`

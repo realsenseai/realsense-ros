@@ -25,16 +25,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [rolling, iron, humble, foxy]
+        ros_distro: [rolling, iron, humble, foxy, jazzy]
         include:
         - ros_distro: 'rolling'
-          os: ubuntu-22.04
+          os: ubuntu-24.04
         - ros_distro: 'iron'
           os: ubuntu-22.04
         - ros_distro: 'humble'
           os: ubuntu-22.04
         - ros_distro: 'foxy'
           os: ubuntu-20.04
+        - ros_distro: 'jazzy'
+          os: ubuntu-24.04
 
     steps:
 
@@ -53,14 +55,14 @@ jobs:
         ./pr_check.sh 
 
     # setup-ros@v0.6 is the last version supporting foxy (EOL)
-    # setup-ros@v0.7 is needed to support humble/iron/rolling
+    # setup-ros@v0.7 is needed to support humble/iron/rolling/jazzy
     # so, seperating steps with if conditions
     - name: build ROS2 for foxy
       if: ${{ matrix.ros_distro == 'foxy' }}
       uses: ros-tooling/setup-ros@v0.6
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
-    - name: build ROS2 for humble/iron/rolling
+    - name: build ROS2 for humble/iron/rolling/jazzy
       if: ${{ matrix.ros_distro != 'foxy' }}
       uses: ros-tooling/setup-ros@v0.7
       with:
@@ -96,15 +98,14 @@ jobs:
         source ${{github.workspace}}/.bashrc
         cd ${{github.workspace}}/ros2
         echo "================= ROSDEP UPDATE ====================="
-        # temp fix for rolling sources.. TODO: track when we can remove the two commands below
-        # see https://discourse.ros.org/t/psa-rolling-ci-or-docker-build-fix-from-rosdep-errors-in-24-04-transition/36902
-        sudo sed -i "s|ros\/rosdistro\/master|ros\/rosdistro\/rolling\/2024-02-28|" /etc/ros/rosdep/sources.list.d/20-default.list
-        export ROSDISTRO_INDEX_URL=https://raw.githubusercontent.com/ros/rosdistro/rolling/2024-02-28/index-v4.yaml
         rosdep update --rosdistro ${{ matrix.ros_distro }} --include-eol-distros
         echo "================= ROSDEP INSTALL ===================="
         rosdep install -i --reinstall --from-path src --rosdistro ${{ matrix.ros_distro }} --skip-keys=librealsense2 -y
         echo "================== COLCON BUILD ======================"
-        colcon build  --cmake-args '-DBUILD_TOOLS=ON'
+        # Enable 'BUILD_TOOLS' through cmake arguments. Since, this variable is available only in realsense2_camera package 
+        # and not in  realsense2_camera_msgs and realsense2_description packages, to avoid warnings from these packages,
+        # use '--no-warn-unused-cli'. Ref: https://cmake.org/cmake/help/v3.0/manual/cmake.1.html
+        colcon build  --cmake-args '-DBUILD_TOOLS=ON' --no-warn-unused-cli
 
     ## This step is commented out since we don't use rosbag files in "Run Tests" step below.
     ## Please uncomment when "Run Tests" step is fixed to run all tests.
@@ -120,9 +121,15 @@ jobs:
        
     - name: Install Packages For Tests
       run: |
+        # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
+        # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
+        python3 -m venv .venv
+        # Activate the virtual env such that following python related commands run within it.
+        source .venv/bin/activate
         sudo apt-get install python3-pip
         pip3 install numpy --upgrade
-        pip3 install numpy-quaternion tqdm
+        pip3 install numpy-quaternion tqdm pyyaml
+
  
     - name: Run Tests
       run: |
@@ -132,6 +139,7 @@ jobs:
         # the next command might be needed for foxy distro, since this package is not installed
         # by default in ubuntu 20.04. For other distro, the apt install command will be ignored.
         sudo apt install -y ros-${{matrix.ros_distro}}-sensor-msgs-py
+        source ../.venv/bin/activate
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
     
     # don't run integration tests for foxy since some testing dependecies packages like 

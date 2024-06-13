@@ -1,4 +1,4 @@
-# Copyright 2023 Intel Corporation. All Rights Reserved.
+# Copyright 2024 Intel Corporation. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -116,9 +116,9 @@ find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
 
-find_package(realsense2 2.55.0)
+find_package(realsense2 2.55.1)
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
-  find_package(realsense2-gl 2.55.0)
+  find_package(realsense2-gl 2.55.1)
 endif()
 if(NOT realsense2_FOUND)
     message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/IntelRealSense/librealsense/releases\n\n")
@@ -169,6 +169,10 @@ elseif("$ENV{ROS_DISTRO}" STREQUAL "iron")
 elseif("$ENV{ROS_DISTRO}" STREQUAL "rolling")
   message(STATUS "Build for ROS2 Rolling")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DROLLING")
+  set(SOURCES "${SOURCES}" src/ros_param_backend.cpp)
+elseif("$ENV{ROS_DISTRO}" STREQUAL "jazzy")
+  message(STATUS "Build for ROS2 Jazzy")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJAZZY")
   set(SOURCES "${SOURCES}" src/ros_param_backend.cpp)
 else()
   message(FATAL_ERROR "Unsupported ROS Distribution: " "$ENV{ROS_DISTRO}")

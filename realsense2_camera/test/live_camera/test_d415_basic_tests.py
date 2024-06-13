@@ -77,8 +77,6 @@ class TestD415_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
         config["Infrared2"]["default_profile2"] = "1280x720x6" 
 
         cap = [
-            #['Infrared1', '1920x1080x25', 'Y8'],
-            #['Infrared1', '1920x1080x15', 'Y16'],
             ['Infrared', '848x100x100', 'BGRA8'],
             ['Infrared', '848x480x60', 'RGBA8'],
             ['Infrared', '640x480x60', 'RGBA8'],
@@ -89,8 +87,14 @@ class TestD415_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
             ['Infrared', '480x270x60', 'BGRA8'],
             ['Infrared', '480x270x60', 'RGB8'],
             ['Infrared', '424x240x60', 'BGRA8'],
-
+            ['Infrared1', '848x100x100', 'Y8'],
+            ['Infrared1', '848x480x6', 'Y8'],
+            ['Infrared1', '1920x1080x25', 'Y16'],
+            ['Infrared2', '848x100x100', 'Y8'],
+            ['Infrared2', '848x480x6', 'Y8'],
+            ['Infrared2', '1920x1080x25', 'Y16'],
         ]
+
         try:
             ''' 
             initialize, run and check the data 
@@ -98,7 +102,8 @@ class TestD415_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
             self.init_test("RsTest"+params['camera_name'])
             self.spin_for_time(wait_time=1.0)
             self.create_param_ifs(get_node_heirarchy(params))
- 
+            self.spin_for_time(wait_time=1.0)
+
             for key in cap:
                 profile_type = key[0]
                 profile = key[1]
@@ -108,21 +113,22 @@ class TestD415_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
                 themes[0]['width'] = int(profile.split('x')[0])
                 themes[0]['height'] = int(profile.split('x')[1])
                 #'''
+                self.disable_all_streams()
                 if themes[0]['width'] == int(config[profile_type]["default_profile2"].split('x')[0]):
                     self.set_string_param(config[profile_type]["profile"], config[profile_type]["default_profile1"])
                 else:
                     self.set_string_param(config[profile_type]["profile"], config[profile_type]["default_profile2"])
                 self.set_bool_param(config[profile_type]["param"], True)
-                self.disable_all_params()
-                #self.set_string_param("depth_profile", "640x480x6")
-                #self.set_bool_param("enable_depth", True)
-                #'''
-                self.spin_for_time(wait_time=0.2)
+                self.spin_for_time(wait_time=1.0)
+
                 self.set_string_param(config[profile_type]["profile"], profile)
+                self.spin_for_time(wait_time=1.0)
                 self.set_string_param(config[profile_type]["format"], format)
+                self.spin_for_time(wait_time=1.0)
                 self.set_bool_param(config[profile_type]["param"], True)
+                self.spin_for_time(wait_time=1.0)
                 try:
-                    ret = self.run_test(themes, timeout=5.0)
+                    ret = self.run_test(themes, timeout=10.0)
                     assert ret[0], ret[1]
                     assert self.process_data(themes), " ".join(key) + " failed"
                     num_passed += 1
@@ -144,13 +150,18 @@ class TestD415_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
                 assert False, " Tests failed"
 
 
-    def disable_all_params(self):
-        '''
+    def disable_all_streams(self):
+        
         self.set_bool_param('enable_color', False)
+        self.spin_for_time(wait_time=1.0)
         self.set_bool_param('enable_depth', False)
+        self.spin_for_time(wait_time=1.0)
         self.set_bool_param('enable_infra', False)
+        self.spin_for_time(wait_time=1.0)
         self.set_bool_param('enable_infra1', False)
+        self.spin_for_time(wait_time=1.0)
         self.set_bool_param('enable_infra2', False)
-        '''
+        self.spin_for_time(wait_time=1.0)
+        
         pass
 

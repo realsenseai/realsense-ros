@@ -2,6 +2,11 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.55.1 (2024-05-28)
+-------------------
+* PR `#2830 <https://github.com/IntelRealSense/realsense-ros/issues/2830>`_ from SamerKhshiboun: Add RGBD + reduce changes between hkr and development
+* Contributors: SamerKhshiboun
+
 4.54.1 (2023-06-27)
 -------------------
 * add info about extrinsic msg format in Extrinsics.msg and README.md
