@@ -93,13 +93,17 @@ class TestCamera_TestFPS(pytest_rs_utils.RsTestBaseClass):
             }
             ]
             profiles = test_profiles[params['camera_name']]['depth_test_profiles']
+            self.spin_for_time(wait_time=0.5)
             assert self.set_bool_param('enable_color', False)
+            self.spin_for_time(wait_time=0.5)
+
             for profile in profiles:
                 print("Testing profile: ", profile)
                 themes[0]['expected_fps_in_hz']  = float(profile.split('x')[2])
-                assert self.set_string_param('depth_module.profile', profile)
+                assert self.set_string_param('depth_module.depth_profile', profile)
+                self.spin_for_time(wait_time=0.5)
                 assert self.set_bool_param('enable_depth', True)
-                self.spin_for_time(0.5)
+                self.spin_for_time(wait_time=0.5)
                 ret = self.run_test(themes, timeout=25.0)
                 assert ret[0], ret[1]
                 assert self.process_data(themes)
@@ -111,12 +115,15 @@ class TestCamera_TestFPS(pytest_rs_utils.RsTestBaseClass):
             }
             ]
             assert self.set_bool_param('enable_depth', False)
+            self.spin_for_time(wait_time=0.5)
             profiles = test_profiles[params['camera_name']]['color_test_profiles']
             for profile in profiles:
                 print("Testing profile: ", profile)
                 themes[0]['expected_fps_in_hz']  = float(profile.split('x')[2])
-                assert self.set_string_param('rgb_camera.profile', profile)
+                assert self.set_string_param('rgb_camera.color_profile', profile)
+                self.spin_for_time(wait_time=0.5)
                 assert self.set_bool_param('enable_color', True)
+                self.spin_for_time(wait_time=0.5)
                 ret = self.run_test(themes, timeout=25.0)
                 assert ret[0], ret[1]
                 assert self.process_data(themes)

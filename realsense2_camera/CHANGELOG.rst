@@ -2,6 +2,56 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.55.1 (2024-05-28)
+-------------------
+* PR `#3106 <https://github.com/IntelRealSense/realsense-ros/issues/3106>`_ from SamerKhshiboun: Remove unused parameter _is_profile_exist
+* PR `#3098 <https://github.com/IntelRealSense/realsense-ros/issues/3098>`_ from kadiredd: ROS live cam test fixes
+* PR `#3094 <https://github.com/IntelRealSense/realsense-ros/issues/3094>`_ from kadiredd: ROSCI infra for live camera testing
+* PR `#3066 <https://github.com/IntelRealSense/realsense-ros/issues/3066>`_ from SamerKhshiboun: Revert Foxy Build Support (From Source)
+* PR `#3052 <https://github.com/IntelRealSense/realsense-ros/issues/3052>`_ from Arun-Prasad-V: Support for selecting profile for each stream_type
+* PR `#3056 <https://github.com/IntelRealSense/realsense-ros/issues/3056>`_ from SamerKhshiboun: Add documentation for RealSense ROS2 Wrapper Windows installation
+* PR `#3049 <https://github.com/IntelRealSense/realsense-ros/issues/3049>`_ from Arun-Prasad-V: Applying Colorizer filter to Aligned-Depth image
+* PR `#3053 <https://github.com/IntelRealSense/realsense-ros/issues/3053>`_ from Nir-Az: Fix Coverity issues + remove empty warning log
+* PR `#3007 <https://github.com/IntelRealSense/realsense-ros/issues/3007>`_ from Arun-Prasad-V: Skip updating Exp 1,2 & Gain 1,2 when HDR is disabled
+* PR `#3042 <https://github.com/IntelRealSense/realsense-ros/issues/3042>`_ from kadiredd: Assert Fail if camera not found
+* PR `#3008 <https://github.com/IntelRealSense/realsense-ros/issues/3008>`_ from Arun-Prasad-V: Renamed GL GPU enable param
+* PR `#2989 <https://github.com/IntelRealSense/realsense-ros/issues/2989>`_ from Arun-Prasad-V: Dynamically switching b/w CPU & GPU processing
+* PR `#3001 <https://github.com/IntelRealSense/realsense-ros/issues/3001>`_ from deep0294: Update ReadMe to run ROS2 Unit Test
+* PR `#2998 <https://github.com/IntelRealSense/realsense-ros/issues/2998>`_ from SamerKhshiboun: fix calibration intrinsic fail
+* PR `#2987 <https://github.com/IntelRealSense/realsense-ros/issues/2987>`_ from SamerKhshiboun: Remove D465 SKU
+* PR `#2984 <https://github.com/IntelRealSense/realsense-ros/issues/2984>`_ from deep0294: Fix All Profiles Test
+* PR `#2956 <https://github.com/IntelRealSense/realsense-ros/issues/2956>`_ from Arun-Prasad-V: Extending LibRS's GL support to RS ROS2
+* PR `#2953 <https://github.com/IntelRealSense/realsense-ros/issues/2953>`_ from Arun-Prasad-V: Added urdf & mesh files for D405 model
+* PR `#2940 <https://github.com/IntelRealSense/realsense-ros/issues/2940>`_ from Arun-Prasad-V: Fixing the data_type of ROS Params exposure & gain
+* PR `#2948 <https://github.com/IntelRealSense/realsense-ros/issues/2948>`_ from Arun-Prasad-V: Disabling HDR during INIT
+* PR `#2934 <https://github.com/IntelRealSense/realsense-ros/issues/2934>`_ from Arun-Prasad-V: Disabling hdr while updating exposure & gain values
+* PR `#2946 <https://github.com/IntelRealSense/realsense-ros/issues/2946>`_ from gwen2018: fix ros random crash with error hw monitor command for asic temperature failed
+* PR `#2865 <https://github.com/IntelRealSense/realsense-ros/issues/2865>`_ from PrasRsRos: add live camera tests
+* PR `#2891 <https://github.com/IntelRealSense/realsense-ros/issues/2891>`_ from Arun-Prasad-V: revert PR2872
+* PR `#2853 <https://github.com/IntelRealSense/realsense-ros/issues/2853>`_ from Arun-Prasad-V: Frame latency for the '/topic' provided by user
+* PR `#2872 <https://github.com/IntelRealSense/realsense-ros/issues/2872>`_ from Arun-Prasad-V: Updating _camera_name with RS node's name
+* PR `#2878 <https://github.com/IntelRealSense/realsense-ros/issues/2878>`_ from Arun-Prasad-V: Updated ros2 examples and readme
+* PR `#2841 <https://github.com/IntelRealSense/realsense-ros/issues/2841>`_ from SamerKhshiboun: Remove Dashing, Eloquent, Foxy, L500 and SR300 support
+* PR `#2868 <https://github.com/IntelRealSense/realsense-ros/issues/2868>`_ from Arun-Prasad-V: Fix Pointcloud topic frame_id
+* PR `#2849 <https://github.com/IntelRealSense/realsense-ros/issues/2849>`_ from Arun-Prasad-V: Create /imu topic only when motion streams enabled
+* PR `#2847 <https://github.com/IntelRealSense/realsense-ros/issues/2847>`_ from Arun-Prasad-V: Updated rs_launch param names
+* PR `#2839 <https://github.com/IntelRealSense/realsense-ros/issues/2839>`_ from Arun-Prasad: Added ros2 examples
+* PR `#2861 <https://github.com/IntelRealSense/realsense-ros/issues/2861>`_ from SamerKhshiboun: fix readme and nodefactory for ros2 run
+* PR `#2859 <https://github.com/IntelRealSense/realsense-ros/issues/2859>`_ from PrasRsRos: Fix tests (topic now has camera name)
+* PR `#2857 <https://github.com/IntelRealSense/realsense-ros/issues/2857>`_ from lge-ros2: Apply camera name in topics
+* PR `#2840 <https://github.com/IntelRealSense/realsense-ros/issues/2840>`_ from SamerKhshiboun: Support Depth, IR and Color formats in ROS2
+* PR `#2764 <https://github.com/IntelRealSense/realsense-ros/issues/2764>`_ from lge-ros2 : support modifiable camera namespace
+* PR `#2830 <https://github.com/IntelRealSense/realsense-ros/issues/2830>`_ from SamerKhshiboun: Add RGBD + reduce changes between hkr and development
+* PR `#2811 <https://github.com/IntelRealSense/realsense-ros/issues/2811>`_ from Arun-Prasad-V: Exposing stream formats params to user
+* PR `#2825 <https://github.com/IntelRealSense/realsense-ros/issues/2825>`_ from SamerKhshiboun: Fix align_depth + add test
+* PR `#2822 <https://github.com/IntelRealSense/realsense-ros/issues/2822>`_ from Arun-Prasad-V: Updated rs_launch configurations
+* PR `#2726 <https://github.com/IntelRealSense/realsense-ros/issues/2726>`_ from PrasRsRos: Integration test template
+* PR `#2742 <https://github.com/IntelRealSense/realsense-ros/issues/2742>`_ from danielhonies:Update rs_launch.py
+* PR `#2806 <https://github.com/IntelRealSense/realsense-ros/issues/2806>`_ from Arun-Prasad-V: Enabling RGB8 Infrared stream
+* PR `#2799 <https://github.com/IntelRealSense/realsense-ros/issues/2799>`_ from SamerKhshiboun: Fix overriding frames on same topics/CV-images due to a bug in PR2759
+* PR `#2759 <https://github.com/IntelRealSense/realsense-ros/issues/2759>`_ from SamerKhshiboun: Cleanups and name fixes
+* Contributors: (=YG=) Hyunseok Yang, Arun Prasad, Arun-Prasad-V, Daniel Honies, Hyunseok, Madhukar Reddy Kadireddy, Nir, Nir Azkiel, PrasRsRos, Samer Khshiboun, SamerKhshiboun, deep0294, gwen2018, nairps
+
 4.54.1 (2023-06-27)
 -------------------
 * Applying AlignDepth filter after Pointcloud

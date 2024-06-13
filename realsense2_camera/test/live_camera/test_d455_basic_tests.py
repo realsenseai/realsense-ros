@@ -78,13 +78,17 @@ class TestD455_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
             self.init_test("RsTest"+params['camera_name'])
             self.wait_for_node(params['camera_name'])
             self.create_param_ifs(get_node_heirarchy(params))
-            #assert self.set_bool_param('enable_color', False)
-            assert self.set_string_param('rgb_camera.profile', '640x480x30')
+            self.spin_for_time(0.5)
+            assert self.set_bool_param('enable_color', False)
+            self.spin_for_time(0.5)
+            assert self.set_string_param('rgb_camera.color_profile', '640x480x30')
+            self.spin_for_time(0.5)
             assert self.set_bool_param('enable_color', True)
+            self.spin_for_time(0.5)
             ret = self.run_test(themes)
             assert ret[0], ret[1]
             assert self.process_data(themes)
-            self.set_string_param('rgb_camera.profile', '1280x800x5')
+            self.set_string_param('rgb_camera.color_profile', '1280x800x5')
             self.set_bool_param('enable_color', True)
             themes[0]['width'] = 1280
             themes[0]['height'] = 800

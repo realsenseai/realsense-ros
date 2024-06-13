@@ -196,7 +196,7 @@ namespace realsense2_camera
         class CimuData
         {
             public:
-                CimuData() : m_time_ns(-1) {};
+                CimuData() : m_data({0,0,0}), m_time_ns(-1) {};
                 CimuData(const stream_index_pair type, Eigen::Vector3d data, double time):
                     m_type(type),
                     m_data(data),

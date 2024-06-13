@@ -84,7 +84,6 @@ namespace realsense2_camera
             std::string _module_name;
             std::map<stream_index_pair, rs2_format>  _formats;
             std::map<rs2_stream, int> _fps, _width, _height;
-            bool _is_profile_exist;
             bool _force_image_default_qos;
     };
 
