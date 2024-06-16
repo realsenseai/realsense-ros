@@ -118,8 +118,9 @@ jobs:
     #    bag_filename="https://librealsense.intel.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
     #    wget $bag_filename -P "records/"
     #    sudo apt install ros-${{ matrix.ros_distro}}-launch-pytest
-       
-    - name: Install Packages For Tests
+
+    - name: Install Packages For Foxy Tests
+      if: ${{ matrix.ros_distro == 'foxy' }}
       run: |
         # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
         # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
@@ -127,8 +128,23 @@ jobs:
         # Activate the virtual env such that following python related commands run within it.
         source .venv/bin/activate
         sudo apt-get install python3-pip
-        pip3 install numpy --upgrade
+        # numpy-quaternion needs numpy<2.0.0. Chose 1.24.1 as it is the highest version that support foxy.
+        pip3 install --force-reinstall numpy==1.24.1
         pip3 install numpy-quaternion tqdm pyyaml
+
+    - name: Install Packages For Humble/Iron/Rolling/Jazzy Tests
+      if: ${{ matrix.ros_distro != 'foxy' }}
+      run: |
+        # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
+        # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
+        python3 -m venv .venv
+        # Activate the virtual env such that following python related commands run within it.
+        source .venv/bin/activate
+        sudo apt-get install python3-pip
+        # numpy-quaternion needs numpy<2.0.0. Chose 1.26.4 as it is the lowest working version for ubuntu 24.04.
+        pip3 install --force-reinstall numpy==1.26.4
+        pip3 install numpy-quaternion tqdm pyyaml
+  
 
  
     - name: Run Tests

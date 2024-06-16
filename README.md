@@ -641,6 +641,36 @@ Each of the above filters have it's own parameters, following the naming convent
   - Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list.
   - Call example: `ros2 service call /camera/camera/device_info realsense2_camera_msgs/srv/DeviceInfo`
 
+### calib_config_read (for specific camera modules):
+  - Read calibration config.
+  - Note that reading calibration config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/CalibConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/calib_config_read realsense2_camera_msgs/srv/CalibConfigRead`
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    `response: realsense2_camera_msgs.srv.CalibConfigRead_Response(success=True, error_message='', calib_config='{"calibration_config":{"calib_roi_num_of_segments":0,"camera_position":{"rotation":[[0,0,0],[0,0,0],[0,0,0]],"translation":[0,0,0]},"crypto_signature":[0, 0 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"roi":[[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]]]}}')`
+
+    </details>
+
+  - [JSON safety interface config example](realsense2_camera/examples/jsons/calib_config_example.json)
+
+### calib_config_write (for specific camera modules):
+  - Write calibration config.
+  - Note that writing calibration config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/CalibConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `ros2 service call /camera/camera/calib_config_write realsense2_camera_msgs/srv/CalibConfigWrite "{calib_config: '{\"calibration_config\":{\"calib_roi_num_of_segments\":0,\"camera_position\":{\"rotation\":[[0,0,0],[0,0,0],[0,0,0]],\"translation\":[0,0,0]},\"crypto_signature\":[0, 0 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\"roi\":[[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]]]}}' }"`
+
+    </details>
+
+  - [JSON safety interface config example](realsense2_camera/examples/jsons/calib_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.CalibConfigWrite_Response(success=True, error_message='')`
+
 ### safety_preset_read:
   - Read safety preset at a given index.
   - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetRead` for the full request/response fields.
