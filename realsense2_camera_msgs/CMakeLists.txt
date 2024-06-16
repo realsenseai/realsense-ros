@@ -47,6 +47,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/SafetyPresetWrite.srv"
   "srv/SafetyInterfaceConfigRead.srv"
   "srv/SafetyInterfaceConfigWrite.srv"
+  "srv/CalibConfigRead.srv"
+  "srv/CalibConfigWrite.srv"
   DEPENDENCIES builtin_interfaces std_msgs sensor_msgs
   ADD_LINTER_TESTS
 )
