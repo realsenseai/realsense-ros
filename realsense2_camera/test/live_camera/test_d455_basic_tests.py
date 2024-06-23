@@ -77,7 +77,7 @@ class TestD455_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
             print("Starting camera test...")
             self.init_test("RsTest"+params['camera_name'])
             self.wait_for_node(params['camera_name'])
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
             self.spin_for_time(0.5)
             assert self.set_bool_param('enable_color', False)
             self.spin_for_time(0.5)
@@ -131,7 +131,7 @@ class Test_D455_Seq_ID_Update(pytest_rs_utils.RsTestBaseClass):
             print("Starting camera test...")
             self.init_test("RsTest"+params['camera_name'])
             self.wait_for_node(params['camera_name'])
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
 
             assert self.set_bool_param('depth_module.hdr_enabled', False)
 

@@ -1,0 +1,9 @@
+# request
+string json "calib run"
+---
+# result
+string calibration
+float32 health
+---
+# feedback
+float32 progress

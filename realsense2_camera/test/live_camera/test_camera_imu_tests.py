@@ -70,7 +70,7 @@ class TestLiveCamera_TestMotionSensor(pytest_rs_utils.RsTestBaseClass):
         try:
             #initialize 
             self.init_test("RsTest"+params['camera_name'])
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
 
 
             #run with default params and check the data

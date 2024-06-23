@@ -144,9 +144,7 @@ jobs:
         # numpy-quaternion needs numpy<2.0.0. Chose 1.26.4 as it is the lowest working version for ubuntu 24.04.
         pip3 install --force-reinstall numpy==1.26.4
         pip3 install numpy-quaternion tqdm pyyaml
-  
 
- 
     - name: Run Tests
       run: |
         cd ${{github.workspace}}/ros2

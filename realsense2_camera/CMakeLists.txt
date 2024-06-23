@@ -107,6 +107,7 @@ find_package(builtin_interfaces REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -116,9 +117,9 @@ find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
 
-find_package(realsense2 2.55.1)
+find_package(realsense2 2.56.0)
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
-  find_package(realsense2-gl 2.55.1)
+  find_package(realsense2-gl 2.56.0)
 endif()
 if(NOT realsense2_FOUND)
     message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/IntelRealSense/librealsense/releases\n\n")
@@ -144,6 +145,7 @@ set(SOURCES
     src/profile_manager.cpp
     src/image_publisher.cpp
     src/tfs.cpp
+    src/actions.cpp
     src/safety.cpp
   )
 
