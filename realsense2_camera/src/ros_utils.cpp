@@ -141,4 +141,17 @@ const std::string list_available_qos_strings()
     return res.str();
 }
 
+std::string vectorToJsonString(const std::vector<uint8_t>& vec) {
+    std::ostringstream oss;
+    oss << "[";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        oss << static_cast<int>(vec[i]);
+        if (i < vec.size() - 1) {
+            oss << ",";
+        }
+    }
+    oss << "]";
+    return oss.str();
+}
+
 }

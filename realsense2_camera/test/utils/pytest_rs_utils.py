@@ -66,6 +66,7 @@ from sensor_msgs.msg import PointCloud2 as msg_PointCloud2
 from sensor_msgs.msg import CameraInfo as msg_CameraInfo
 from realsense2_camera_msgs.msg import Extrinsics as msg_Extrinsics
 from realsense2_camera_msgs.msg import Metadata as msg_Metadata
+from realsense2_camera_msgs.srv import DeviceInfo
 from sensor_msgs_py import point_cloud2 as pc2
 import tf2_ros
 
@@ -790,14 +791,17 @@ class RsTestBaseClass():
 
    
 
-    def create_param_ifs(self, camera_name):
+    def create_service_client_ifs(self, camera_name):
         self.set_param_if = self.node.create_client(SetParameters, camera_name + '/set_parameters')
         self.get_param_if = self.node.create_client(GetParameters, camera_name + '/get_parameters')
+        self.get_device_info = self.node.create_client(DeviceInfo, camera_name + '/device_info')
         while not self.get_param_if.wait_for_service(timeout_sec=1.0):
             print('service not available, waiting again...') 
         while not self.set_param_if.wait_for_service(timeout_sec=1.0):
             print('service not available, waiting again...') 
-
+        while not self.get_device_info.wait_for_service(timeout_sec=1.0):
+            print('service not available, waiting again...')
+    
     def send_param(self, req):
         future = self.set_param_if.call_async(req)
         while rclpy.ok():
@@ -811,7 +815,7 @@ class RsTestBaseClass():
                     print("exception raised:")
                     print(e)
                     pass
-                return False
+        return False
 
     def get_param(self, req):
         future = self.get_param_if.call_async(req)
@@ -825,7 +829,7 @@ class RsTestBaseClass():
                     print("exception raised:")
                     print(e)
                     pass
-                return None
+        return None
 
     def set_string_param(self, param_name, param_value):
         req = SetParameters.Request()
@@ -838,7 +842,16 @@ class RsTestBaseClass():
         new_param_value = ParameterValue(type=ParameterType.PARAMETER_BOOL, bool_value=param_value)
         req.parameters = [Parameter(name=param_name, value=new_param_value)]
         return self.send_param(req)
-
+    
+    def get_bool_param(self, param_name):
+        req = GetParameters.Request()
+        req.names = [param_name]
+        value = self.get_param(req)
+        if (value == None) or (value.type != ParameterType.PARAMETER_BOOL):
+            return None
+        else:
+            return value.bool_value
+    
     def set_integer_param(self, param_name, param_value):
         req = SetParameters.Request()
         new_param_value = ParameterValue(type=ParameterType.PARAMETER_INTEGER, integer_value=param_value)
@@ -849,11 +862,25 @@ class RsTestBaseClass():
         req = GetParameters.Request()
         req.names = [param_name]
         value = self.get_param(req)
-        if (value == None) or (value.type == ParameterType.PARAMETER_NOT_SET):
+        if (value == None) or (value.type != ParameterType.PARAMETER_INTEGER):
             return None
         else:
             return value.integer_value
-
+    
+    def get_deviceinfo(self):
+        self.req = DeviceInfo.Request()
+        self.future = self.get_device_info.call_async(self.req)
+        while rclpy.ok():
+            rclpy.spin_once(self.node)
+            if self.future.done():
+                try:
+                    response = self.future.result()
+                    return response
+                except Exception as e:
+                    print("exception raised:")
+                    print(e)
+        return None
+    
     def spin_for_data(self,themes, timeout=5.0):
         '''
         timeout value varies depending upon the system, it needs to be more if

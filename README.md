@@ -40,6 +40,7 @@
      * [Metadata Topic](#metadata-topic)
      * [Post-Processing Filters](#post-processing-filters)
      * [Available Services](#available-services)
+     * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
@@ -50,9 +51,9 @@
 
 <details>
   <summary>
-    Intel RealSense ROS1 Wrapper
+    ROS1 Wrapper for Intel® RealSense™ cameras
   </summary>
-    Intel Realsense ROS1 Wrapper is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
+    ROS1 Wrapper for Intel® RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
     For ROS1 wrapper, go to <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros1-legacy">ros1-legacy</a> branch
 </details>
 
@@ -120,7 +121,7 @@
   
 <details>
   <summary>
-    Step 3: Install Intel&reg; RealSense&trade; ROS2 wrapper
+    Step 3: Install ROS Wrapper for Intel&reg; RealSense&trade; cameras
   </summary>
   
 #### Option 1: Install debian package from ROS servers (Foxy EOL distro is not supported by this option):
@@ -136,7 +137,7 @@
       cd ~/ros2_ws/src/
       ```
   
-  - Clone the latest ROS2 Intel&reg; RealSense&trade;  wrapper from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
+  - Clone the latest ROS Wrapper for Intel&reg; RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
       ```bashrc
       git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-development
       cd ~/ros2_ws
@@ -168,7 +169,7 @@
 <hr>
 
 # Installation on Windows
-  **PLEASE PAY ATTENTION: RealSense ROS2 Wrapper is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
+  **PLEASE PAY ATTENTION: ROS Wrapper for Intel&reg; RealSense&trade; cameras is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
 
 <details>
   <summary>
@@ -185,7 +186,7 @@
     - [ROS2 Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html)
   - Microsoft IOT binary installation:
     - https://ms-iot.github.io/ROSOnWindows/GettingStarted/SetupRos2.html
-    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by RealSense ROS2 Wrapper)
+    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for Intel&reg; RealSense&trade; cameras)
 	- Please replace the word "Foxy" with Humble or Iron, depends on the chosen distro.
 </details>
   
@@ -194,7 +195,7 @@
     Step 2: Download RealSense&trade; ROS2 Wrapper and RealSense&trade; SDK 2.0 source code from github:
   </summary>
   
-- Download Intel&reg; RealSense&trade; ROS2 Wrapper source code from [Intel&reg; RealSense&trade; ROS2 Wrapper Releases](https://github.com/IntelRealSense/realsense-ros/releases)
+- Download ROS Wrapper for Intel&reg; RealSense&trade; cameras source code from [ROS Wrapper for Intel&reg; RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
 - Download the corrosponding supported Intel&reg; RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose fronm the link above
 - Place the librealsense folder inside the realsense-ros folder, to make the librealsense package set beside realsense2_camera, realsense2_camera_msgs and realsense2_description packages
 </details>
@@ -1019,6 +1020,28 @@ Each of the above filters have it's own parameters, following the naming convent
   - [JSON safety interface config example](realsense2_camera/examples/safety_configs/safety_interface_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.SafetyInterfaceConfigWrite_Response(success=True, error_message='')`
 
+
+<hr>
+
+## Available actions
+
+### triggered_calibration
+  - Type `ros2 interface show realsense2_camera_msgs/action/TriggeredCalibration` for the full request/result/feedback fields.
+    ```
+    # request
+    string json "calib run"  # default value
+    ---
+    # result
+    string calibration
+    float32 health
+    ---
+    # feedback
+    float32 progress
+
+    ```
+  - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
+  - The action gives an updated feedback about the progress (%) if the client asks for feedback.
+  - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
 
 <hr>
 
