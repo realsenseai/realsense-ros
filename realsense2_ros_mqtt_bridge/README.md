@@ -1,0 +1,583 @@
+
+<h1 align="center">
+   <img src="https://www.intelrealsense.com/wp-content/uploads/2020/09/intel-realsense-logo-360px.png" alt="Intel® RealSense™" title="Intel® RealSense™" />
+</h1>
+
+
+<h1 align="center">
+  MQTT <-> ROS bridge for Intel&copy; RealSense&trade; Cameras<br>
+</h1>
+
+
+## Table of contents
+- [Installation](#installation)
+- [Starting the ros-mqtt-bridge node](#starting-the-ros-mqtt-bridge-node)
+    - [ros2 run](#ros2-run)
+    - [ros2 launch](#ros2-launch)
+- [Parameters](#parameters)
+- [Client Usage](#client-usage)
+  - [Enumerate Devices](#enumerate-devices)
+  - [Get Parameter](#get-parameter)
+  - [Set Parameter](#set-parameter)
+  - [Get Frame](#get-frame)
+  - [Get Safety Preset](#get-safety-preset)
+  - [Set Safety Preset](#set-safety-preset)
+  - [Get Safety Interface Config](#get-safety-interface-config)
+  - [Set Safety Interface Config](#set-safety-interface-config)
+  - [Get Safety Calib Config](#get-safety-calib-config)
+  - [Set Safety Calib Config](#set-safety-calib-config)
+- [Supported Parameters For Set/Get](#supported-parameters-for-setget)
+- [Supported Streams](#supported-streams)
+- [Examples](#examples)
+  - [Python Example](#python-example)
+
+# Installation  
+***This step assumes you have installed ROS environment and ROS Wrapper for Realsense Cameras (including RealSense SDK). For more info about these steps, click [here](https://github.com/IntelRealSense/realsense-ros-private/tree/ros2-hkr?tab=readme-ov-file)***
+
+  - Create a ROS2 workspace
+    ```bash
+    mkdir -p ~/ros2_ws/src
+    cd ~/ros2_ws/src/
+    ```
+  
+  - Clone latest realsense-ros-mqtt-bridge (master branch) from [here](https://github.com/IntelRealSense/realsense-ros-mqtt-bridge.git) into '~/ros2_ws/src/'
+      ```bashrc
+      git clone https://github.com/IntelRealSense/realsense-ros-mqtt-bridge.git -b master
+      cd ~/ros2_ws
+      ```
+  
+  - Build
+    ```bash
+    colcon build
+    ```
+
+  - Source environment
+    ```bash
+    ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: iron, humble
+    source /opt/ros/$ROS_DISTRO/setup.bash
+    cd ~/ros2_ws
+    ./install/local_setup.bash
+    ```
+
+# Starting the ros-mqtt-bridge node
+***this step assumes there is a running and configured MQTT broker, and at least one running realsense2_camera node***
+  ### ros2 run
+    ros2 run realsense2_ros_mqtt_bridge realsense2_ros_mqtt_bridge
+    # or, with parameters, for example
+    ros2 run realsense2_ros_mqtt_bridge realsense2_ros_mqtt_bridge --ros-args -p broker_ip:='localhost'
+  ### ros2 launch
+    ros2 launch realsense2_camera rs_launch.py
+    # or, with parameters, for example
+    ros2 launch realsense2_camera rs_launch.py broker_ip:='localhost'
+
+# Parameters
+***All parameters can be configured or overriden by the `ros2 run` and `ros2 launch` commands (see examples in above section), or from the `rs_launch.py` file***
+- broker_ip
+  - description: MQTT broker ip address
+  - default value: 'localhost'
+- port
+  - description: MQTT port
+  - default value: '1883'
+- log_level
+  - description: log level [DEBUG|INFO|WARN|ERROR|FATAL]
+  - default value: INFO
+
+# Client Usage
+## Enumerate Devices
+* mqtt request message example
+  ```
+    {
+      "camera_namespace_prefix": "robot",
+      "camera_names_prefix": "c_"
+    }
+  ```
+* request topic
+  ```
+  enumrete_devices_request
+  ```
+* response topic
+  ```
+  enumerate_devices_response
+  ```
+* mqtt response message example:
+  ```
+    {
+      "success": "true",
+      "error_msg": "",
+      "available_nodes_count": "1",
+      "available_nodes":
+        "[
+          {camera_namespace: robot1, camera_name: c_333622320169}
+        ]"
+    }
+  ```
+
+## Get Parameter
+***See [available parameters and their types](#supported-parameters-for-setget)***
+* mqtt request message example
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "parameter_name": "rgb_camera.exposure"
+  }
+  ```
+* request topic
+  ```
+  enumrete_devices_request
+  ```
+* response topic
+  ```
+  enumerate_devices_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "parameter_name": "rgb_camera.exposure",
+    "success": "true",
+    "error_msg": "",
+    "parameter_type": "integer",
+    "parameter_value": "6012"
+  }
+  ```
+
+## Set Parameter
+***See [available parameters and their types](#supported-parameters-for-setget)***
+* mqtt request message example
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "parameter_name": "rgb_camera.exposure"
+    "parameter_value": "6012",
+    "parameter_type": "int"
+  }
+  ```
+* request topic
+  ```
+  set_param_request
+  ```
+* response topic
+  ```
+  set_param_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "success": "true",
+    "error_msg": ""
+  }
+  ```
+  
+## Get Frame
+***See [Supported Streams](#supported-streams)***
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "stream_name": "color"
+  }
+  ```
+* request topic
+  ```
+  get_frame_request
+  ```
+* response topic
+  ```
+  get_frame_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "stream_name": "color"
+    "success": "true",
+    "error_msg": "",
+    "frame": ""
+  }
+  ```
+
+## Get Safety Preset
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "index": "1"
+  }
+  ```
+* request topic
+  ```
+  get_safety_preset_request
+  ```
+* response topic
+  ```
+  get_safety_preset_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "success": "true",
+    "error_msg": "",
+    "preset": "{safety preset as json}"
+  }
+  ```
+## Set Safety Preset
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "preset": "{safety preset as json}"
+    "index": "1"
+  }
+  ```
+* request topic
+  ```
+  set_safety_preset_request
+  ```
+ * response topic
+  ```
+  set_safety_preset_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+## Get Safety Interface Config
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic
+  ```
+  get_safety_interface_config_request
+  ```
+ * response topic
+  ```
+  get_safety_interface_config_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "safety_inteface_config": "{safety interface config as JSON}",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+## Set Safety Interface Config
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "safety_inteface_config": "{safety interface config as JSON}",
+  }
+  ```
+* request topic
+  ```
+  set_safety_interface_config_request
+  ```
+ * response topic
+  ```
+  set_safety_interface_config_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+## Get Safety Calib Config
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic
+  ```
+  get_calib_config_request
+  ```
+ * response topic
+  ```
+  get_calib_config_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "calib_config": "{calib config as JSON}",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+## Set Safety Calib Config
+
+* mqtt request message
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic
+  ```
+  set_calib_config_request
+  ```
+ * response topic
+  ```
+  set_calib_config_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "calib_config": "{calib config as JSON}",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+# Supported Parameters For Set/Get
+
+```
+  accel_fps (type: integer)
+  accel_info_qos (type: string)
+  accel_qos (type: string)
+
+  align_depth.enable (type: boolean)
+  align_depth.frames_queue_size (type: integer)
+
+  angular_velocity_cov (type: double)
+  base_frame_id (type: string)
+  camera_name (type: string)
+  clip_distance (type: double)
+  color_info_qos (type: string)
+  color_qos (type: string)
+
+  colorizer.color_scheme (type: integer)
+  colorizer.enable (type: boolean)
+  colorizer.frames_queue_size (type: integer)
+  colorizer.histogram_equalization_enabled (type: boolean)
+  colorizer.max_distance (type: double)
+  colorizer.min_distance (type: double)
+  colorizer.stream_filter (type: integer)
+  colorizer.stream_format_filter (type: integer)
+  colorizer.stream_index_filter (type: integer)
+  colorizer.visual_preset (type: integer)
+
+  decimation_filter.enable (type: boolean)
+  decimation_filter.filter_magnitude (type: integer)
+  decimation_filter.frames_queue_size (type: integer)
+  decimation_filter.stream_filter (type: integer)
+  decimation_filter.stream_format_filter (type: integer)
+  decimation_filter.stream_index_filter (type: integer)
+
+  depth_info_qos (type: string)
+
+  depth_mapping_camera.frames_queue_size (type: integer)
+  depth_mapping_camera.global_time_enabled (type: boolean)
+  depth_mapping_camera.labeled_point_cloud_format (type: string)
+  depth_mapping_camera.labeled_point_cloud_profile (type: string)
+  depth_mapping_camera.occupancy_format (type: string)
+  depth_mapping_camera.occupancy_profile (type: string)
+
+  depth_module.auto_exposure_roi.bottom (type: integer)
+  depth_module.auto_exposure_roi.left (type: integer)
+  depth_module.auto_exposure_roi.right (type: integer)
+  depth_module.auto_exposure_roi.top (type: integer)
+  depth_module.depth_format (type: string)
+  depth_module.depth_profile (type: string)
+  depth_module.emitter_always_on (type: boolean)
+  depth_module.emitter_enabled (type: boolean)
+  depth_module.enable_auto_exposure (type: boolean)
+  depth_module.error_polling_enabled (type: boolean)
+  depth_module.exposure (type: integer)
+  depth_module.frames_queue_size (type: integer)
+  depth_module.gain (type: integer)
+  depth_module.global_time_enabled (type: boolean)
+  depth_module.infra1_format (type: string)
+  depth_module.infra2_format (type: string)
+  depth_module.infra_profile (type: string)
+  depth_module.inter_cam_sync_mode (type: integer)
+  depth_module.laser_power (type: double)
+  depth_module.visual_preset (type: integer)
+  depth_qos (type: string)
+
+  device_type (type: string)
+  diagnostics_period (type: double)
+  disparity_filter.enable (type: boolean)
+  disparity_to_depth.enable (type: boolean)
+
+  enable_accel (type: boolean)
+  enable_color (type: boolean)
+  enable_depth (type: boolean)
+  enable_gyro (type: boolean)
+  enable_infra1 (type: boolean)
+  enable_infra2 (type: boolean)
+  enable_labeled_point_cloud (type: boolean)
+  enable_occupancy (type: boolean)
+  enable_rgbd (type: boolean)
+  enable_safety (type: boolean)
+  enable_sync (type: boolean)
+
+  filter_by_sequence_id.enable (type: boolean)
+  filter_by_sequence_id.frames_queue_size (type: integer)
+  filter_by_sequence_id.sequence_id (type: integer)
+
+  gyro_fps (type: integer)
+  gyro_info_qos (type: string)
+  gyro_qos (type: string)
+
+  hdr_merge.enable (type: boolean)
+  hdr_merge.frames_queue_size (type: integer)
+
+  hold_back_imu_for_frames (type: boolean)
+  hole_filling_filter.enable (type: boolean)
+  hole_filling_filter.frames_queue_size (type: integer)
+  hole_filling_filter.holes_fill (type: integer)
+  hole_filling_filter.stream_filter (type: integer)
+  hole_filling_filter.stream_format_filter (type: integer)
+  hole_filling_filter.stream_index_filter (type: integer)
+
+  infra1_info_qos (type: string)
+  infra1_qos (type: string)
+  infra2_info_qos (type: string)
+  infra2_qos (type: string)
+
+  initial_reset (type: boolean)
+  json_file_path (type: string)
+
+  labeled_point_cloud_info_qos (type: string)
+  labeled_point_cloud_qos (type: string)
+
+  linear_accel_cov (type: double)
+
+  motion_module.enable_motion_correction (type: boolean)
+  motion_module.frames_queue_size (type: integer)
+  motion_module.global_time_enabled (type: boolean)
+
+  occupancy_info_qos (type: string)
+  occupancy_qos (type: string)
+
+  pointcloud.allow_no_texture_points (type: boolean)
+  pointcloud.enable (type: boolean)
+  pointcloud.filter_magnitude (type: integer)
+  pointcloud.frames_queue_size (type: integer)
+  pointcloud.ordered_pc (type: boolean)
+  pointcloud.pointcloud_qos (type: string)
+  pointcloud.stream_filter (type: integer)
+  pointcloud.stream_format_filter (type: integer)
+  pointcloud.stream_index_filter (type: integer)
+
+  publish_tf (type: boolean)
+  reconnect_timeout (type: double)
+
+  rgb_camera.auto_exposure_priority (type: boolean)
+  rgb_camera.auto_exposure_roi.bottom (type: integer)
+  rgb_camera.auto_exposure_roi.left (type: integer)
+  rgb_camera.auto_exposure_roi.right (type: integer)
+  rgb_camera.auto_exposure_roi.top (type: integer)
+  rgb_camera.brightness (type: integer)
+  rgb_camera.color_format (type: string)
+  rgb_camera.color_profile (type: string)
+  rgb_camera.contrast (type: integer)
+  rgb_camera.enable_auto_exposure (type: boolean)
+  rgb_camera.enable_auto_white_balance (type: boolean)
+  rgb_camera.exposure (type: integer)
+  rgb_camera.frames_queue_size (type: integer)
+  rgb_camera.gain (type: integer)
+  rgb_camera.gamma (type: integer)
+  rgb_camera.global_time_enabled (type: boolean)
+  rgb_camera.hue (type: integer)
+  rgb_camera.power_line_frequency (type: integer)
+  rgb_camera.saturation (type: integer)
+  rgb_camera.sharpness (type: integer)
+  rgb_camera.white_balance (type: double)
+
+  rosbag_filename (type: string)
+
+  safety_camera.frames_queue_size (type: integer)
+  safety_camera.global_time_enabled (type: boolean)
+  safety_camera.safety_format (type: string)
+  safety_camera.safety_mode (type: integer)
+  safety_camera.safety_preset_active_index (type: integer)
+  safety_camera.safety_profile (type: string)
+  safety_info_qos (type: string)
+  safety_qos (type: string)
+
+  serial_no (type: string)
+
+  spatial_filter.enable (type: boolean)
+  spatial_filter.filter_magnitude (type: integer)
+  spatial_filter.filter_smooth_alpha (type: double)
+  spatial_filter.filter_smooth_delta (type: integer)
+  spatial_filter.frames_queue_size (type: integer)
+  spatial_filter.holes_fill (type: integer)
+  spatial_filter.stream_filter (type: integer)
+  spatial_filter.stream_format_filter (type: integer)
+  spatial_filter.stream_index_filter (type: integer)
+
+  temporal_filter.enable (type: boolean)
+  temporal_filter.filter_smooth_alpha (type: double)
+  temporal_filter.filter_smooth_delta (type: integer)
+  temporal_filter.frames_queue_size (type: integer)
+  temporal_filter.holes_fill (type: integer)
+  temporal_filter.stream_filter (type: integer)
+  temporal_filter.stream_format_filter (type: integer)
+  temporal_filter.stream_index_filter (type: integer)
+
+  tf_publish_rate (type: double)
+  unite_imu_method (type: integer)
+  usb_port_id (type: string)
+  use_sim_time (type: boolean)
+  wait_for_device_timeout (type: double)
+
+```
+
+# Supported Streams
+- color
+- depth
+- infra1 (Left IR)
+- infra2 (Right IR)
+
+# Examples
+## Python Example
+[Minimal Python MQTT Client Example](examples/python/minimal_mqtt_client.py)
+
+
+[humble-badge]: https://img.shields.io/badge/-HUMBLE-orange?style=flat-square&logo=ros
+[humble]: https://docs.ros.org/en/humble/index.html
+[iron-badge]: https://img.shields.io/badge/-IRON-orange?style=flat-square&logo=ros
+[iron]: https://docs.ros.org/en/iron/index.html
+[ubuntu22-badge]: https://img.shields.io/badge/-UBUNTU%2022%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
+[ubuntu22]: https://releases.ubuntu.com/jammy/

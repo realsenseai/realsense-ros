@@ -42,6 +42,7 @@
      * [Available Services](#available-services)
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
+  * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
 
