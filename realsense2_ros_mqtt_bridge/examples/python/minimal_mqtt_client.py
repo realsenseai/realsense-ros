@@ -28,20 +28,20 @@ class DemoMQTTClient:
 
     Attributes:
         mqtt_broker_ip: The IP address of the MQTT broker.
-        mqtt_port: The port number of the MQTT broker.
+        mqtt_broker_port: The port number of the MQTT broker.
         mqtt_client: The MQTT client instance.
     """
 
-    def __init__(self, mqtt_broker_ip, mqtt_port):
+    def __init__(self, mqtt_broker_ip, mqtt_broker_port):
         """
         Initialize the Demo MQTT client.
 
         Args:
             mqtt_broker_ip: The IP address of the MQTT broker.
-            mqtt_port: The port number of the MQTT broker.
+            mqtt_broker_port: The port number of the MQTT broker.
         """
         self.mqtt_broker_ip = mqtt_broker_ip
-        self.mqtt_port = mqtt_port
+        self.mqtt_broker_port = mqtt_broker_port
 
         # Generate a Client ID with a random user-id suffix.
         mqtt_client_id = f'mqtt-client-user-{random.randint(0, 1000)}'
@@ -50,7 +50,7 @@ class DemoMQTTClient:
             paho_mqtt_client.CallbackAPIVersion.VERSION1, mqtt_client_id)
         # client.username_pw_set(username, password)
         self.mqtt_client.on_connect = self.on_connect
-        self.mqtt_client.connect(mqtt_broker_ip, mqtt_port)
+        self.mqtt_client.connect(mqtt_broker_ip, mqtt_broker_port)
 
     def on_connect(self, client, userdata, flags, rc):
         """
@@ -65,10 +65,10 @@ class DemoMQTTClient:
         del client, userdata, flags  # delete unused params
         if rc == 0:
             print(f'Connected to MQTT Broker on'
-                  f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_port}')
+                  f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_broker_port}')
         else:
             print(f'Could not Connect to MQTT Broker on'
-                  f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_port}'
+                  f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_broker_port}'
                   f' return_code: {rc}')
 
     def publish(self, msg, topic):
@@ -304,9 +304,9 @@ class DemoMQTTClient:
 
 if __name__ == '__main__':
     MQTT_BROKER_IP = 'localhost'
-    MQTT_PORT = 1883
+    MQTT_BROKER_PORT = 1883
 
-    demo_mqtt_client = DemoMQTTClient(MQTT_BROKER_IP, MQTT_PORT)
+    demo_mqtt_client = DemoMQTTClient(MQTT_BROKER_IP, MQTT_BROKER_PORT)
     demo_mqtt_client.start_client()
 
     CAMERA_NAMESPACE_PREFIX = 'robot'

@@ -95,6 +95,7 @@ class ParameterHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('set_param_response message sent')
+        ros_client_set_parameter.destroy()
 
     def handle_get_param_request(self, mqtt_request):
         """
@@ -128,6 +129,7 @@ class ParameterHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('get_parameter_response message sent')
+        ros_client_get_parameter.destroy()
 
     def create_parameter_value(self, parameter_type, parameter_value):
         """

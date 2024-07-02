@@ -60,6 +60,7 @@ class SafetyPresetHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('get_safety_preset_response message sent')
+        ros_client_safety_preset_read.destroy()
 
     def handle_set_safety_preset_request(self, mqtt_request):
         """docstring."""
@@ -95,3 +96,4 @@ class SafetyPresetHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('set_safety_preset_response message sent')
+        ros_client_safety_preset_write.destroy()

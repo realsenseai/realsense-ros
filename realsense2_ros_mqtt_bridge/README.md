@@ -66,16 +66,16 @@
     # or, with parameters, for example
     ros2 run realsense2_ros_mqtt_bridge realsense2_ros_mqtt_bridge --ros-args -p broker_ip:='localhost'
   ### ros2 launch
-    ros2 launch realsense2_camera rs_launch.py
+    ros2 launch realsense2_ros_mqtt_bridge rs_launch.py
     # or, with parameters, for example
-    ros2 launch realsense2_camera rs_launch.py broker_ip:='localhost'
+    ros2 launch realsense2_ros_mqtt_bridge rs_launch.py broker_ip:='localhost'
 
 # Parameters
 ***All parameters can be configured or overriden by the `ros2 run` and `ros2 launch` commands (see examples in above section), or from the `rs_launch.py` file***
 - broker_ip
   - description: MQTT broker ip address
   - default value: 'localhost'
-- port
+- broker_port
   - description: MQTT port
   - default value: '1883'
 - log_level
@@ -199,7 +199,7 @@
     "stream_name": "color"
     "success": "true",
     "error_msg": "",
-    "frame": ""
+    "frame": "[0, 118, 124, 0, 0, ...., 255]" # array of bytes
   }
   ```
 
@@ -270,7 +270,7 @@
   ```
   get_safety_interface_config_request
   ```
- * response topic
+* response topic
   ```
   get_safety_interface_config_response
   ```
@@ -298,7 +298,7 @@
   ```
   set_safety_interface_config_request
   ```
- * response topic
+* response topic
   ```
   set_safety_interface_config_response
   ```
@@ -324,7 +324,7 @@
   ```
   get_calib_config_request
   ```
- * response topic
+* response topic
   ```
   get_calib_config_response
   ```
@@ -352,7 +352,7 @@
   ```
   set_calib_config_request
   ```
- * response topic
+* response topic
   ```
   set_calib_config_response
   ```
@@ -575,9 +575,13 @@
 [Minimal Python MQTT Client Example](examples/python/minimal_mqtt_client.py)
 
 
+[jazzy-badge]: https://img.shields.io/badge/-JAZZY-orange?style=flat-square&logo=ros
+[jazzy]: https://docs.ros.org/en/jazzy/index.html
 [humble-badge]: https://img.shields.io/badge/-HUMBLE-orange?style=flat-square&logo=ros
 [humble]: https://docs.ros.org/en/humble/index.html
 [iron-badge]: https://img.shields.io/badge/-IRON-orange?style=flat-square&logo=ros
 [iron]: https://docs.ros.org/en/iron/index.html
+[ubuntu24-badge]: https://img.shields.io/badge/-UBUNTU%2024%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
+[ubuntu24]: https://releases.ubuntu.com/noble/
 [ubuntu22-badge]: https://img.shields.io/badge/-UBUNTU%2022%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
 [ubuntu22]: https://releases.ubuntu.com/jammy/

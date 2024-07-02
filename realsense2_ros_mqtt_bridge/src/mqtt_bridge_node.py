@@ -40,21 +40,21 @@ class MQTTBridgeNode(Node):
 
     def __init__(self,
                  default_mqtt_broker_ip='localhost',
-                 default_mqtt_port=1883):
+                 default_mqtt_broker_port=1883):
         """
         Initialize the MQTTBridgeNode.
 
         Args:
             default_mqtt_broker_ip (str): Default MQTT broker IP address.
-            default_mqtt_port (int): Default MQTT broker port.
+            default_mqtt_broker_port (int): Default MQTT broker port.
         """
         super().__init__('realsense_ros_mqtt_bridge_node')
-        self.setup_node_parameters(default_mqtt_broker_ip, default_mqtt_port)
+        self.setup_node_parameters(default_mqtt_broker_ip, default_mqtt_broker_port)
         self.setup_mqtt_topics()
         self.setup_mqtt_handlers()
         self.setup_mqtt_connection()
 
-    def setup_node_parameters(self, default_mqtt_broker_ip, default_mqtt_port):
+    def setup_node_parameters(self, default_mqtt_broker_ip, default_mqtt_broker_port):
         """
         Declare and set node parameters.
 
@@ -67,9 +67,9 @@ class MQTTBridgeNode(Node):
             self.broker_ip = str(self.get_parameter(
                 'broker_ip').get_parameter_value().string_value)
 
-            self.declare_parameter('port', default_mqtt_port)
-            self.port = self.get_parameter(
-                'port').get_parameter_value().integer_value
+            self.declare_parameter('broker_port', default_mqtt_broker_port)
+            self.broker_port = self.get_parameter(
+                'broker_port').get_parameter_value().integer_value
         except Exception as e:
             print(f'An unexpected error occurred: {e}')
 
@@ -83,13 +83,13 @@ class MQTTBridgeNode(Node):
         self.mqtt_client.on_message = self.on_mqtt_message
         try:
             self.ROS_INFO(f'Trying to connect to MQTT broker at '
-                          f'ip:{self.broker_ip} port:{self.port}')
-            self.mqtt_client.connect(self.broker_ip, self.port)
+                          f'ip:{self.broker_ip} port:{self.broker_port}')
+            self.mqtt_client.connect(self.broker_ip, self.broker_port)
             self.mqtt_client.loop_start()
             self.ROS_INFO('Successfully connected to MQTT Broker')
         except Exception as e:
             self.ROS_ERROR(f'Cannot connect to Broker ip:\
-                {self.broker_ip} port:{self.port}')
+                {self.broker_ip} port:{self.broker_port}')
             self.ROS_ERROR(f'An exception occurred: {e}')
             raise e
 

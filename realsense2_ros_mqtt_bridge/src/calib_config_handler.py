@@ -58,6 +58,7 @@ class CalibConfigHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('get_calib_config_response message sent')
+        ros_client_calib_config_read.destroy()
 
     def handle_set_calib_config_request(self, mqtt_request):
         """docstring."""
@@ -91,3 +92,4 @@ class CalibConfigHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('set_calib_config_response message sent')
+        ros_client_calib_config_write.destroy()

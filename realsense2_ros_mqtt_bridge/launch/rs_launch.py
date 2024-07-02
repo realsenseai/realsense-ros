@@ -21,9 +21,9 @@ from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
 configurable_parameters = [
-    {'name': 'broker_ip', 'default': 'localhost', 'description': 'MQTT broker ip'},
-    {'name': 'port',      'default': '1883',      'description': 'MQTT port'},
-    {'name': 'log_level', 'default': 'info',      'description': 'debug log level [DEBUG|INFO|WARN|ERROR|FATAL]'},
+    {'name': 'broker_ip',        'default': 'localhost', 'description': 'MQTT broker ip'},
+    {'name': 'broker_port',      'default': '1883',      'description': 'MQTT port'},
+    {'name': 'log_level',        'default': 'info',      'description': 'debug log level [DEBUG|INFO|WARN|ERROR|FATAL]'},
 ]
 
 
