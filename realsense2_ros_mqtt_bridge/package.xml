@@ -3,7 +3,7 @@
 <package format="3">
   <name>realsense2_ros_mqtt_bridge</name>
   <version>0.0.0</version>
-  <description>ROS <-> MQTT Brdige for realsense2_camera node</description>
+  <description>ROS-MQTT Brdige for realsense2_camera node</description>
   <maintainer email="samer.khshiboun@intel.com">Samer Khshiboun</maintainer>
   <license>Apache-2.0</license>
 
