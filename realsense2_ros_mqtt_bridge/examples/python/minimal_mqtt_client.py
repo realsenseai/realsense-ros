@@ -46,8 +46,7 @@ class DemoMQTTClient:
         # Generate a Client ID with a random user-id suffix.
         mqtt_client_id = f'mqtt-client-user-{random.randint(0, 1000)}'
 
-        self.mqtt_client = paho_mqtt_client.Client(
-            paho_mqtt_client.CallbackAPIVersion.VERSION1, mqtt_client_id)
+        self.mqtt_client = paho_mqtt_client.Client(mqtt_client_id)
         # client.username_pw_set(username, password)
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.connect(mqtt_broker_ip, mqtt_broker_port)
