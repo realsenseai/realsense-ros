@@ -107,6 +107,8 @@ BSD 3-clause License Third Party Programs
 |tf2|<p><https://github.com/ros2/geometry2/></p><p></p>|BSD 3-clause|<p>Copyright (c) 2008, Willow Garage, Inc.</p><p></p>|
 |tf2\_ros|<p><https://github.com/ros2/geometry2/></p><p></p>|BSD 3-clause|<p>Copyright (c) 2008, Willow Garage, Inc.</p><p></p>|
 |<p>diagnostic\_updater</p><p></p>|<p><https://github.com/ros/diagnostics></p><p></p>|BSD 3-clause|<p>Copyright 2008 - 2012, Willow Garage, Inc.</p><p>`          `2012 - 2022, Open Source Robotics Foundation and contributors</p>|
+|paho-mqtt|<p><https://pypi.org/project/paho-mqtt/></p><p></p>|BSD 3-clause|<p></p><p></p>|
+
 ## **BSD 3-clause** 
 Note: This license has also been called the “New BSD License” or “Modified BSD License”. See also the [2-clause BSD License](https://opensource.org/license/bsd-2-clause/).
 

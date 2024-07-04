@@ -42,6 +42,7 @@
      * [Available Services](#available-services)
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
+  * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
 
@@ -734,7 +735,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0,   "j": 0},
                       "p1": {"i": 0,   "j": 320},
@@ -746,7 +747,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -758,7 +759,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -770,7 +771,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -782,7 +783,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -794,7 +795,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -806,7 +807,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -818,7 +819,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
