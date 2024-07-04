@@ -34,6 +34,11 @@
 # Installation  
 ***This step assumes you have installed ROS environment and ROS Wrapper for Realsense Cameras (including RealSense SDK). For more info about these steps, click [here](https://github.com/IntelRealSense/realsense-ros-private/tree/ros2-hkr?tab=readme-ov-file)***
 
+  - Install paho-mqtt from https://pypi.org/project/paho-mqtt/2.1.0/
+    ```
+    sudo pip3 install paho-mqtt==2.1.0
+    ```
+
   - Create a ROS2 workspace
     ```bash
     mkdir -p ~/ros2_ws/src

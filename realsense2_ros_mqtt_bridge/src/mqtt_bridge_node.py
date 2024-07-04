@@ -77,7 +77,8 @@ class MQTTBridgeNode(Node):
         """Create MQTT client and connect it to MQTT broker."""
         self.mqtt_client_id = (f'realsense_ros_mqtt_bridge_node-'
                                f'{random.randint(0, 1000)}')
-        self.mqtt_client = mqtt.Client(self.mqtt_client_id)
+        self.mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,
+                                       self.mqtt_client_id)
         self.mqtt_client.on_connect = self.on_mqtt_connect
         self.mqtt_client.on_message = self.on_mqtt_message
         try:
