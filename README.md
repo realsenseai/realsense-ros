@@ -735,7 +735,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0,   "j": 0},
                       "p1": {"i": 0,   "j": 320},
@@ -747,7 +747,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -759,7 +759,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -771,7 +771,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -783,7 +783,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -795,7 +795,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -807,7 +807,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
@@ -819,7 +819,7 @@ Each of the above filters have it's own parameters, following the naming convent
               {
                   "attributes": 1,
                   "minimal_range": 0,
-                  "region_of_interesets":
+                  "region_of_interests":
                   {
                       "p0": {"i": 0, "j": 0},
                       "p1": {"i": 0, "j": 0},
