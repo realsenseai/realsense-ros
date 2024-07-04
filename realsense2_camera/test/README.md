@@ -127,7 +127,7 @@ The xml files mentioned by the command can be directly opened also.
 ### Running pytests directly
 
 Note :
-1. All the commands for test execution has to be executed from realsense-ros folder. For example: If the ROS2 workspace was created based on Step 3 [Option2] of [this](https://github.com/IntelRealSense/realsense-ros/blob/ros2-development/README.md#installation).
+1. All the commands for test execution has to be executed from realsense-ros folder. For example: If the ROS2 workspace was created based on Step 3 [Option2] of [this](https://github.com/IntelRealSense/realsense-ros/blob/ros2-master/README.md#installation).
 Then, the path to execute the tests would be ~/ros2_ws/src/realsense-ros.
 
 		cd ~/ros2_ws/src/realsense-ros

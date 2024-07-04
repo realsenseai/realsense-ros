@@ -29,14 +29,14 @@ jobs:
         include:
         - ros_distro: 'rolling'
           os: ubuntu-24.04
+        - ros_distro: 'jazzy'
+          os: ubuntu-24.04
         - ros_distro: 'iron'
           os: ubuntu-22.04
         - ros_distro: 'humble'
           os: ubuntu-22.04
         - ros_distro: 'foxy'
           os: ubuntu-20.04
-        - ros_distro: 'jazzy'
-          os: ubuntu-24.04
 
     steps:
 

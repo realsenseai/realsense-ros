@@ -89,9 +89,15 @@ void BaseRealSenseNode::TriggeredCalibrationExecute(const std::shared_ptr<GoalHa
         rs2::auto_calibrated_device ac_dev = _dev.as<auto_calibrated_device>();
         float health = 0.f;  // output health
         int timeout_ms = 120000;  // 2 minutes timout
+
+        auto progress_callback = [&](const float progress) {
+                _progress = progress;
+                goal_handle->publish_feedback(feedback);
+        };
+
         auto ans = ac_dev.run_on_chip_calibration(goal->json,
                                                 &health,
-                                                [&](const float progress) {_progress = progress; },
+                                                progress_callback,
                                                 timeout_ms);
 
         // the new calibration is the result without the first 3 bytes
@@ -101,21 +107,27 @@ void BaseRealSenseNode::TriggeredCalibrationExecute(const std::shared_ptr<GoalHa
         {
             result->calibration = vectorToJsonString(new_calib);
             result->health = health;
+            result->success = true;
             goal_handle->succeed(result);
-            ROS_DEBUG("TriggeredCalibrationExecute: Succeded");
+            ROS_INFO("TriggeredCalibrationExecute: Succeded");
         }
         else
         {
             result->calibration = "{}";
+            result->success = false;
+            result->error_msg = "Canceled";
             goal_handle->canceled(result);
             ROS_WARN("TriggeredCalibrationExecute: Canceled");
         }
     }
-    catch(...)
+    catch(const std::runtime_error& e)
     {
         // exception must have been thrown from run_on_chip_calibration call
+        std::string error_msg = "TriggeredCalibrationExecute: Aborted. Error: " + std::string(e.what());
         result->calibration = "{}";
+        result->success = false;
+        result->error_msg = error_msg;
         goal_handle->abort(result);
-        ROS_ERROR("TriggeredCalibrationExecute: Aborted");
+        ROS_ERROR(error_msg.c_str());
     }
 }
