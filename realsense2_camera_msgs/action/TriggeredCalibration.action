@@ -2,6 +2,8 @@
 string json "calib run"
 ---
 # result
+bool success
+string error_msg
 string calibration
 float32 health
 ---

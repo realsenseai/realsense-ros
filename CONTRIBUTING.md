@@ -5,7 +5,7 @@ This project welcomes third-party code via GitHub pull requests.
 You are welcome to propose and discuss enhancements using project [issues](https://github.com/IntelRealSense/realsense-ros/issues).
 
 > **Branching Policy**:
-> The `ros2-development` branch is considered stable, at all times.
+> The `ros2-master` branch is considered stable, at all times.
 > If you plan to propose a patch, please commit into the `ros2-development` branch, or its own feature branch.
 
 In addition, please run `pr_check.sh` under `scripts` directory. This scripts verify compliance with project's standards:

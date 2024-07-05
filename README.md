@@ -12,9 +12,11 @@
 
 
 [![rolling][rolling-badge]][rolling]
+[![jazzy][jazzy-badge]][jazzy]
 [![iron][iron-badge]][iron]
 [![humble][humble-badge]][humble]
 [![foxy][foxy-badge]][foxy]
+[![ubuntu24][ubuntu24-badge]][ubuntu24]
 [![ubuntu22][ubuntu22-badge]][ubuntu22]
 [![ubuntu20][ubuntu20-badge]][ubuntu20]
 
@@ -60,7 +62,7 @@
 
 <details>
    <summary>
-     Moving from <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-legacy">ros2-legacy</a> to ros2-development
+     Moving from <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-legacy">ros2-legacy</a> to ros2-master
   </summary>
 
 * Changed Parameters:
@@ -68,7 +70,7 @@
     - For video streams: **\<module>.profile** replaces **\<stream>_width**, **\<stream>_height**, **\<stream>_fps**
         - **ROS2-legacy (Old)**:
           - ros2 launch realsense2_camera rs_launch.py depth_width:=640 depth_height:=480 depth_fps:=30.0 infra1_width:=640 infra1_height:=480 infra1_fps:=30.0
-        - **ROS2-development (New)**:
+        - **ROS2-master (New)**:
           - ros2 launch realsense2_camera rs_launch.py depth_module.profile:=640x480x30
     - Removed paramets **\<stream>_frame_id**, **\<stream>_optical_frame_id**. frame_ids are now defined by camera_name
     - **"filters"** is removed. All filters (or post-processing blocks) are enabled/disabled using **"\<filter>.enable"**
@@ -89,7 +91,10 @@
   <summary>
     Step 1: Install the ROS2 distribution 
   </summary>
-  
+
+- #### Ubuntu 24.04:
+  - [ROS2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debians.html)
+
 - #### Ubuntu 22.04:
   - [ROS2 Iron](https://docs.ros.org/en/iron/Installation/Ubuntu-Install-Debians.html)
   - [ROS2 Humble](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
@@ -115,7 +120,7 @@
     - For example, for Humble distro: ```sudo apt install ros-humble-librealsense2*```
 
 - #### Option 3: Build from source
-  - Download the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.53.1)
+  - Download the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.55.1)
   - Follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
 </details>
@@ -140,7 +145,7 @@
   
   - Clone the latest ROS Wrapper for Intel&reg; RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
       ```bashrc
-      git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-development
+      git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
       cd ~/ros2_ws
       ```
   
@@ -159,7 +164,7 @@
 
   -  Source environment
    ```bash
-   ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: iron, humble, foxy
+   ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: jazzy, iron, humble, foxy
    source /opt/ros/$ROS_DISTRO/setup.bash
    cd ~/ros2_ws
    . install/local_setup.bash
@@ -182,13 +187,14 @@
   **Please choose only one option from the two options below (in order to prevent multiple versions installation and workspace conflicts)**
   
   - Manual install from ROS2 formal documentation:
+    - [ROS2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Windows-Install-Binary.html)
     - [ROS2 Iron](https://docs.ros.org/en/iron/Installation/Windows-Install-Binary.html)
     - [ROS2 Humble](https://docs.ros.org/en/humble/Installation/Windows-Install-Binary.html)
     - [ROS2 Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html)
   - Microsoft IOT binary installation:
     - https://ms-iot.github.io/ROSOnWindows/GettingStarted/SetupRos2.html
     - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for Intel&reg; RealSense&trade; cameras)
-	- Please replace the word "Foxy" with Humble or Iron, depends on the chosen distro.
+	- Please replace the word "Foxy" with Humble, Iron or Jazzy, depends on the chosen distro.
 </details>
   
 <details>
@@ -1026,13 +1032,15 @@ Each of the above filters have it's own parameters, following the naming convent
 
 ## Available actions
 
-### triggered_calibration
+### triggered_calibration (supported only for D500 devices)
   - Type `ros2 interface show realsense2_camera_msgs/action/TriggeredCalibration` for the full request/result/feedback fields.
     ```
     # request
     string json "calib run"  # default value
     ---
     # result
+    bool success
+    string error_msg
     string calibration
     float32 health
     ---
@@ -1041,8 +1049,16 @@ Each of the above filters have it's own parameters, following the naming convent
 
     ```
   - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
-  - The action gives an updated feedback about the progress (%) if the client asks for feedback.
+  - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
   - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
+  - If failed, it will return the error message inside the result. For example:
+  ```
+  Result:
+    success: false
+    error_msg: 'TriggeredCalibrationExecute: Aborted. Error: Calibration completed but algorithm failed'
+    calibration: '{}'
+    health: 0.0
+  ```
 
 <hr>
 
@@ -1093,12 +1109,16 @@ ros2 launch realsense2_camera rs_intra_process_demo_launch.py intra_process_comm
 
 [rolling-badge]: https://img.shields.io/badge/-ROLLING-orange?style=flat-square&logo=ros
 [rolling]: https://docs.ros.org/en/rolling/index.html
-[foxy-badge]: https://img.shields.io/badge/-foxy-orange?style=flat-square&logo=ros
+[jazzy-badge]: https://img.shields.io/badge/-JAZZY-orange?style=flat-square&logo=ros
+[jazzy]: https://docs.ros.org/en/jazzy/index.html
+[foxy-badge]: https://img.shields.io/badge/-FOXY-orange?style=flat-square&logo=ros
 [foxy]: https://docs.ros.org/en/foxy/index.html
 [humble-badge]: https://img.shields.io/badge/-HUMBLE-orange?style=flat-square&logo=ros
 [humble]: https://docs.ros.org/en/humble/index.html
 [iron-badge]: https://img.shields.io/badge/-IRON-orange?style=flat-square&logo=ros
 [iron]: https://docs.ros.org/en/iron/index.html
+[ubuntu24-badge]: https://img.shields.io/badge/-UBUNTU%2024%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
+[ubuntu24]: https://releases.ubuntu.com/noble/
 [ubuntu22-badge]: https://img.shields.io/badge/-UBUNTU%2022%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
 [ubuntu22]: https://releases.ubuntu.com/jammy/
 [ubuntu20-badge]: https://img.shields.io/badge/-UBUNTU%2020%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
