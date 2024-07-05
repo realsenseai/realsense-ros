@@ -1048,6 +1048,11 @@ Each of the above filters have it's own parameters, following the naming convent
     float32 progress
 
     ```
+  - Before calling triggered calibration, user should set these parameters:
+    - `depth_module.visual_preset: 1`
+    - `depth_module.emitter_enabled: true`
+    - `depth_module.enable_auto_exposure: true`
+    - `enable_depth: false` # turn off the depth streaming
   - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
   - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
   - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32

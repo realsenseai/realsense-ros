@@ -51,6 +51,7 @@ class DemoMQTTClient:
         # client.username_pw_set(username, password)
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.connect(mqtt_broker_ip, mqtt_broker_port)
+        self.tc_done = False
 
     def on_connect(self, client, userdata, flags, rc):
         """
@@ -108,7 +109,12 @@ class DemoMQTTClient:
             print('got image... \
                 not printing it since its raw data is huge...')
         else:
+            if msg.topic == 'triggered_calibration_response':
+                tc_json = json.loads(content)
+                if tc_json['progress'] == 100.0:
+                    self.tc_done = True
             print(f'Received {content} to topic {msg.topic}')
+        self.locked = False;
 
     def start_client(self):
         """Start the MQTT client."""
@@ -123,6 +129,7 @@ class DemoMQTTClient:
         self.mqtt_client.subscribe('set_safety_interface_config_response')
         self.mqtt_client.subscribe('get_calib_config_response')
         self.mqtt_client.subscribe('set_calib_config_response')
+        self.mqtt_client.subscribe('triggered_calibration_response')
 
         self.mqtt_client.on_message = self.on_message
 
@@ -165,7 +172,10 @@ class DemoMQTTClient:
             'parameter_type': parameter_type
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'set_param_request')
+        while self.locked:
+            pass
 
     def get_param(self, camera_namespace, camera_name, parameter_name):
         """
@@ -182,7 +192,10 @@ class DemoMQTTClient:
             'parameter_name': parameter_name,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'get_param_request')
+        while self.locked:
+            pass
 
     def get_frame(self, camera_namespace, camera_name, stream_name):
         """
@@ -199,7 +212,10 @@ class DemoMQTTClient:
             'stream_name': stream_name,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'get_frame_request')
+        while self.locked:
+            pass
 
     def get_safety_preset(self, camera_namespace, camera_name, index):
         """
@@ -216,7 +232,10 @@ class DemoMQTTClient:
             'index': index,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'get_safety_preset_request')
+        while self.locked:
+            pass
 
     def set_safety_preset(self, camera_namespace, camera_name, sp, index):
         """
@@ -235,7 +254,10 @@ class DemoMQTTClient:
             'index': str(index),
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'set_safety_preset_request')
+        while self.locked:
+            pass
 
     def get_safety_interface_config(self, camera_namespace, camera_name):
         """
@@ -250,7 +272,10 @@ class DemoMQTTClient:
             'camera_name': camera_name,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'get_safety_interface_config_request')
+        while self.locked:
+            pass
 
     def set_safety_interface_config(self, camera_namespace, camera_name, sic):
         """
@@ -267,7 +292,10 @@ class DemoMQTTClient:
             'safety_interface_config': sic,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'set_safety_interface_config_request')
+        while self.locked:
+            pass
 
     def get_calib_config(self, camera_namespace, camera_name):
         """
@@ -282,9 +310,12 @@ class DemoMQTTClient:
             'camera_name': camera_name,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'get_calib_config_request')
+        while self.locked:
+            pass
 
-    def set_calib_config(self, camera_namespace, camera_name, sic):
+    def set_calib_config(self, camera_namespace, camera_name, calib_config):
         """
         Send a request to set a calib config.
 
@@ -296,10 +327,29 @@ class DemoMQTTClient:
         request_dict = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
-            'calib_config': sic,
+            'calib_config': calib_config,
         }
         j = json.dumps(request_dict)
+        self.locked = True
         self.publish(j, 'set_calib_config_request')
+        while self.locked:
+            pass
+
+    def triggered_calibration(self, camera_namespace, camera_name):
+        """
+        Run triggered calibration action.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        self.tc_done = False
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.publish(j, 'triggered_calibration_request')
 
 
 if __name__ == '__main__':
@@ -395,7 +445,45 @@ if __name__ == '__main__':
                                       CAMERA_NAME,
                                       CALIB_CONFIG_ESCAPED)
     
+    ###################################################################
+    ############## TRIGGERED CALIBRATION EXAMPLE ######################
 
+    # setup params for triggered calibration
 
-    time.sleep(3)
+    # switch to visual preset #1
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'depth_module.visual_preset',
+                               '1',
+                               'int')
+    # enable emitter
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'depth_module.emitter_enabled',
+                               'true',
+                               'bool')
+    # enable auto exposure
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'depth_module.enable_auto_exposure',
+                               'true',
+                               'bool')
+
+    # turn off depth streaming
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'enable_depth',
+                               'false',
+                               'bool')
+
+    # call the triggered calibration method
+    demo_mqtt_client.triggered_calibration(CAMERA_NAMESPACE,
+                                           CAMERA_NAME)
+    
+    # check if TC is done, otherwise sleep for 2 seconds
+    while not demo_mqtt_client.tc_done:
+          time.sleep(2)
+
+    ###################################################################
+
     demo_mqtt_client.stop_client()

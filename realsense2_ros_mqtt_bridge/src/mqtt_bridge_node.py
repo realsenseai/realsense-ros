@@ -25,6 +25,7 @@ from .parameter_handler import ParameterHandler
 from .safety_preset_handler import SafetyPresetHandler
 from .safety_interface_config_handler import SafetyInterfaceConfigHandler
 from .calib_config_handler import CalibConfigHandler
+from .triggered_calibration_handler import TriggeredCalibrationHandler
 
 
 class MQTTBridgeNode(Node):
@@ -105,7 +106,8 @@ class MQTTBridgeNode(Node):
             'get_safety_interface_config_request',
             'set_safety_interface_config_request',
             'get_calib_config_request',
-            'set_calib_config_request'
+            'set_calib_config_request',
+            'triggered_calibration_request'
         ]
 
     def setup_mqtt_handlers(self):
@@ -121,6 +123,7 @@ class MQTTBridgeNode(Node):
         self.safety_preset_handler = SafetyPresetHandler(self)
         self.safety_interface_config_handler = SafetyInterfaceConfigHandler(self)
         self.calib_config_handler = CalibConfigHandler(self)
+        self.triggered_calibration_handler = TriggeredCalibrationHandler(self)
 
     def ROS_INFO(self, msg):  # pylint: disable=invalid-name
         """
@@ -219,6 +222,9 @@ class MQTTBridgeNode(Node):
                 mqtt_request)
         elif msg.topic == 'set_calib_config_request':
             self.calib_config_handler.handle_set_calib_config_request(
+                mqtt_request)
+        elif msg.topic == 'triggered_calibration_request':
+            self.triggered_calibration_handler.handle_triggered_calibration_request(
                 mqtt_request)
         else:
             self.ROS_ERROR('Unsupported MQTT Message')
