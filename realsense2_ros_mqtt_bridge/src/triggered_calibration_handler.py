@@ -16,7 +16,7 @@ from rclpy.action import ActionClient
 from realsense2_camera_msgs.action import TriggeredCalibration
 
 class TriggeredCalibrationHandler:
-    """Brdige For Triggered Calibartion ROS Action."""
+    """Brdige For Triggered Calibration ROS Action."""
 
     def __init__(self, mqtt_ros_node):
         self.action_client = None
