@@ -374,11 +374,17 @@
 
 ## Triggered Calibration
 
-* Before calling triggered calibration, user should set these parameters:
-  * `depth_module.visual_preset: 1`
-  * `depth_module.emitter_enabled: true`
-  * `depth_module.enable_auto_exposure: true`
-  * `enable_depth: false` # turn off the depth streaming
+* Before calling triggered calibration, user should set the following parameters:
+  * `safety_camera.safety_mode: 2` # switch to service mode
+  * `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
+  * `depth_module.emitter_enabled: true` # enable emitter in depth module
+  * `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+  * `enable_depth: false` # turn off depth stream
+  * `enable_infra1: false` # turn off infra1 stream
+  * `enable_infra2: false` # turn off infra2 stream
+  * `enable_safety: false` # turn off safety stream
+  * `enable_labeled_point_cloud: false` # turn off labeled pointcloud stream
+  * `enable_occupancy: false` # turn off occupancy stream
 
 * mqtt request message example:
   ```

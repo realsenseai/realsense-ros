@@ -450,12 +450,15 @@ if __name__ == '__main__':
 
     # setup params for triggered calibration
 
+    # we are already in service mode, no need to switch
+
     # switch to visual preset #1
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,
                                CAMERA_NAME,
                                'depth_module.visual_preset',
                                '1',
                                'int')
+
     # enable emitter
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,
                                CAMERA_NAME,
@@ -476,10 +479,45 @@ if __name__ == '__main__':
                                'false',
                                'bool')
 
+    # turn off infra1 streaming
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'enable_infra1',
+                               'false',
+                               'bool')
+
+    # turn off infra2 streaming
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'enable_infra2',
+                               'false',
+                               'bool')
+
+    # turn off safety streaming
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'enable_safety',
+                               'false',
+                               'bool')
+
+    # turn off occupancy streaming
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'enable_occupancy',
+                               'false',
+                               'bool')
+
+    # turn off lpcl streaming
+    demo_mqtt_client.set_param(CAMERA_NAMESPACE,
+                               CAMERA_NAME,
+                               'enable_labeled_point_cloud',
+                               'false',
+                               'bool')
+
     # call the triggered calibration method
     demo_mqtt_client.triggered_calibration(CAMERA_NAMESPACE,
                                            CAMERA_NAME)
-    
+
     # check if TC is done, otherwise sleep for 2 seconds
     while not demo_mqtt_client.tc_done:
           time.sleep(2)
