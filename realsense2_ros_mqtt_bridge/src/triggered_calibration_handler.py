@@ -27,7 +27,7 @@ class TriggeredCalibrationHandler:
     def ros_action_send_goal(self):
         goal_msg = TriggeredCalibration.Goal()
         self.action_client.wait_for_server()
-        self.send_goal_future = self._action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_feedback_callback)
+        self.send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_feedback_callback)
         self.send_goal_future.add_done_callback(self.ros_action_goal_response_callback)
 
     def ros_action_goal_response_callback(self, future):
@@ -62,7 +62,7 @@ class TriggeredCalibrationHandler:
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('triggered_calibration_response message sent')
-        self._action_client.destroy()
+        self.action_client.destroy()
 
     def ros_action_feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback

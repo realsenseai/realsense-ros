@@ -527,6 +527,7 @@ if __name__ == '__main__':
                                'depth_module.emitter_enabled',
                                'true',
                                'bool')
+
     # enable auto exposure
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,
                                CAMERA_NAME,
@@ -575,8 +576,6 @@ if __name__ == '__main__':
                                'enable_labeled_point_cloud',
                                'false',
                                'bool')
-
-    time.sleep(3)
 
     # call the triggered calibration method
     demo_mqtt_client.triggered_calibration(CAMERA_NAMESPACE,
