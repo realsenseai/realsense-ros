@@ -85,8 +85,8 @@ class TriggeredCalibrationHandler:
         self.mqtt_ros_node.ROS_DEBUG('triggered_calibration_request \
             message received')
 
-        self._camera_namespace = mqtt_request['camera_namespace']
-        self._camera_name = mqtt_request['camera_name']
+        self.camera_namespace = mqtt_request['camera_namespace']
+        self.camera_name = mqtt_request['camera_name']
         action_name = f'/{self.camera_namespace}/{self.camera_name}/triggered_calibration'
 
         self.action_client = ActionClient(self.mqtt_ros_node, TriggeredCalibration, action_name)

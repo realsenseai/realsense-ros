@@ -1029,33 +1029,33 @@ Each of the above filters have it's own parameters, following the naming convent
 
 ### application_config_read:
   - Read application config.
-  - Note that reading calibration config is applicable only in Safey Service Mode
+  - Note that reading application config is applicable only in Safey Service Mode
   - Type `ros2 interface show realsense2_camera_msgs/srv/ApplicationConfigRead` for the full request/response fields.
   - Call example: `ros2 service call /camera/camera/application_config_read realsense2_camera_msgs/srv/ApplicationConfigRead`
     <details>
     <summary>Click to see the full response of the call example</summary>
 
-    `response: realsense2_camera_msgs.srv.CalibConfigRead_Response(success=True, error_message='', calib_config='{"calibration_config":{"calib_roi_num_of_segments":0,"camera_position":{"rotation":[[0,0,0],[0,0,0],[0,0,0]],"translation":[0,0,0]},"crypto_signature":[0, 0 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"roi":[[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]]]}}')`
+    `response: realsense2_camera_msgs.srv.ApplicationConfigRead_Response(success=True, error_message='', application_config='{"application_config":{"depth_pipe_safety_checks_override":0,"depth_pipeline_config":0,"depth_roi":0,"dev_rules_selection":0,"developer_mode":{"hkr":0,"hkr_simulated_lock_state":0,"sc":0,"smcu":0},"digital_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ir_for_sip":0,"sht4x_humidity_threshold":23,"sip":{"immediate_mode_safety_features_selection":0,"mechanisms_sampling_interval":[0,0,0,0,0,0,0,0],"mechanisms_thresholds":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"temporal_safety_features_selection":0},"smcu_bypass_directly_to_maintenance_mode":0,"smcu_skip_spi_error":0,"temp_thresholds":{"apm_left":[0,0,0,0],"apm_right":[0,0,0,0],"hkr_core":[0,0,0,0],"imu":[0,0,0,0],"ir_left":[0,0,0,0],"ir_right":[0,0,0,0],"sht4x":[0,0,0,0],"smcu_right":[0,0,0,0]},"triggered_calib_safety_checks_override":0,"voltage_thresholds":{"vdd0v6":0,"vdd0v8":0,"vdd0v8_ddr":0,"vdd1v1":0,"vdd1v2":0,"vdd1v8":0,"vdd3v3":0,"vdd5vo_l":0,"vdd5vo_u":0}}}')`
 
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/jsons/calib_config_example.json)
+  - [JSON safety interface config example](realsense2_camera/examples/jsons/application_config_example.json)
 
 ### application_config_write:
   - Write application config.
-  - Note that writing calibration config is applicable only in Safey Service Mode
+  - Note that writing application config is applicable only in Safey Service Mode
   - Type `ros2 interface show realsense2_camera_msgs/srv/ApplicationConfigWrite` for the full request/response fields.
     - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
 
     <details>
     <summary>Click to see full call example</summary>
 
-    `ros2 service call /camera/camera/calib_config_write realsense2_camera_msgs/srv/CalibConfigWrite "{calib_config: '{\"calibration_config\":{\"calib_roi_num_of_segments\":0,\"camera_position\":{\"rotation\":[[0,0,0],[0,0,0],[0,0,0]],\"translation\":[0,0,0]},\"crypto_signature\":[0, 0 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\"roi\":[[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]],[[0,0],[0,0],[0,0],[0,0]]]}}' }"`
+    `ros2 service call /camera/camera/application_config_write realsense2_camera_msgs/srv/ApplicationConfigWrite "{application_config: ''{"application_config":{"depth_pipe_safety_checks_override":0,"depth_pipeline_config":0,"depth_roi":0,"dev_rules_selection":0,"developer_mode":{"hkr":0,"hkr_simulated_lock_state":0,"sc":0,"smcu":0},"digital_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ir_for_sip":0,"sht4x_humidity_threshold":23,"sip":{"immediate_mode_safety_features_selection":0,"mechanisms_sampling_interval":[0,0,0,0,0,0,0,0],"mechanisms_thresholds":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"temporal_safety_features_selection":0},"smcu_bypass_directly_to_maintenance_mode":0,"smcu_skip_spi_error":0,"temp_thresholds":{"apm_left":[0,0,0,0],"apm_right":[0,0,0,0],"hkr_core":[0,0,0,0],"imu":[0,0,0,0],"ir_left":[0,0,0,0],"ir_right":[0,0,0,0],"sht4x":[0,0,0,0],"smcu_right":[0,0,0,0]},"triggered_calib_safety_checks_override":0,"voltage_thresholds":{"vdd0v6":0,"vdd0v8":0,"vdd0v8_ddr":0,"vdd1v1":0,"vdd1v2":0,"vdd1v8":0,"vdd3v3":0,"vdd5vo_l":0,"vdd5vo_u":0}}}' }"`
 
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/jsons/calib_config_example.json)
-  - Result example: `realsense2_camera_msgs.srv.CalibConfigWrite_Response(success=True, error_message='')`
+  - [JSON safety interface config example](realsense2_camera/examples/jsons/application_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.ApplicationonfigWrite_Response(success=True, error_message='')`
 
 <hr>
 
