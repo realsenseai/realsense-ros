@@ -150,7 +150,7 @@
 
 ## Set Parameter
 ***See [available parameters and their types](#supported-parameters-for-setget)***
-* mqtt request message example
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
@@ -180,7 +180,7 @@
   
 ## Get Frame
 ***See [Supported Streams](#supported-streams)***
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
@@ -188,11 +188,11 @@
     "stream_name": "color"
   }
   ```
-* request topic
+* request topic:
   ```
   get_frame_request
   ```
-* response topic
+* response topic:
   ```
   get_frame_response
   ```
@@ -209,7 +209,7 @@
   ```
 
 ## Get Safety Preset
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
@@ -217,11 +217,11 @@
     "index": "1"
   }
   ```
-* request topic
+* request topic:
   ```
   get_safety_preset_request
   ```
-* response topic
+* response topic:
   ```
   get_safety_preset_response
   ```
@@ -236,7 +236,7 @@
   }
   ```
 ## Set Safety Preset
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
@@ -245,11 +245,11 @@
     "index": "1"
   }
   ```
-* request topic
+* request topic:
   ```
   set_safety_preset_request
   ```
- * response topic
+ * response topic:
   ```
   set_safety_preset_response
   ```
@@ -264,18 +264,18 @@
   ```
 
 ## Get Safety Interface Config
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
   }
   ```
-* request topic
+* request topic:
   ```
   get_safety_interface_config_request
   ```
-* response topic
+* response topic:
   ```
   get_safety_interface_config_response
   ```
@@ -291,7 +291,7 @@
   ```
 
 ## Set Safety Interface Config
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
@@ -299,11 +299,11 @@
     "safety_inteface_config": "{safety interface config as JSON}",
   }
   ```
-* request topic
+* request topic:
   ```
   set_safety_interface_config_request
   ```
-* response topic
+* response topic:
   ```
   set_safety_interface_config_response
   ```
@@ -318,18 +318,18 @@
   ```
 
 ## Get Safety Calib Config
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
   }
   ```
-* request topic
+* request topic:
   ```
   get_calib_config_request
   ```
-* response topic
+* response topic:
   ```
   get_calib_config_response
   ```
@@ -346,18 +346,19 @@
 
 ## Set Safety Calib Config
 
-* mqtt request message
+* mqtt request message example:
   ```
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
+    "calib_config": "{calib config as JSON}"
   }
   ```
-* request topic
+* request topic:
   ```
   set_calib_config_request
   ```
-* response topic
+* response topic:
   ```
   set_calib_config_response
   ```
@@ -366,9 +367,50 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "calib_config": "{calib config as JSON}",
     "success": "true",
     "error_msg": "",
+  }
+  ```
+
+## Triggered Calibration
+
+* Before calling triggered calibration, user should set the following parameters:
+  * `safety_camera.safety_mode: 2` # switch to service mode
+  * `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
+  * `depth_module.emitter_enabled: true` # enable emitter in depth module
+  * `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+  * `enable_depth: false` # turn off depth stream
+  * `enable_infra1: false` # turn off infra1 stream
+  * `enable_infra2: false` # turn off infra2 stream
+  * `enable_safety: false` # turn off safety stream
+  * `enable_labeled_point_cloud: false` # turn off labeled pointcloud stream
+  * `enable_occupancy: false` # turn off occupancy stream
+
+* mqtt request message example:
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic:
+  ```
+  triggered_calibration_request
+  ```
+* response topic:
+  ```
+  triggered_calibration_response
+  ```
+* mqtt response message example: (user will get messages on the `triggered_calibration_response` on every progress update)
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "success": "true",
+    "error_msg": "",
+    "calibration": {calibration table as json}
+    "health": 3.0
+    "progress": 100.0   # [%0...%100]
   }
   ```
 

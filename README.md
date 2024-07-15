@@ -1048,6 +1048,17 @@ Each of the above filters have it's own parameters, following the naming convent
     float32 progress
 
     ```
+  - Before calling triggered calibration, user should set the following parameters:
+    - `safety_camera.safety_mode: 2` # switch to service mode
+    - `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
+    - `depth_module.emitter_enabled: true` # enable emitter in depth module
+    - `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+    - `enable_depth: false` # turn off depth stream
+    - `enable_infra1: false` # turn off infra1 stream
+    - `enable_infra2: false` # turn off infra2 stream
+    - `enable_safety: false` # turn off safety stream
+    - `enable_labeled_point_cloud: false` # turn off labeled pointcloud stream
+    - `enable_occupancy: false` # turn off occupancy stream
   - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
   - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
   - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
