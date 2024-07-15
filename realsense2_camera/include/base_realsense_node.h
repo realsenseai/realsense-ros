@@ -34,6 +34,8 @@
 #include "realsense2_camera_msgs/srv/device_info.hpp"
 #include "realsense2_camera_msgs/srv/calib_config_read.hpp"
 #include "realsense2_camera_msgs/srv/calib_config_write.hpp"
+#include "realsense2_camera_msgs/srv/application_config_read.hpp"
+#include "realsense2_camera_msgs/srv/application_config_write.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "realsense2_camera_msgs/action/triggered_calibration.hpp"
 #include <librealsense2/hpp/rs_processing.hpp>
@@ -202,6 +204,9 @@ namespace realsense2_camera
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetWrite>::SharedPtr _safety_preset_write_srv;
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigRead>::SharedPtr _safety_interface_config_read_srv;
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite>::SharedPtr _safety_interface_config_write_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::ApplicationConfigRead>::SharedPtr _application_config_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::ApplicationConfigWrite>::SharedPtr _application_config_write_srv;
+
         void SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res);
         void SafetyPresetWriteService(const realsense2_camera_msgs::srv::SafetyPresetWrite::Request::SharedPtr req,
@@ -210,6 +215,11 @@ namespace realsense2_camera
                                  realsense2_camera_msgs::srv::SafetyInterfaceConfigRead::Response::SharedPtr res);
         void SafetyInterfaceConfigWriteService(const realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Response::SharedPtr res);
+        void ApplicationConfigReadService(const realsense2_camera_msgs::srv::ApplicationConfigRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::ApplicationConfigRead::Response::SharedPtr res);
+        void ApplicationConfigWriteService(const realsense2_camera_msgs::srv::ApplicationConfigWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::ApplicationConfigWrite::Response::SharedPtr res);
+
 
 
     private:

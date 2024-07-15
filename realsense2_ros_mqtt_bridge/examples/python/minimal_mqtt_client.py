@@ -335,6 +335,45 @@ class DemoMQTTClient:
         while self.locked:
             pass
 
+    def get_application_config(self, camera_namespace, camera_name):
+        """
+        Send a request to get an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_application_config_request')
+        while self.locked:
+            pass
+
+    def set_application_config(self, camera_namespace, camera_name, application_config):
+        """
+        Send a request to set an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            application_config (str): The application config.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'application_config': application_config,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_application_config_request')
+        while self.locked:
+            pass
+
+
     def triggered_calibration(self, camera_namespace, camera_name):
         """
         Run triggered calibration action.
@@ -444,6 +483,24 @@ if __name__ == '__main__':
     demo_mqtt_client.set_calib_config(CAMERA_NAMESPACE,
                                       CAMERA_NAME,
                                       CALIB_CONFIG_ESCAPED)
+    
+    ###################################################################
+    ########### APPLICATION CONFIG GET/SET EXAMPLE ####################
+
+    demo_mqtt_client.get_application_config(CAMERA_NAMESPACE,
+                                      CAMERA_NAME)
+
+    application_config_file = open('../../examples/config/application_config_example.json',
+                             mode='r',
+                             encoding='utf-8')
+    application_config_json = json.load(application_config_file)
+    APPLICATION_CONFIG_ESCAPED = str(application_config_json).replace('"', '\"')
+    APPLICATION_CONFIG_ESCAPED = str(application_config_json).replace("'", '\"')
+
+    demo_mqtt_client.set_application_config(CAMERA_NAMESPACE,
+                                      CAMERA_NAME,
+                                      APPLICATION_CONFIG_ESCAPED)
+
     
     ###################################################################
     ############## TRIGGERED CALIBRATION EXAMPLE ######################

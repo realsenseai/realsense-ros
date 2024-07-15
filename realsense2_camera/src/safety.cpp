@@ -54,6 +54,17 @@ void BaseRealSenseNode::publishSafetyServices()
                         realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Response::SharedPtr res)
                         {SafetyInterfaceConfigWriteService(req, res);});
 
+    _application_config_read_srv = _node.create_service<realsense2_camera_msgs::srv::ApplicationConfigRead>(
+            "~/application_config_read",
+            [&](const realsense2_camera_msgs::srv::ApplicationConfigRead::Request::SharedPtr req,
+                        realsense2_camera_msgs::srv::ApplicationConfigRead::Response::SharedPtr res)
+                        {ApplicationConfigReadService(req, res);});
+
+    _application_config_write_srv = _node.create_service<realsense2_camera_msgs::srv::ApplicationConfigWrite>(
+            "~/application_config_write",
+            [&](const realsense2_camera_msgs::srv::ApplicationConfigWrite::Request::SharedPtr req,
+                        realsense2_camera_msgs::srv::ApplicationConfigWrite::Response::SharedPtr res)
+                        {ApplicationConfigWriteService(req, res);});
 }
 
 void BaseRealSenseNode::SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
@@ -116,3 +127,33 @@ void BaseRealSenseNode::SafetyInterfaceConfigWriteService(const realsense2_camer
         res->error_message = std::string("Exception occurred: ") + e.what();
     }
 }
+
+void BaseRealSenseNode::ApplicationConfigReadService(const realsense2_camera_msgs::srv::ApplicationConfigRead::Request::SharedPtr req,
+    realsense2_camera_msgs::srv::ApplicationConfigRead::Response::SharedPtr res){
+    try
+    {
+        (void)req; // silence unused parameter warning
+        res->application_config = _safety_sensor->as<rs2::safety_sensor>().get_application_config();
+        res->success = true;
+    }
+    catch (const std::exception &e)
+    {
+        res->success = false;
+        res->error_message = std::string("Exception occurred: ") + e.what();
+    }
+}
+
+void BaseRealSenseNode::ApplicationConfigWriteService(const realsense2_camera_msgs::srv::ApplicationConfigWrite::Request::SharedPtr req,
+    realsense2_camera_msgs::srv::ApplicationConfigWrite::Response::SharedPtr res){
+    try
+    {
+        _safety_sensor->as<rs2::safety_sensor>().set_application_config(req->application_config);
+        res->success = true;
+    }
+    catch (const std::exception &e)
+    {
+        res->success = false;
+        res->error_message = std::string("Exception occurred: ") + e.what();
+    }
+}
+
