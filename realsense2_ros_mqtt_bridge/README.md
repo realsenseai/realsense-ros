@@ -24,12 +24,13 @@
   - [Set Safety Preset](#set-safety-preset)
   - [Get Safety Interface Config](#get-safety-interface-config)
   - [Set Safety Interface Config](#set-safety-interface-config)
-  - [Get Safety Calib Config](#get-safety-calib-config)
-  - [Set Safety Calib Config](#set-safety-calib-config)
+  - [Get Calib Config](#get-calib-config)
+  - [Set Calib Config](#set-calib-config)
+  - [Get Safety Application Config](#get-application-config)
+  - [Set Safety Application Config](#set-application-config)
 - [Supported Parameters For Set/Get](#supported-parameters-for-setget)
 - [Supported Streams](#supported-streams)
-- [Examples](#examples)
-  - [Python Example](#python-example)
+- [Usage Example](#usage-example)
 
 # Installation  
 ***This step assumes you have installed ROS environment and ROS Wrapper for Realsense Cameras (including RealSense SDK). For more info about these steps, click [here](https://github.com/IntelRealSense/realsense-ros-private/tree/ros2-hkr?tab=readme-ov-file)***
@@ -317,7 +318,7 @@
   }
   ```
 
-## Get Safety Calib Config
+## Get Calib Config
 * mqtt request message example:
   ```
   {
@@ -344,7 +345,7 @@
   }
   ```
 
-## Set Safety Calib Config
+## Set Calib Config
 
 * mqtt request message example:
   ```
@@ -361,6 +362,61 @@
 * response topic:
   ```
   set_calib_config_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+## Get Application Config
+* mqtt request message example:
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic:
+  ```
+  get_application_config_request
+  ```
+* response topic:
+  ```
+  get_application_config_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "application_config": "{application config as JSON}",
+    "success": "true",
+    "error_msg": "",
+  }
+  ```
+
+## Set Application Config
+
+* mqtt request message example:
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+    "application_config": "{application config as JSON}"
+  }
+  ```
+* request topic:
+  ```
+  set_application_config_request
+  ```
+* response topic:
+  ```
+  set_application_config_response
   ```
 * mqtt response message example: 
   ```
@@ -617,9 +673,8 @@
 - infra1 (Left IR)
 - infra2 (Right IR)
 
-# Examples
-## Python Example
-[Minimal Python MQTT Client Example](examples/python/minimal_mqtt_client.py)
+# Usage Example
+[Minimal Python MQTT Client Example](examples/minimal_mqtt_client.py)
 
 
 [jazzy-badge]: https://img.shields.io/badge/-JAZZY-orange?style=flat-square&logo=ros

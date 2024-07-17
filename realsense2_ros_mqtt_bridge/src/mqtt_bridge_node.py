@@ -25,6 +25,7 @@ from .parameter_handler import ParameterHandler
 from .safety_preset_handler import SafetyPresetHandler
 from .safety_interface_config_handler import SafetyInterfaceConfigHandler
 from .calib_config_handler import CalibConfigHandler
+from .application_config_handler import ApplicationConfigHandler
 from .triggered_calibration_handler import TriggeredCalibrationHandler
 
 
@@ -107,6 +108,8 @@ class MQTTBridgeNode(Node):
             'set_safety_interface_config_request',
             'get_calib_config_request',
             'set_calib_config_request',
+            'get_application_config_request',
+            'set_application_config_request',
             'triggered_calibration_request'
         ]
 
@@ -123,6 +126,7 @@ class MQTTBridgeNode(Node):
         self.safety_preset_handler = SafetyPresetHandler(self)
         self.safety_interface_config_handler = SafetyInterfaceConfigHandler(self)
         self.calib_config_handler = CalibConfigHandler(self)
+        self.application_config_handler = ApplicationConfigHandler(self)
         self.triggered_calibration_handler = TriggeredCalibrationHandler(self)
 
     def ROS_INFO(self, msg):  # pylint: disable=invalid-name
@@ -222,6 +226,12 @@ class MQTTBridgeNode(Node):
                 mqtt_request)
         elif msg.topic == 'set_calib_config_request':
             self.calib_config_handler.handle_set_calib_config_request(
+                mqtt_request)
+        elif msg.topic == 'get_application_config_request':
+            self.application_config_handler.handle_get_application_config_request(
+                mqtt_request)
+        elif msg.topic == 'set_application_config_request':
+            self.application_config_handler.handle_set_application_config_request(
                 mqtt_request)
         elif msg.topic == 'triggered_calibration_request':
             self.triggered_calibration_handler.handle_triggered_calibration_request(

@@ -1,0 +1,4 @@
+---
+bool success
+string error_message
+string application_config

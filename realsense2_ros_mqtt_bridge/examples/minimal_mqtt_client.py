@@ -129,6 +129,8 @@ class DemoMQTTClient:
         self.mqtt_client.subscribe('set_safety_interface_config_response')
         self.mqtt_client.subscribe('get_calib_config_response')
         self.mqtt_client.subscribe('set_calib_config_response')
+        self.mqtt_client.subscribe('get_application_config_response')
+        self.mqtt_client.subscribe('set_application_config_response')
         self.mqtt_client.subscribe('triggered_calibration_response')
 
         self.mqtt_client.on_message = self.on_message
@@ -335,6 +337,45 @@ class DemoMQTTClient:
         while self.locked:
             pass
 
+    def get_application_config(self, camera_namespace, camera_name):
+        """
+        Send a request to get an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_application_config_request')
+        while self.locked:
+            pass
+
+    def set_application_config(self, camera_namespace, camera_name, application_config):
+        """
+        Send a request to set an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            application_config (str): The application config.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'application_config': application_config,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_application_config_request')
+        while self.locked:
+            pass
+
+
     def triggered_calibration(self, camera_namespace, camera_name):
         """
         Run triggered calibration action.
@@ -355,6 +396,8 @@ class DemoMQTTClient:
 if __name__ == '__main__':
     MQTT_BROKER_IP = 'localhost'
     MQTT_BROKER_PORT = 1883
+
+    jsons_dir = '../../realsense2_camera/examples/d500_tables/'
 
     demo_mqtt_client = DemoMQTTClient(MQTT_BROKER_IP, MQTT_BROKER_PORT)
     demo_mqtt_client.start_client()
@@ -396,7 +439,7 @@ if __name__ == '__main__':
                                        CAMERA_NAME,
                                        1)
 
-    safety_preset_file = open('../../examples/config/safety_preset_example.json',
+    safety_preset_file = open(jsons_dir + 'safety_preset_example.json',
                               mode='r',
                               encoding='utf-8')
     safety_preset_json = json.load(safety_preset_file)
@@ -415,7 +458,7 @@ if __name__ == '__main__':
     demo_mqtt_client.get_safety_interface_config(CAMERA_NAMESPACE, 
                                                  CAMERA_NAME)
 
-    safety_interface_config_file = open('../../examples/config/safety_interface_config_example.json',
+    safety_interface_config_file = open(jsons_dir + 'safety_interface_config_example.json',
                                         mode='r',
                                         encoding='utf-8')
 
@@ -434,7 +477,7 @@ if __name__ == '__main__':
     demo_mqtt_client.get_calib_config(CAMERA_NAMESPACE,
                                       CAMERA_NAME)
 
-    calib_config_file = open('../../examples/config/calib_config_example.json',
+    calib_config_file = open(jsons_dir + 'calib_config_example.json',
                              mode='r',
                              encoding='utf-8')
     calib_config_json = json.load(calib_config_file)
@@ -444,7 +487,26 @@ if __name__ == '__main__':
     demo_mqtt_client.set_calib_config(CAMERA_NAMESPACE,
                                       CAMERA_NAME,
                                       CALIB_CONFIG_ESCAPED)
-    
+
+
+    ##################################################################
+    ########## APPLICATION CONFIG GET/SET EXAMPLE ####################
+
+    demo_mqtt_client.get_application_config(CAMERA_NAMESPACE,
+                                            CAMERA_NAME)
+
+    application_config_file = open(jsons_dir + 'application_config_example.json',
+                                   mode='r',
+                                   encoding='utf-8')
+    application_config_json = json.load(application_config_file)
+    APPLICATION_CONFIG_ESCAPED = str(application_config_json).replace('"', '\"')
+    APPLICATION_CONFIG_ESCAPED = str(application_config_json).replace("'", '\"')
+
+    demo_mqtt_client.set_application_config(CAMERA_NAMESPACE,
+                                            CAMERA_NAME,
+                                            APPLICATION_CONFIG_ESCAPED)
+
+
     ###################################################################
     ############## TRIGGERED CALIBRATION EXAMPLE ######################
 
@@ -465,6 +527,7 @@ if __name__ == '__main__':
                                'depth_module.emitter_enabled',
                                'true',
                                'bool')
+
     # enable auto exposure
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,
                                CAMERA_NAME,
