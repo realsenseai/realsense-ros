@@ -636,8 +636,7 @@ void BaseRealSenseNode::CalibConfigReadService(const realsense2_camera_msgs::srv
     try
     {
         (void)req; // silence unused parameter warning
-        rs2_calibration_config calib_config = _dev.as<rs2::auto_calibrated_device>().get_calibration_config();
-        res->calib_config = _dev.as<rs2::auto_calibrated_device>().calibration_config_to_json_string(calib_config);
+        res->calib_config = _dev.as<rs2::auto_calibrated_device>().get_calibration_config();
         res->success = true;
     }
     catch (const std::exception &e)
@@ -651,8 +650,7 @@ void BaseRealSenseNode::CalibConfigWriteService(const realsense2_camera_msgs::sr
     realsense2_camera_msgs::srv::CalibConfigWrite::Response::SharedPtr res){
     try
     {
-        rs2_calibration_config calib_config = _dev.as<rs2::auto_calibrated_device>().json_string_to_calibration_config(req->calib_config);
-        _dev.as<rs2::auto_calibrated_device>().set_calibration_config(calib_config);
+        _dev.as<rs2::auto_calibrated_device>().set_calibration_config(req->calib_config);
         res->success = true;
     }
     catch (const std::exception &e)
