@@ -120,6 +120,7 @@ class DemoMQTTClient:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
         self.mqtt_client.subscribe('set_parameter_response')
         self.mqtt_client.subscribe('get_frame_response')
@@ -153,6 +154,24 @@ class DemoMQTTClient:
         }
         j = json.dumps(request_dict)
         self.publish(j, 'enumerate_devices_request')
+
+    def get_device_info(self, camera_namespace, camera_name):
+        """
+        Send a request to get device info.
+
+        Args:
+            camera_namespace: The namespace of the camera.
+            camera_name: The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_device_info_request')
+        while self.locked:
+            pass
 
     def set_param(self, camera_namespace, camera_name,
                   parameter_name, parameter_value, parameter_type):
@@ -405,11 +424,17 @@ if __name__ == '__main__':
     CAMERA_NAMESPACE_PREFIX = 'robot'
     CAMERA_NAME_PREFIX = 'c_'
 
+    # enumerate devices
     demo_mqtt_client.enumerate_devices(CAMERA_NAMESPACE_PREFIX,
                                        CAMERA_NAME_PREFIX)
 
+    # choose specific camera
     CAMERA_NAMESPACE = 'robot1'
     CAMERA_NAME = 'c_353322320702'
+
+    # get device info
+    demo_mqtt_client.get_device_info(CAMERA_NAMESPACE,
+                                     CAMERA_NAME)
 
     # switch to service mode
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,
