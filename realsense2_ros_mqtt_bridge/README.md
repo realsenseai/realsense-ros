@@ -28,6 +28,7 @@
   - [Set Calib Config](#set-calib-config)
   - [Get Safety Application Config](#get-application-config)
   - [Set Safety Application Config](#set-application-config)
+  - [Triggered Calibration](#triggered-calibration)
 - [Supported Parameters For Set/Get](#supported-parameters-for-setget)
 - [Supported Streams](#supported-streams)
 - [Usage Example](#usage-example)
