@@ -24,6 +24,8 @@ import logging
 LOGGER = logging.getLogger()
 
 
+
+
 def test_bridge_instatiation():
     #initialization starts....
     try:
@@ -36,46 +38,42 @@ def test_bridge_instatiation():
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
             os.system("ros2 node list")
     #initialization ends....
-        params = [
-            {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
-        ]
-        camera.add_parameters(params)
-        
+
         LOGGER.info("Testing enumerate_devices")
         sds.send_enumerate_devices_request(namespace, name)
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
+        params = [
+            {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int", "alternate_value":2},
+            {"param_name":'accel_info_qos ', "default_value":"accel_info_qos", "param_type":"string", "alternate_value":'hello'},
+            {"param_name":'align_depth.enable','default_value':True,'param_type': 'boolean', "alternate_value":False}
+        ]
 
-        LOGGER.info("Testing get_param...")
+        camera.add_parameters(params)
+        for param in params:
 
-        sds.send_get_param_request(namespace,
+            LOGGER.info("Testing get_param for type " + param["param_type"])
+            sds.send_get_param_request(namespace,
+                    name,
+                    param['param_name'])
+            
+            response = sds.get_get_param_response()
+            assert str(response["parameter_value"]) == str(param['default_value']), "default value was not set for for param " + param['param_name'] 
+
+            LOGGER.info("Testing set_param for type " + param["param_type"])
+
+            sds.send_set_param_request(namespace,
+                    name,
+                    param['param_name'],
+                    param['alternate_value'],
+                    param['param_type'])
+            response = sds.get_set_param_response()
+
+            response = sds.get_param(namespace,
                 name,
-                'safety_camera.safety_mode')
-        
-        response = sds.get_get_param_response()
-
-        LOGGER.debug("safety_camera.safety_mode Param received: " + str(response["parameter_value"]))    
-
-        LOGGER.info("Testing set_param...")
-
-        sds.send_set_param_request(namespace,
-                name,
-                'safety_camera.safety_mode',
-                '2',
-                'int')
-        response = sds.get_set_param_response()
-
-        response = sds.get_param(namespace,
-            name,
-            'safety_camera.safety_mode')
-        assert int(response["parameter_value"]) == 2, "Get or Set param failed, didn't get the written value"
-        LOGGER.debug("safety_camera.safety_mode Param received: " + str(response))  
-
-        LOGGER.info("Testing get_frame...")
-        frame = sds.get_frame(namespace, name, "color")
-        LOGGER.debug(frame)
-
+                param['param_name'])
+            assert response["parameter_value"] == str(param['alternate_value']), "Get or Set param failed, didn't get the written value for param " + param['param_name']
     #cleanup starts....
 
     except Exception as e:

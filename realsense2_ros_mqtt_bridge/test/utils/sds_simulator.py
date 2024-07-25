@@ -147,12 +147,6 @@ class SDSSimulator:
             'camera_name_prefix': camera_name_prefix
         }
         j = json.dumps(request_dict)
-        print_once = True
-        while self.locked:
-            if print_once:
-                LOGGER.debug("Waiting for the previous message to get the response..")
-                print_once = False
-            pass
         self.msg = None
         self.locked = True
         self.publish(j, 'enumerate_devices_request')
@@ -203,6 +197,7 @@ class SDSSimulator:
             'parameter_type': parameter_type
         }
         j = json.dumps(request_dict)
+        self.msg = None
         self.locked = True
         self.publish(j, 'set_param_request')
 
@@ -251,6 +246,7 @@ class SDSSimulator:
             'parameter_name': parameter_name,
         }
         j = json.dumps(request_dict)
+        self.msg = None
         self.locked = True
         self.publish(j, 'get_param_request')
 
@@ -294,6 +290,7 @@ class SDSSimulator:
             'stream_name': stream_name,
         }
         j = json.dumps(request_dict)
+        self.msg = None
         self.locked = True
         self.publish(j, 'get_frame_request')
 

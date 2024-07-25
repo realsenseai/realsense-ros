@@ -34,7 +34,8 @@ class RSCameraSimulator(Node, threading.Thread):
         threading.Thread.__init__(self)
         self._stop_event = threading.Event()
         self.color_frame = self.create_publisher(Image, '/' + namespace + '/' + name + '/color/image_raw', queue)
-        self.declare_all_parameters()
+        self.add_on_set_parameters_callback(self.parameter_callback)
+
     def run(self):
         LOGGER.debug("Thread started...")
         loop_count = 0
@@ -48,6 +49,7 @@ class RSCameraSimulator(Node, threading.Thread):
     def stop(self):
         LOGGER.debug("Setting the stop event...")
         self._stop_event.set()
+        self.join()
     def publish_frame(self):
         msg = Image()
         frame = np.zeros((4,4,0), dtype=int)
@@ -62,25 +64,29 @@ class RSCameraSimulator(Node, threading.Thread):
         # publishes message
         # LOGGER.debug("Publishing color frame...")
         self.color_frame.publish(msg)
-    def declare_all_parameters(self):
+    def add_parameters(self, params):
         try:
-            self.declare_parameter('safety_camera.safety_mode', 0)
-            self.safety_camera_safety_mode = self.get_parameter(
-                'safety_camera.safety_mode').get_parameter_value().integer_value
-            LOGGER.debug("safety mode is " + str(self.safety_camera_safety_mode))
+            for param in params:
+                self.declare_parameter(param['param_name'], param['default_value'])
         except Exception as e:
             LOGGER.warning(f'An unexpected error occurred: {e}')
-        self.add_on_set_parameters_callback(self.parameter_callback)
-        pass
+
     def parameter_callback(self, params):
         LOGGER.debug("Params changed: " + str(params))
         for param in params:
-            if param.name == 'safety_camera.safety_mode':
-                if param.type_ == rclpy.Parameter.Type.INTEGER:
+            if param.type_ == rclpy.Parameter.Type.INTEGER:
+                if param.name == 'safety_camera.safety_mode':
                     self.safety_camera_safety_mode = param.value
                     LOGGER.info("Safety mode changed to " + str(self.safety_camera_safety_mode))
                 else:
-                    return SetParametersResult(successful=False)                    
+                    LOGGER.info(param.name + " (int)value changed to " + str(param.value))
+            elif param.type_ == rclpy.Parameter.Type.STRING:
+                LOGGER.info(param.name + " (string)value changed to " + str(param.value))
+            elif param.type_ == rclpy.Parameter.Type.BOOL:
+                LOGGER.info(param.name + " (bool)value changed to " + str(param.value))
+            else:
+                LOGGER.warning("Unexpected param type: " + str(param.type_) + ". "+  param.name + " (bool)value changed to " + str(param.value))
+                return SetParametersResult(successful=False)
         return SetParametersResult(successful=True)
 
 
@@ -93,9 +99,8 @@ if __name__ == '__main__':
     camera.start()
     os.system("ros2 node list")
     import time
-    rclpy.spin(node)
+    rclpy.spin(camera)
     time.sleep(10)
     rclpy.shutdown()
     camera.stop()
-    camera.join()
     LOGGER.info("Test completed")
