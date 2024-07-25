@@ -1,16 +1,32 @@
+# Copyright 2024 Intel Corporation. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import numpy as np
 from rclpy.node import Node
 import rclpy
 from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import Image
 import threading
+import logging
+LOGGER = logging.getLogger()
 
 ''' 
 This is that holds the test node that listens to a subscription created by a test.  
 '''
 class RSCameraSimulator(Node, threading.Thread):
     def __init__(self, namespace="camera", name='RSCameraSimulator'):
-        print('\nCreating node... /' + namespace + '/' + name)
+        LOGGER.info('Creating node... /' + namespace + '/' + name)
         queue = 1
         if not rclpy.ok():
             rclpy.init()
@@ -20,17 +36,17 @@ class RSCameraSimulator(Node, threading.Thread):
         self.color_frame = self.create_publisher(Image, '/' + namespace + '/' + name + '/color/image_raw', queue)
         self.declare_all_parameters()
     def run(self):
-        print("\nThread started...")
+        LOGGER.debug("Thread started...")
         loop_count = 0
         while(self._stop_event.is_set() == False):
             if loop_count > 10:
-                print("\nSpinning...")
+                LOGGER.debug("Spinning...")
                 loop_count = 0
             self.publish_frame()
             rclpy.spin_once(self, timeout_sec=0.01)
 
     def stop(self):
-        print("\nSetting the stop event...")
+        LOGGER.info("Setting the stop event...")
         self._stop_event.set()
     def publish_frame(self):
         msg = Image()
@@ -44,26 +60,25 @@ class RSCameraSimulator(Node, threading.Thread):
         msg.step = np.shape(frame)[2] * np.shape(frame)[1]
         msg.data = np.array(frame).tobytes()
         # publishes message
-        #print("\nPublishing color frame...")
+        # LOGGER.debug("Publishing color frame...")
         self.color_frame.publish(msg)
     def declare_all_parameters(self):
         try:
             self.declare_parameter('safety_camera.safety_mode', 0)
             self.safety_camera_safety_mode = self.get_parameter(
                 'safety_camera.safety_mode').get_parameter_value().integer_value
-            print("safety mode is " + str(self.safety_camera_safety_mode))
+            LOGGER.info("safety mode is " + str(self.safety_camera_safety_mode))
         except Exception as e:
-            print(f'An unexpected error occurred: {e}')
+            LOGGER.warning(f'An unexpected error occurred: {e}')
         self.add_on_set_parameters_callback(self.parameter_callback)
         pass
     def parameter_callback(self, params):
-        print("Params changed:")
-        print(params)
+        LOGGER.info("Params changed: " + str(params))
         for param in params:
             if param.name == 'safety_camera.safety_mode':
                 if param.type_ == rclpy.Parameter.Type.INTEGER:
                     self.safety_camera_safety_mode = param.value
-                    print("Safety mode changed to " + str(self.safety_camera_safety_mode))
+                    LOGGER.info("Safety mode changed to " + str(self.safety_camera_safety_mode))
                 else:
                     return SetParametersResult(successful=False)                    
         return SetParametersResult(successful=True)
@@ -83,4 +98,4 @@ if __name__ == '__main__':
     rclpy.shutdown()
     camera.stop()
     camera.join()
-    print("Test completed")
+    LOGGER.info("Test completed")

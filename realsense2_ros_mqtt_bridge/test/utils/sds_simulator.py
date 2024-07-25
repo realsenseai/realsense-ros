@@ -15,6 +15,8 @@
 import json
 import random
 import time
+import logging
+LOGGER = logging.getLogger()
 
 from paho.mqtt import client as paho_mqtt_client
 
@@ -53,10 +55,10 @@ class SDSSimulator:
         """
         del client, userdata, flags  # delete unused params
         if rc == 0:
-            print(f'Connected to MQTT Broker on'
+            LOGGER.info(f'Connected to MQTT Broker on'
                   f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_broker_port}')
         else:
-            print(f'Could not Connect to MQTT Broker on'
+            LOGGER.warning(f'Could not Connect to MQTT Broker on'
                   f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_broker_port}'
                   f' return_code: {rc}')
 
@@ -75,9 +77,9 @@ class SDSSimulator:
             # result: [0, 1]
             status = result[0]
             if status == 0:
-                print(f'Send {msg} to topic {topic}')
+                LOGGER.info(f'Send {msg} to topic {topic}')
             else:
-                print(f'Failed to send message to topic {topic}')
+                LOGGER.warning(f'Failed to send message to topic {topic}')
             msg_count += 1
             if msg_count > 1:
                 break
@@ -93,9 +95,9 @@ class SDSSimulator:
         """
         del client, userdata  # delete unused params
         content = msg.payload.decode('utf-8')
-        print(f'Received {content} to topic {msg.topic}')
+        LOGGER.info(f'Received {content} to topic {msg.topic}')
         self.msg = content
-        print("\nUnlocking...")
+        LOGGER.info("Unlocking...")
         self.locked = False
 
     def start_client(self):
@@ -138,7 +140,7 @@ class SDSSimulator:
         print_once = True
         while self.locked:
             if print_once:
-                print("Waiting for enumerate_devices..")
+                LOGGER.info("Waiting for enumerate_devices..")
                 print_once = False
             pass
     def get_frame(self, camera_namespace, camera_name, stream_name):
@@ -161,10 +163,10 @@ class SDSSimulator:
         print_once = True
         while self.locked:
             if print_once:
-                print("Waiting for frame..")
+                LOGGER.info("Waiting for frame..")
                 print_once = False
             pass
-        print("received frame")
+        LOGGER.info("received frame")
         return self.msg
     def set_param(self, camera_namespace, camera_name,
                   parameter_name, parameter_value, parameter_type):
