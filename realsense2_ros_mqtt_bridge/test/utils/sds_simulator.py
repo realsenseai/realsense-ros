@@ -1,0 +1,213 @@
+# Copyright 2024 Intel Corporation. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""reused from minimal_mqtt_client example to mimic the SDS MQTT client functionality"""
+import json
+import random
+import time
+
+from paho.mqtt import client as paho_mqtt_client
+
+class SDSSimulator:
+    def __init__(self, mqtt_broker_ip, mqtt_broker_port):
+        """
+        Initialize the client.
+
+        Args:
+            mqtt_broker_ip: The IP address of the MQTT broker.
+            mqtt_broker_port: The port number of the MQTT broker.
+        """
+        self.mqtt_broker_ip = mqtt_broker_ip
+        self.mqtt_broker_port = mqtt_broker_port
+
+        # Generate a Client ID with a random user-id suffix.
+        mqtt_client_id = f'mqtt-client-user-{random.randint(0, 1000)}'
+
+        self.mqtt_client = paho_mqtt_client.Client(
+            paho_mqtt_client.CallbackAPIVersion.VERSION1, mqtt_client_id)
+        # client.username_pw_set(username, password)
+        self.mqtt_client.on_connect = self.on_connect
+        self.mqtt_client.connect(mqtt_broker_ip, mqtt_broker_port)
+        self.tc_done = False
+        self.msgs = dict()
+
+    def on_connect(self, client, userdata, flags, rc):
+        """
+        Handle the MQTT connection event.
+
+        Args:
+            client: The MQTT client instance.
+            userdata: The user data associated with the connection.
+            flags: The connection flags.
+            rc: The result code of the connection attempt.
+        """
+        del client, userdata, flags  # delete unused params
+        if rc == 0:
+            print(f'Connected to MQTT Broker on'
+                  f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_broker_port}')
+        else:
+            print(f'Could not Connect to MQTT Broker on'
+                  f' ip:{ self.mqtt_broker_ip} port:{self.mqtt_broker_port}'
+                  f' return_code: {rc}')
+
+    def publish(self, msg, topic):
+        """
+        Publish a message to the specified MQTT topic.
+
+        Args:
+            msg: The message to publish.
+            topic: The MQTT topic to publish to.
+        """
+        msg_count = 1
+        while True:
+            time.sleep(1)
+            result = self.mqtt_client.publish(topic, msg, qos=2)
+            # result: [0, 1]
+            status = result[0]
+            if status == 0:
+                print(f'Send {msg} to topic {topic}')
+            else:
+                print(f'Failed to send message to topic {topic}')
+            msg_count += 1
+            if msg_count > 1:
+                break
+
+    def on_message(self, client, userdata, msg):
+        """
+        Handle the MQTT message event.
+
+        Args:
+            client: The MQTT client instance.
+            userdata: The user data associated with the message.
+            msg: The received MQTT message.
+        """
+        del client, userdata  # delete unused params
+        content = msg.payload.decode('utf-8')
+        print(f'Received {content} to topic {msg.topic}')
+        self.msg = content
+        print("\nUnlocking...")
+        self.locked = False
+
+    def start_client(self):
+        """Start the MQTT client."""
+        self.mqtt_client.loop_start()
+        self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('get_parameter_response')
+        self.mqtt_client.subscribe('set_parameter_response')
+        self.mqtt_client.subscribe('get_frame_response')
+        self.mqtt_client.subscribe('get_safety_preset_response')
+        self.mqtt_client.subscribe('set_safety_preset_response')
+        self.mqtt_client.subscribe('get_safety_interface_config_response')
+        self.mqtt_client.subscribe('set_safety_interface_config_response')
+        self.mqtt_client.subscribe('get_calib_config_response')
+        self.mqtt_client.subscribe('set_calib_config_response')
+        self.mqtt_client.subscribe('get_application_config_response')
+        self.mqtt_client.subscribe('set_application_config_response')
+        self.mqtt_client.subscribe('triggered_calibration_response')
+
+        self.mqtt_client.on_message = self.on_message
+
+    def stop_client(self):
+        """Stop the MQTT client."""
+        self.mqtt_client.loop_stop()
+    def enumerate_devices(self, camera_namespace_prefix, camera_name_prefix):
+        """
+        Send a request to enumerate devices.
+
+        Args:
+            camera_namespace_prefix: The prefix of the camera namespace.
+            camera_name_prefix: The prefix of the camera name.
+        """
+        request_dict = {
+            'camera_namespace_prefix': camera_namespace_prefix,
+            'camera_name_prefix': camera_name_prefix
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'enumerate_devices_request')
+        print_once = True
+        while self.locked:
+            if print_once:
+                print("Waiting for enumerate_devices..")
+                print_once = False
+            pass
+    def get_frame(self, camera_namespace, camera_name, stream_name):
+        """
+        Send a request to get a frame.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            stream_name (str): The name of the stream.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'stream_name': stream_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_frame_request')
+        print_once = True
+        while self.locked:
+            if print_once:
+                print("Waiting for frame..")
+                print_once = False
+            pass
+        print("received frame")
+        return self.msg
+    def set_param(self, camera_namespace, camera_name,
+                  parameter_name, parameter_value, parameter_type):
+        """
+        Send a request to set a parameter.
+
+        Args:
+            camera_namespace: The namespace of the camera.
+            camera_name: The name of the camera.
+            parameter_name: The name of the parameter to set.
+            parameter_value: The value to set for the parameter.
+            parameter_type: The type of the parameter.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'parameter_name': parameter_name,
+            'parameter_value': parameter_value,
+            'parameter_type': parameter_type
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_param_request')
+        while self.locked:
+            pass
+
+    def get_param(self, camera_namespace, camera_name, parameter_name):
+        """
+        Send a request to get a parameter.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            parameter_name (str): The name of the parameter to get.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'parameter_name': parameter_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_param_request')
+        while self.locked:
+            pass
+        return self.msg
