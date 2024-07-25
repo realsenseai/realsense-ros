@@ -27,14 +27,18 @@ This is that holds the test node that listens to a subscription created by a tes
 class RSCameraSimulator(Node, threading.Thread):
     def __init__(self, namespace="camera", name='RSCameraSimulator'):
         LOGGER.debug('Creating node... /' + namespace + '/' + name)
-        queue = 1
         if not rclpy.ok():
             rclpy.init()
         Node.__init__(self,namespace=namespace, node_name=name)
         threading.Thread.__init__(self)
         self._stop_event = threading.Event()
-        self.color_frame = self.create_publisher(Image, '/' + namespace + '/' + name + '/color/image_raw', queue)
         self.add_on_set_parameters_callback(self.parameter_callback)
+        self.color_frame = None
+        self.depth_frame = None
+        self.infra1_frame = None
+        self.infra2_frame = None
+        self.namespace = namespace 
+        self.name = name
 
     def run(self):
         LOGGER.debug("Thread started...")
@@ -43,14 +47,34 @@ class RSCameraSimulator(Node, threading.Thread):
             if loop_count > 10:
                 LOGGER.debug("Spinning...")
                 loop_count = 0
-            self.publish_frame()
+            if self.color_frame != None:
+                self.publish_color_frame()
+            if self.depth_frame != None:
+                self.publish_depth_frame()
+            if self.infra1_frame != None:
+                self.publish_infra1_frame()
+            if self.infra2_frame != None:
+                self.publish_infra2_frame()
             rclpy.spin_once(self, timeout_sec=0.01)
+
+        LOGGER.info("destroying the publisher")
+        if self.color_frame != None:
+            self.destroy_publisher(self.color_frame)
+        if self.depth_frame != None:
+            self.destroy_publisher(self.depth_frame)
+        if self.infra1_frame != None:
+            self.destroy_publisher(self.infra1_frame)
+        if self.infra2_frame != None:
+            self.destroy_publisher(self.infra2_frame)
+        self.destroy_node()
+
 
     def stop(self):
         LOGGER.debug("Setting the stop event...")
         self._stop_event.set()
         self.join()
-    def publish_frame(self):
+
+    def publish_color_frame(self):
         msg = Image()
         frame = np.zeros((4,4,0), dtype=int)
         msg.header.stamp = Node.get_clock(self).now().to_msg()
@@ -64,6 +88,82 @@ class RSCameraSimulator(Node, threading.Thread):
         # publishes message
         # LOGGER.debug("Publishing color frame...")
         self.color_frame.publish(msg)
+
+    def publish_depth_frame(self):
+        msg = Image()
+        frame = np.zeros((4,4,0), dtype=int)
+        msg.header.stamp = Node.get_clock(self).now().to_msg()
+        msg.header.frame_id = 'test'
+        msg.height = np.shape(frame)[0]
+        msg.width = np.shape(frame)[1]
+        msg.encoding = "rgb"
+        msg.is_bigendian = False
+        msg.step = np.shape(frame)[2] * np.shape(frame)[1]
+        msg.data = np.array(frame).tobytes()
+        # publishes message
+        # LOGGER.debug("Publishing color frame...")
+        self.depth_frame.publish(msg)
+
+    def publish_infra1_frame(self):
+        msg = Image()
+        frame = np.zeros((4,4,0), dtype=int)
+        msg.header.stamp = Node.get_clock(self).now().to_msg()
+        msg.header.frame_id = 'test'
+        msg.height = np.shape(frame)[0]
+        msg.width = np.shape(frame)[1]
+        msg.encoding = "rgb"
+        msg.is_bigendian = False
+        msg.step = np.shape(frame)[2] * np.shape(frame)[1]
+        msg.data = np.array(frame).tobytes()
+        # publishes message
+        # LOGGER.debug("Publishing color frame...")
+        self.infra1_frame.publish(msg)
+
+    def publish_infra2_frame(self):
+        msg = Image()
+        frame = np.zeros((4,4,0), dtype=int)
+        msg.header.stamp = Node.get_clock(self).now().to_msg()
+        msg.header.frame_id = 'test'
+        msg.height = np.shape(frame)[0]
+        msg.width = np.shape(frame)[1]
+        msg.encoding = "rgb"
+        msg.is_bigendian = False
+        msg.step = np.shape(frame)[2] * np.shape(frame)[1]
+        msg.data = np.array(frame).tobytes()
+        # publishes message
+        # LOGGER.debug("Publishing color frame...")
+        self.infra2_frame.publish(msg)
+
+    def start_publish_color_frame(self):
+        if self.color_frame != None:
+            LOGGER.warning(f'Color frame is already being published..')
+            return
+        queue = 1
+        self.color_frame = self.create_publisher(Image, '/' + self.namespace + '/' + self.name + '/color/image_raw', queue)
+
+
+    def start_publish_depth_frame(self):
+        if self.depth_frame != None:
+            LOGGER.warning(f'Depth frame is already being published..')
+            return
+        queue = 1
+        self.depth_frame = self.create_publisher(Image, '/' + self.namespace + '/' + self.name + '/depth/image_rect_raw', queue)
+
+
+    def start_publish_infra1_frame(self):
+        if self.infra1_frame != None:
+            LOGGER.warning(f'Infra1 frame is already being published..')
+            return
+        queue = 1
+        self.infra1_frame = self.create_publisher(Image, '/' + self.namespace + '/' + self.name + '/infra1/image_rect_raw', queue)
+
+    def start_publish_infra2_frame(self):
+        if self.infra2_frame != None:
+            LOGGER.warning(f'Infra2 frame is already being published..')
+            return
+        queue = 1
+        self.infra2_frame = self.create_publisher(Image, '/' + self.namespace + '/' + self.name + '/infra2/image_rect_raw', queue)
+
     def add_parameters(self, params):
         try:
             for param in params:

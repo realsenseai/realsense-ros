@@ -26,7 +26,7 @@ LOGGER = logging.getLogger()
 
 
 
-def test_bridge_instatiation():
+def test_all_param_types():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -83,5 +83,5 @@ def test_bridge_instatiation():
         LOGGER.error(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
     camera.stop()
-    LOGGER.warning("Test completed")
+    LOGGER.info("Test completed")
     #cleanup ends....

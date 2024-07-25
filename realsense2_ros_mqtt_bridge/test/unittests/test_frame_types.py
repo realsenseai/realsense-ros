@@ -24,7 +24,7 @@ import logging
 LOGGER = logging.getLogger()
 
 
-def test_bridge_instatiation():
+def test_frame_types():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -46,35 +46,24 @@ def test_bridge_instatiation():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-
-        LOGGER.info("Testing get_param...")
-
-        sds.send_get_param_request(namespace,
-                name,
-                'safety_camera.safety_mode')
-        
-        response = sds.get_get_param_response()
-
-        LOGGER.debug("safety_camera.safety_mode Param received: " + str(response["parameter_value"]))    
-
-        LOGGER.info("Testing set_param...")
-
-        sds.send_set_param_request(namespace,
-                name,
-                'safety_camera.safety_mode',
-                '2',
-                'int')
-        response = sds.get_set_param_response()
-
-        response = sds.get_param(namespace,
-            name,
-            'safety_camera.safety_mode')
-        assert int(response["parameter_value"]) == 2, "Get or Set param failed, didn't get the written value"
-        LOGGER.debug("safety_camera.safety_mode Param received: " + str(response))  
-
-        LOGGER.info("Testing get_frame...")
+        LOGGER.info("Testing color_frame...")
         camera.start_publish_color_frame()
         frame = sds.get_frame(namespace, name, "color")
+        LOGGER.debug(frame)
+
+        LOGGER.info("Testing depth_frame...")
+        camera.start_publish_depth_frame()
+        frame = sds.get_frame(namespace, name, "depth")
+        LOGGER.debug(frame)
+
+        LOGGER.info("Testing infra1_frame...")
+        camera.start_publish_infra1_frame()
+        frame = sds.get_frame(namespace, name, "infra1")
+        LOGGER.debug(frame)
+
+        LOGGER.info("Testing infra2_frame...")
+        camera.start_publish_infra2_frame()
+        frame = sds.get_frame(namespace, name, "infra2")
         LOGGER.debug(frame)
 
     #cleanup starts....
