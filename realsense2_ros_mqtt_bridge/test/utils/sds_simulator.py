@@ -41,7 +41,7 @@ class SDSSimulator:
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.connect(mqtt_broker_ip, mqtt_broker_port)
         self.tc_done = False
-        self.msgs = dict()
+        self.msg = dict()
 
     def on_connect(self, client, userdata, flags, rc):
         """
@@ -96,8 +96,8 @@ class SDSSimulator:
         del client, userdata  # delete unused params
         content = msg.payload.decode('utf-8')
         LOGGER.info(f'Received {content} to topic {msg.topic}')
-        self.msg = content
-        LOGGER.info("Unlocking...")
+        self.msg = msg
+        LOGGER.debug("Unlocking...")
         self.locked = False
 
     def start_client(self):
@@ -122,6 +122,17 @@ class SDSSimulator:
     def stop_client(self):
         """Stop the MQTT client."""
         self.mqtt_client.loop_stop()
+
+    def get_message(self):
+        print_once = True
+        while self.locked:
+            if print_once:
+                LOGGER.debug("Waiting for message..")
+                print_once = False
+            pass
+        return self.msg
+
+
     def enumerate_devices(self, camera_namespace_prefix, camera_name_prefix):
         """
         Send a request to enumerate devices.
@@ -140,9 +151,46 @@ class SDSSimulator:
         print_once = True
         while self.locked:
             if print_once:
-                LOGGER.info("Waiting for enumerate_devices..")
+                LOGGER.debug("Waiting for enumerate_devices..")
                 print_once = False
             pass
+
+    def send_enumerate_devices_request(self, camera_namespace_prefix, camera_name_prefix):
+        """
+        Send a request to enumerate devices.
+
+        Args:
+            camera_namespace_prefix: The prefix of the camera namespace.
+            camera_name_prefix: The prefix of the camera name.
+        """
+        request_dict = {
+            'camera_namespace_prefix': camera_namespace_prefix,
+            'camera_name_prefix': camera_name_prefix
+        }
+        j = json.dumps(request_dict)
+        print_once = True
+        while self.locked:
+            if print_once:
+                LOGGER.debug("Waiting for the previous message to get the response..")
+                print_once = False
+            pass
+        self.msg = None
+        self.locked = True
+        self.publish(j, 'enumerate_devices_request')
+
+    def get_enumerate_devices_response(self):
+        """
+        Get response to the enumerate devices request.
+
+        Args:
+            None
+        """
+        msg = self.get_message()
+        assert msg.topic == "enumerate_devices_response", "Unexpected topic: Enumerate device expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        assert payload["success"] == "true", "Enumerate device failed" + payload["err_msg"]
+        return payload
+
     def get_frame(self, camera_namespace, camera_name, stream_name):
         """
         Send a request to get a frame.
@@ -163,7 +211,7 @@ class SDSSimulator:
         print_once = True
         while self.locked:
             if print_once:
-                LOGGER.info("Waiting for frame..")
+                LOGGER.debug("Waiting for frame..self.msg")
                 print_once = False
             pass
         LOGGER.info("received frame")

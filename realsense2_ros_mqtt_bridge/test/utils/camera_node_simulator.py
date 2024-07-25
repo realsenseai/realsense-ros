@@ -26,7 +26,7 @@ This is that holds the test node that listens to a subscription created by a tes
 '''
 class RSCameraSimulator(Node, threading.Thread):
     def __init__(self, namespace="camera", name='RSCameraSimulator'):
-        LOGGER.info('Creating node... /' + namespace + '/' + name)
+        LOGGER.debug('Creating node... /' + namespace + '/' + name)
         queue = 1
         if not rclpy.ok():
             rclpy.init()
@@ -46,7 +46,7 @@ class RSCameraSimulator(Node, threading.Thread):
             rclpy.spin_once(self, timeout_sec=0.01)
 
     def stop(self):
-        LOGGER.info("Setting the stop event...")
+        LOGGER.debug("Setting the stop event...")
         self._stop_event.set()
     def publish_frame(self):
         msg = Image()
@@ -67,13 +67,13 @@ class RSCameraSimulator(Node, threading.Thread):
             self.declare_parameter('safety_camera.safety_mode', 0)
             self.safety_camera_safety_mode = self.get_parameter(
                 'safety_camera.safety_mode').get_parameter_value().integer_value
-            LOGGER.info("safety mode is " + str(self.safety_camera_safety_mode))
+            LOGGER.debug("safety mode is " + str(self.safety_camera_safety_mode))
         except Exception as e:
             LOGGER.warning(f'An unexpected error occurred: {e}')
         self.add_on_set_parameters_callback(self.parameter_callback)
         pass
     def parameter_callback(self, params):
-        LOGGER.info("Params changed: " + str(params))
+        LOGGER.debug("Params changed: " + str(params))
         for param in params:
             if param.name == 'safety_camera.safety_mode':
                 if param.type_ == rclpy.Parameter.Type.INTEGER:

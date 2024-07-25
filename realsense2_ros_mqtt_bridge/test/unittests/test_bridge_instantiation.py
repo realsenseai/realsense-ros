@@ -33,11 +33,16 @@ def test_bridge_instatiation():
     camera.start()
     if LOGGER.getEffectiveLevel() <= logging.DEBUG:
         os.system("ros2 node list")
-    sds.enumerate_devices(namespace, name)
+
+    sds.send_enumerate_devices_request(namespace, name)
+    response = sds.get_enumerate_devices_response()
+    assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
+
 
     param = sds.get_param(namespace,
         name,
         'safety_camera.safety_mode')
+
     LOGGER.info("safety_camera.safety_mode Param received: " + str(param))    
 
     sds.set_param(namespace,
