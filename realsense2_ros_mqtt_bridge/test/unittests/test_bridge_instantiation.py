@@ -34,28 +34,41 @@ def test_bridge_instatiation():
     if LOGGER.getEffectiveLevel() <= logging.DEBUG:
         os.system("ros2 node list")
 
+    LOGGER.info("Testing enumerate_devices")
     sds.send_enumerate_devices_request(namespace, name)
     response = sds.get_enumerate_devices_response()
     assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
 
-    param = sds.get_param(namespace,
-        name,
-        'safety_camera.safety_mode')
+    LOGGER.info("Testing get_param...")
 
-    LOGGER.info("safety_camera.safety_mode Param received: " + str(param))    
+    sds.send_get_param_request(namespace,
+            name,
+            'safety_camera.safety_mode')
+    
+    response = sds.get_get_param_response()
 
-    sds.set_param(namespace,
+    LOGGER.debug("safety_camera.safety_mode Param received: " + str(response["parameter_value"]))    
+
+    LOGGER.info("Testing set_param...")
+
+    sds.send_set_param_request(namespace,
             name,
             'safety_camera.safety_mode',
             '2',
             'int')
-    param = sds.get_param(namespace,
+    response = sds.get_set_param_response()
+
+
+    response = sds.get_param(namespace,
         name,
         'safety_camera.safety_mode')
-    LOGGER.info("safety_camera.safety_mode Param received: " + str(param))  
+    assert int(response["parameter_value"]) == 2, "Get or Set param failed, didn't get the written value"
+    LOGGER.debug("safety_camera.safety_mode Param received: " + str(response))  
+
+    LOGGER.info("Testing get_frame...")
     frame = sds.get_frame(namespace, name, "color")
-    LOGGER.info(frame)
+    LOGGER.debug(frame)
     camera.stop()
     camera.join()
     LOGGER.warning("Test completed")

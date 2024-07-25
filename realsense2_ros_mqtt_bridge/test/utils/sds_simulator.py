@@ -42,6 +42,7 @@ class SDSSimulator:
         self.mqtt_client.connect(mqtt_broker_ip, mqtt_broker_port)
         self.tc_done = False
         self.msg = dict()
+        self.locked = False
 
     def on_connect(self, client, userdata, flags, rc):
         """
@@ -77,7 +78,7 @@ class SDSSimulator:
             # result: [0, 1]
             status = result[0]
             if status == 0:
-                LOGGER.info(f'Send {msg} to topic {topic}')
+                LOGGER.debug(f'Send {msg} to topic {topic}')
             else:
                 LOGGER.warning(f'Failed to send message to topic {topic}')
             msg_count += 1
@@ -95,7 +96,7 @@ class SDSSimulator:
         """
         del client, userdata  # delete unused params
         content = msg.payload.decode('utf-8')
-        LOGGER.info(f'Received {content} to topic {msg.topic}')
+        LOGGER.debug(f'Received {content} to topic {msg.topic}')
         self.msg = msg
         LOGGER.debug("Unlocking...")
         self.locked = False
@@ -133,28 +134,6 @@ class SDSSimulator:
         return self.msg
 
 
-    def enumerate_devices(self, camera_namespace_prefix, camera_name_prefix):
-        """
-        Send a request to enumerate devices.
-
-        Args:
-            camera_namespace_prefix: The prefix of the camera namespace.
-            camera_name_prefix: The prefix of the camera name.
-        """
-        request_dict = {
-            'camera_namespace_prefix': camera_namespace_prefix,
-            'camera_name_prefix': camera_name_prefix
-        }
-        j = json.dumps(request_dict)
-        self.locked = True
-        self.publish(j, 'enumerate_devices_request')
-        print_once = True
-        while self.locked:
-            if print_once:
-                LOGGER.debug("Waiting for enumerate_devices..")
-                print_once = False
-            pass
-
     def send_enumerate_devices_request(self, camera_namespace_prefix, camera_name_prefix):
         """
         Send a request to enumerate devices.
@@ -190,33 +169,21 @@ class SDSSimulator:
         payload = json.loads(msg.payload)
         assert payload["success"] == "true", "Enumerate device failed" + payload["err_msg"]
         return payload
-
-    def get_frame(self, camera_namespace, camera_name, stream_name):
+    
+    def enumerate_devices(self, camera_namespace_prefix, camera_name_prefix):
         """
-        Send a request to get a frame.
+        Send a request to enumerate devices.
 
         Args:
-            camera_namespace (str): The namespace of the camera.
-            camera_name (str): The name of the camera.
-            stream_name (str): The name of the stream.
+            camera_namespace_prefix: The prefix of the camera namespace.
+            camera_name_prefix: The prefix of the camera name.
         """
-        request_dict = {
-            'camera_namespace': camera_namespace,
-            'camera_name': camera_name,
-            'stream_name': stream_name,
-        }
-        j = json.dumps(request_dict)
-        self.locked = True
-        self.publish(j, 'get_frame_request')
-        print_once = True
-        while self.locked:
-            if print_once:
-                LOGGER.debug("Waiting for frame..self.msg")
-                print_once = False
-            pass
-        LOGGER.info("received frame")
-        return self.msg
-    def set_param(self, camera_namespace, camera_name,
+        self.send_enumerate_devices_request(camera_namespace_prefix, camera_name_prefix)
+        return self.get_enumerate_devices_response()
+
+
+
+    def send_set_param_request(self, camera_namespace, camera_name,
                   parameter_name, parameter_value, parameter_type):
         """
         Send a request to set a parameter.
@@ -238,10 +205,38 @@ class SDSSimulator:
         j = json.dumps(request_dict)
         self.locked = True
         self.publish(j, 'set_param_request')
-        while self.locked:
-            pass
 
-    def get_param(self, camera_namespace, camera_name, parameter_name):
+    def get_set_param_response(self):
+        """
+        Get response to the set param request.
+
+        Args:
+            None
+        """
+        msg = self.get_message()
+        assert msg.topic == "set_parameter_response", "Unexpected topic: set_param expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        assert payload["success"] == "true", "set_param failed" + payload["err_msg"]
+        return payload
+
+    def set_param(self, camera_namespace, camera_name,
+                  parameter_name, parameter_value, parameter_type):
+        """
+        Send a request to set a parameter.
+
+        Args:
+            camera_namespace: The namespace of the camera.
+            camera_name: The name of the camera.
+            parameter_name: The name of the parameter to set.
+            parameter_value: The value to set for the parameter.
+            parameter_type: The type of the parameter.
+        """
+        self.send_set_param_request(camera_namespace, camera_name,
+                  parameter_name, parameter_value, parameter_type)
+        return self.get_set_param_response()
+
+    
+    def send_get_param_request(self, camera_namespace, camera_name, parameter_name):
         """
         Send a request to get a parameter.
 
@@ -258,6 +253,70 @@ class SDSSimulator:
         j = json.dumps(request_dict)
         self.locked = True
         self.publish(j, 'get_param_request')
+
+    def get_get_param_response(self):
+        """
+        Get response to the set param request.
+        info
+        Args:
+            None
+        """
+        msg = self.get_message()
+        assert msg.topic == "get_parameter_response", "Unexpected topic: get_param expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        assert payload["success"] == "true", "get_param failed" + payload["err_msg"]
+        return payload
+
+    def get_param(self, camera_namespace, camera_name, parameter_name):
+        """
+        Send a request to get a parameter.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            parameter_name (str): The name of the parameter to get.
+        """
+        self.send_get_param_request(camera_namespace, camera_name, parameter_name)
+        return self.get_get_param_response()
+    
+    def send_get_frame_request(self, camera_namespace, camera_name, stream_name):
+        """
+        Send a request to get a frame.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            stream_name (str): The name of the stream.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'stream_name': stream_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_frame_request')
+
+    def get_get_frame_response(self):
+        print_once = True
         while self.locked:
+            if print_once:
+                LOGGER.debug("Waiting for frame...")
+                print_once = False
             pass
+        LOGGER.debug("received frame")
         return self.msg
+
+
+    def get_frame(self, camera_namespace, camera_name, stream_name):
+        """
+        Send a request to get a frame.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            stream_name (str): The name of the stream.
+        """
+        self.send_get_frame_request(camera_namespace, camera_name, stream_name)
+        return self.get_get_frame_response()
+    
