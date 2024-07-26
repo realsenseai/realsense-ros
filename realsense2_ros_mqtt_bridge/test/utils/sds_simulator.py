@@ -295,14 +295,9 @@ class SDSSimulator:
         self.publish(j, 'get_frame_request')
 
     def get_get_frame_response(self):
-        print_once = True
-        while self.locked:
-            if print_once:
-                LOGGER.debug("Waiting for frame...")
-                print_once = False
-            pass
+        msg = self.get_message()
         LOGGER.debug("received frame")
-        return self.msg
+        return msg
 
 
     def get_frame(self, camera_namespace, camera_name, stream_name):
@@ -317,3 +312,87 @@ class SDSSimulator:
         self.send_get_frame_request(camera_namespace, camera_name, stream_name)
         return self.get_get_frame_response()
     
+    def send_get_safety_preset_response(self, camera_namespace, camera_name, index):
+        """
+        Send a request to get a safety preset.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            index (int): The index of the safety preset.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'index': index,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_safety_preset_request')
+
+    def get_get_safety_preset_response(self):
+        """
+        Send a request to get a safety preset.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        return self.msg
+
+    def get_safety_preset(self, camera_namespace, camera_name, index):
+        """
+        Send a request to get a safety preset.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            index (int): The index of the safety preset.
+        """
+        self.send_get_safety_preset_response(camera_namespace, camera_name, index)
+        return self.get_get_safety_preset_response()
+
+
+    def send_set_safety_preset_request(self, camera_namespace, camera_name, sp, index):
+        """
+        Send a request to set a safety preset.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            sp (str): The safety preset.
+            index (int): The index of the safety preset.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'preset': sp,
+            'index': str(index),
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_safety_preset_request')
+
+    def get_set_safety_preset_response(self):
+        """
+        Send a request to set a safety preset.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        return self.msg
+
+
+    def set_safety_preset(self, camera_namespace, camera_name, sp, index):
+        """
+        Send a request to set a safety preset.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            sp (str): The safety preset.
+            index (int): The index of the safety preset.
+        """
+        self.send_set_safety_preset_request(camera_namespace, camera_name, sp, index)
+        return self.get_set_safety_preset_response()

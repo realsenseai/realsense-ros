@@ -15,8 +15,13 @@
 import numpy as np
 from rclpy.node import Node
 import rclpy
+
 from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import Image
+from realsense2_camera_msgs.srv import SafetyPresetRead
+from realsense2_camera_msgs.srv import SafetyPresetWrite
+
+
 import threading
 import logging
 LOGGER = logging.getLogger()
@@ -188,7 +193,25 @@ class RSCameraSimulator(Node, threading.Thread):
                 LOGGER.warning("Unexpected param type: " + str(param.type_) + ". "+  param.name + " (bool)value changed to " + str(param.value))
                 return SetParametersResult(successful=False)
         return SetParametersResult(successful=True)
+    
+    def create_safety_preset_service(self):
+        service_name = f'/{self.namespace}/{self.name}/safety_preset_read'
+        self.safety_preset_read_srv = self.create_service(SafetyPresetRead, service_name, self.safety_preset_read_cb)
+        service_name = f'/{self.namespace}/{self.name}/safety_preset_write'
+        self.safety_preset_write_srv = self.create_service(SafetyPresetwrite, service_name, self.safety_reset_write_cb)
+    
+    def safety_preset_read_cb(self, request, response):
+        LOGGER.info(f'Safter preset read for index {request.index}')
+        response.success = True
+        response.error_message = ''
+        response.preset = str(request.index)
+        return response
 
+    def safety_preset_write_cb(self, request, response):
+        LOGGER.info(f'Safter preset write for index {request.index} with data {request.preset}')
+        response.success = True
+        response.error_message = ''
+        return response
 
 if __name__ == '__main__':
     rclpy.init()
