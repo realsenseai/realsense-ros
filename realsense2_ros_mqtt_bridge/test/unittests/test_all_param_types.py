@@ -58,7 +58,7 @@ def test_all_param_types():
                     name,
                     param['param_name'])
             
-            response = sds.get_get_param_response()
+            response = sds.receive_get_param_response()
             assert str(response["parameter_value"]) == str(param['default_value']), "default value was not set for for param " + param['param_name'] 
 
             LOGGER.info("Testing set_param for type " + param["param_type"])

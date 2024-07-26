@@ -15,8 +15,13 @@
 import numpy as np
 from rclpy.node import Node
 import rclpy
+
 from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import Image
+from realsense2_camera_msgs.srv import SafetyPresetRead
+from realsense2_camera_msgs.srv import SafetyPresetWrite
+
+
 import threading
 import logging
 LOGGER = logging.getLogger()
@@ -188,6 +193,54 @@ class RSCameraSimulator(Node, threading.Thread):
                 LOGGER.warning("Unexpected param type: " + str(param.type_) + ". "+  param.name + " (bool)value changed to " + str(param.value))
                 return SetParametersResult(successful=False)
         return SetParametersResult(successful=True)
+    
+    def create_safety_preset_service(self):
+        service_name = f'/{self.namespace}/{self.name}/safety_preset_read'
+        self.safety_preset_read_srv = self.create_service(SafetyPresetRead, service_name, self.safety_preset_read_cb)
+        service_name = f'/{self.namespace}/{self.name}/safety_preset_write'
+        self.safety_preset_write_srv = self.create_service(SafetyPresetwrite, service_name, self.safety_reset_write_cb)
+        self.safety_preset = [64]
+    
+    def safety_preset_read_cb(self, request, response):
+        LOGGER.info(f'Safety preset read for index {request.index}')
+        response.success = True
+        response.error_message = ''
+        if self.safety_preset[request.index] == None
+            response.preset =  str(request.index)
+        else:
+            response.preset =  self.safety_preset[request.index]
+        return response
+
+    def safety_preset_write_cb(self, request, response):
+        LOGGER.info(f'Safety preset write for index {request.index} with data {request.preset}')
+        response.success = True
+        response.error_message = ''
+        self.safety_preset[request.index] = request.preset
+        return response
+
+    def create_safety_interface_config_service(self):
+        service_name = f'/{self.namespace}/{self.name}/safety_interface_config_read'
+        self.safety_interface_config_read_srv = self.create_service(SafetyInterfaceConfigRead, service_name, self.safety_interface_config_read_cb)
+        service_name = f'/{self.namespace}/{self.name}/safety_interface_config_write'
+        self.safety_interface_config_srv = self.create_service(SafetyInterfaceConfigWrite, service_name, self.safety_interface_config_write_cb)
+        self.safety_interface_config = [3]
+    
+    def safety_interface_config_read_cb(self, request, response):
+        LOGGER.info(f'Safety interface config read for calbi location {request.calib_location}')
+        response.success = True
+        response.error_message = ''
+        if self.safety_interface_config[request.calib_location] == None
+            response.safety_interface_config =  None
+        else:
+            response.safety_interface_config =  self.safety_interface_config[request.calib_location]
+        return response
+
+    def safety_interface_config_write_cb(self, request, response):
+        LOGGER.info(f'Safety interface config write for index {request.index} with data {request.preset}')
+        response.success = True
+        response.error_message = ''
+        self.safety_interface_config[2] = request.safety_interface_config
+        return response
 
 
 if __name__ == '__main__':

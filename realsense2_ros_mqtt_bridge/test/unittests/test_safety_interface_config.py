@@ -24,7 +24,9 @@ import logging
 LOGGER = logging.getLogger()
 
 
-def test_bridge_instatiation():
+
+
+def test_safety_interface_config():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -36,47 +38,34 @@ def test_bridge_instatiation():
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
             os.system("ros2 node list")
     #initialization ends....
-        params = [
-            {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
-        ]
-        camera.add_parameters(params)
-        
+
         LOGGER.info("Testing enumerate_devices")
         sds.send_enumerate_devices_request(namespace, name)
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-
-        LOGGER.info("Testing get_param...")
-
-        sds.send_get_param_request(namespace,
+        camera.create_safety_interface_config_service()
+        for index in range(0,2):
+            sds.send_get_safety_interface_config_request(namespace, 
+                name, 
+                index)
+            
+            response = sds.receive_get_safety_interface_config_response()
+            assert response.payload["success"] == True, "Safety interface config read failed"
+            sp = "Index is " + str(index)
+            sds.send_set_safety_interface_config_request(namespace, 
                 name,
-                'safety_camera.safety_mode')
-        
-        response = sds.receive_get_param_response()
-
-        LOGGER.debug("safety_camera.safety_mode Param received: " + str(response["parameter_value"]))    
-
-        LOGGER.info("Testing set_param...")
-
-        sds.send_set_param_request(namespace,
-                name,
-                'safety_camera.safety_mode',
-                '2',
-                'int')
-        response = sds.get_set_param_response()
-
-        response = sds.get_param(namespace,
-            name,
-            'safety_camera.safety_mode')
-        assert int(response["parameter_value"]) == 2, "Get or Set param failed, didn't get the written value"
-        LOGGER.debug("safety_camera.safety_mode Param received: " + str(response))  
-
-        LOGGER.info("Testing get_frame...")
-        camera.start_publish_color_frame()
-        frame = sds.get_frame(namespace, name, "color")
-        LOGGER.debug(frame)
-
+                sp,
+                index)
+            response = sds.get_set_safety_interface_config_response()
+            assert response.payload["success"] == True, "Safety interface config write failed"
+            
+            sds.send_get_safety_interface_config_request(namespace, 
+                name, 
+                index)
+            response = sds.receive_get_safety_interface_config_response()
+            assert response.payload["success"] == True, "Safety interface config read failed"
+            assert response.payload["preset"] == str(request.index), "Written safety interface config is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:
