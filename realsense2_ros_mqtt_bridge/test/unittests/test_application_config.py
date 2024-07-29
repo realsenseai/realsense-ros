@@ -26,7 +26,7 @@ LOGGER = logging.getLogger()
 
 
 
-def test_calib_config():
+def test_application_config():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -44,27 +44,27 @@ def test_calib_config():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        camera.create_calib_config_service()
+        camera.create_application_config_service()
 
-        sds.send_get_calib_config_request(namespace, 
+        sds.send_get_application_config_request(namespace, 
             name)
         
-        response = sds.receive_get_calib_config_response()
-        calib_data = "Calibration data"
-        assert response.payload["success"] == True, "Calib config read failed"
-        sds.send_set_calib_config_request(namespace, 
+        response = sds.receive_get_application_config_response()
+        Application_data = "Application data"
+        assert response.payload["success"] == True, "Application config read failed"
+        sds.send_set_application_config_request(namespace, 
             name,
-            calib_data)
+            Application_data)
 
-        response = sds.receive_set_calib_config_response()
-        assert response.payload["success"] == True, "Calib config write failed"
+        response = sds.receive_set_application_config_response()
+        assert response.payload["success"] == True, "Application config write failed"
         
-        sds.send_get_calib_config_request(namespace, 
+        sds.send_get_application_config_request(namespace, 
             name)
         
-        response = sds.receive_get_calib_config_response()
-        assert response.payload["success"] == True, "Calib config read failed"
-        assert response.payload["calib_config"] == calib_data, "Written calib config is not matching with the read one"
+        response = sds.receive_get_application_config_response()
+        assert response.payload["success"] == True, "Application config read failed"
+        assert response.payload["application_config"] == Application_data, "Written Application config is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:

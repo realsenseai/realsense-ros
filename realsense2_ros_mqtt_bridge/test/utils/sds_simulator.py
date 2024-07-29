@@ -517,3 +517,83 @@ class SDSSimulator:
         self.send_set_calib_config(camera_namespace, camera_name, calib_config)
         return self.receive_set_calib_config()
  
+
+     def send_get_application_config_request(self, camera_namespace, camera_name):
+        """
+        Send a request to get an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_application_config_request')
+
+     def receive_get_application_config_response(self):
+        """
+        Send a request to get an application config.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        return self.msg
+
+     def get_application_config(self, camera_namespace, camera_name):
+        """
+        Send a request to get an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        self.send_get_application_config_request(camera_namespace, camera_name)
+        return self.receive_get_application_config_response()
+
+
+
+    def send_set_application_config_request(self, camera_namespace, camera_name, application_config):
+        """
+        Send a request to set an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            application_config (str): The application config.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'application_config': application_config,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_application_config_request')
+
+
+    def receive_set_application_config_response(self):
+        """
+        Send a request to set an application config.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        return self.msg
+
+    def set_application_config(self, camera_namespace, camera_name, application_config):
+        """
+        Send a request to set an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            application_config (str): The application config.
+        """
+        self.send_set_application_config_request(camera_namespace, camera_name, application_config)
+        return self.receive_set_application_config_response()

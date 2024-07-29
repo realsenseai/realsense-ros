@@ -20,7 +20,12 @@ from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import Image
 from realsense2_camera_msgs.srv import SafetyPresetRead
 from realsense2_camera_msgs.srv import SafetyPresetWrite
-
+from realsense2_camera_msgs.srv import SafetyInterfaceRead
+from realsense2_camera_msgs.srv import SafetyInterfaceWrite
+from realsense2_camera_msgs.srv import CalibConfigRead
+from realsense2_camera_msgs.srv import CalibConfigWrite
+from realsense2_camera_msgs.srv import ApplicationConfigRead
+from realsense2_camera_msgs.srv import ApplicationConfigWrite
 
 import threading
 import logging
@@ -242,7 +247,6 @@ class RSCameraSimulator(Node, threading.Thread):
         self.safety_interface_config[2] = request.safety_interface_config
         return response
 
-
     def create_calib_config_service(self):
         service_name = f'/{self.namespace}/{self.name}/calib_config_read'
         self.calib_config_read_srv = self.create_service(CalibConfigRead, service_name, self.calib_config_read_cb)
@@ -258,10 +262,31 @@ class RSCameraSimulator(Node, threading.Thread):
         return response
 
     def calib_config_write_cb(self, request, response):
-        LOGGER.info(f'Safety interface config write for index {request.index} with data {request.preset}')
+        LOGGER.info(f'Calibration config write data {request.calib_config}')
         response.success = True
         response.error_message = ''
         self.calib_config = request.calib_config
+        return response
+
+    def create_application_config_service(self):
+        service_name = f'/{self.namespace}/{self.name}/application_config_read'
+        self.application_config_read_srv = self.create_service(ApplicationConfigRead, service_name, self.application_config_read_cb)
+        service_name = f'/{self.namespace}/{self.name}/application_config_write'
+        self.application_config_srv = self.create_service(ApplicationConfigWrite, service_name, self.application_config_write_cb)
+        self.application_config = None
+    
+    def application_config_read_cb(self, request, response):
+        LOGGER.info(f'Application config read called')
+        response.success = True
+        response.error_message = ''
+        response.application_config =  self.application_config
+        return response
+
+    def application_config_write_cb(self, request, response):
+        LOGGER.info(f'Application config write with data {request.application_config}')
+        response.success = True
+        response.error_message = ''
+        self.application_config = request.application_config
         return response
 
 
