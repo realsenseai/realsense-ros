@@ -242,6 +242,11 @@ class RSCameraSimulator(Node, threading.Thread):
         self.safety_interface_config[2] = request.safety_interface_config
         return response
 
+    def safety_preset_write_cb(self, request, response):
+        LOGGER.info(f'Safter preset write for index {request.index} with data {request.preset}')
+        response.success = True
+        response.error_message = ''
+        return response
 
 if __name__ == '__main__':
     rclpy.init()
