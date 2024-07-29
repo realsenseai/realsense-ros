@@ -201,7 +201,7 @@ class SDSSimulator:
         self.locked = True
         self.publish(j, 'set_param_request')
 
-    def get_set_param_response(self):
+    def receive_set_param_response(self):
         """
         Get response to the set param request.
 
@@ -228,7 +228,7 @@ class SDSSimulator:
         """
         self.send_set_param_request(camera_namespace, camera_name,
                   parameter_name, parameter_value, parameter_type)
-        return self.get_set_param_response()
+        return self.receive_set_param_response()
 
     
     def send_get_param_request(self, camera_namespace, camera_name, parameter_name):
@@ -393,7 +393,7 @@ class SDSSimulator:
             sp (str): The safety config.
         """
         self.send_set_safety_interface_config_request(camera_namespace, camera_name, sp)
-        return self.get_set_safety_interface_config_response()
+        return self.receive_set_safety_interface_config_response()
 
     def send_get_safety_interface_config_request(self, camera_namespace, camera_name, index=2):
         """
@@ -433,7 +433,87 @@ class SDSSimulator:
             camera_namespace (str): The namespace of the camera.
             camera_name (str): The name of the camera.
             sp (str): The safety preset.
-            index (int): The index of the safety preset.
+            index (int): The index of the safety config.
         """
         self.send_set_safety_interface_config_request(camera_namespace, camera_name, index=2)
-        return self.get_set_safety_interface_config_response()
+        return self.receive_set_safety_interface_config_response()
+
+
+    def send_get_calib_config(self, camera_namespace, camera_name):
+        """
+        Send a request to get a calib config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_calib_config_request')
+
+    def receive_get_calib_config(self):
+        """
+        receive the response to a request to get a calib config.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        return self.msg
+
+    def get_calib_config(self, camera_namespace, camera_name):
+        """
+        Send a request to get a calib config and get response.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        self.send_get_calib_config(camera_namespace, camera_name)
+        return self.receive_get_calib_config()
+
+
+    def send_set_calib_config(self, camera_namespace, camera_name, calib_config):
+        """
+        Send a request to set a calib config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            calib_config (str): The calib config.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'calib_config': calib_config,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_calib_config_request')
+
+    def receive_set_calib_config(self):
+        """
+        Get response to a request to set a calib config.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        return self.msg
+
+    def set_calib_config(self, camera_namespace, camera_name, calib_config):
+        """
+        Send a request to set a calib config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            calib_config (str): The calib config.
+        """
+        self.send_set_calib_config(camera_namespace, camera_name, calib_config)
+        return self.receive_set_calib_config()
+ 

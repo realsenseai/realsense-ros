@@ -64,7 +64,7 @@ def test_bridge_instatiation():
                 'safety_camera.safety_mode',
                 '2',
                 'int')
-        response = sds.get_set_param_response()
+        response = sds.receive_set_param_response()
 
         response = sds.get_param(namespace,
             name,

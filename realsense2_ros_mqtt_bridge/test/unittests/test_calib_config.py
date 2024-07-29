@@ -26,7 +26,7 @@ LOGGER = logging.getLogger()
 
 
 
-def test_all_param_types():
+def test_safety_interface_config():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -44,36 +44,27 @@ def test_all_param_types():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        params = [
-            {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int", "alternate_value":2},
-            {"param_name":'accel_info_qos ', "default_value":"accel_info_qos", "param_type":"string", "alternate_value":'hello'},
-            {"param_name":'align_depth.enable','default_value':True,'param_type': 'boolean', "alternate_value":False}
-        ]
+        camera.create_calib_config_service()
 
-        camera.add_parameters(params)
-        for param in params:
+        sds.send_get_calib_config_request(namespace, 
+            name)
+        
+        response = sds.receive_get_calib_config_response()
+        calib_data = "Calibration data"
+        assert response.payload["success"] == True, "Calib config read failed"
+        sds.send_set_calib_config_request(namespace, 
+            name,
+            calib_data)
 
-            LOGGER.info("Testing get_param for type " + param["param_type"])
-            sds.send_get_param_request(namespace,
-                    name,
-                    param['param_name'])
-            
-            response = sds.receive_get_param_response()
-            assert str(response["parameter_value"]) == str(param['default_value']), "default value was not set for for param " + param['param_name'] 
-
-            LOGGER.info("Testing set_param for type " + param["param_type"])
-
-            sds.send_set_param_request(namespace,
-                    name,
-                    param['param_name'],
-                    param['alternate_value'],
-                    param['param_type'])
-            response = sds.receive_set_param_response()
-
-            response = sds.get_param(namespace,
-                name,
-                param['param_name'])
-            assert response["parameter_value"] == str(param['alternate_value']), "Get or Set param failed, didn't get the written value for param " + param['param_name']
+        response = sds.receive_set_calib_config_response()
+        assert response.payload["success"] == True, "Calib config write failed"
+        
+        sds.send_get_calib_config_request(namespace, 
+            name)
+        
+        response = sds.receive_get_calib_config_response()
+        assert response.payload["success"] == True, "Calib config read failed"
+        assert response.payload["calib_config"] == calib_data, "Written calib config is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:

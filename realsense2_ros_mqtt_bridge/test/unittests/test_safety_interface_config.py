@@ -57,7 +57,7 @@ def test_safety_interface_config():
                 name,
                 sp,
                 index)
-            response = sds.get_set_safety_interface_config_response()
+            response = sds.receive_set_safety_interface_config_response()
             assert response.payload["success"] == True, "Safety interface config write failed"
             
             sds.send_get_safety_interface_config_request(namespace, 

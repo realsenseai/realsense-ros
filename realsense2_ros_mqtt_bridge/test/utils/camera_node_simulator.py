@@ -226,7 +226,7 @@ class RSCameraSimulator(Node, threading.Thread):
         self.safety_interface_config = [3]
     
     def safety_interface_config_read_cb(self, request, response):
-        LOGGER.info(f'Safety interface config read for calbi location {request.calib_location}')
+        LOGGER.info(f'Safety interface config read for calib location {request.calib_location}')
         response.success = True
         response.error_message = ''
         if self.safety_interface_config[request.calib_location] == None
@@ -242,11 +242,30 @@ class RSCameraSimulator(Node, threading.Thread):
         self.safety_interface_config[2] = request.safety_interface_config
         return response
 
-    def safety_preset_write_cb(self, request, response):
-        LOGGER.info(f'Safter preset write for index {request.index} with data {request.preset}')
+
+    def create_calib_config_service(self):
+        service_name = f'/{self.namespace}/{self.name}/calib_config_read'
+        self.calib_config_read_srv = self.create_service(CalibConfigRead, service_name, self.calib_config_read_cb)
+        service_name = f'/{self.namespace}/{self.name}/calib_config_write'
+        self.calib_config_srv = self.create_service(CalibConfigWrite, service_name, self.calib_config_write_cb)
+        self.calib_config = None
+    
+    def calib_config_read_cb(self, request, response):
+        LOGGER.info(f'Calib config read called')
         response.success = True
         response.error_message = ''
+        response.calib_config =  self.calib_config
         return response
+
+    def calib_config_write_cb(self, request, response):
+        LOGGER.info(f'Safety interface config write for index {request.index} with data {request.preset}')
+        response.success = True
+        response.error_message = ''
+        self.calib_config = request.calib_config
+        return response
+
+
+
 
 if __name__ == '__main__':
     rclpy.init()

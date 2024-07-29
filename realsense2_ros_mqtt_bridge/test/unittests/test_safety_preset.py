@@ -57,7 +57,7 @@ def test_safety_preset():
                 name,
                 sp,
                 index)
-            response = sds.get_set_safety_preset_response()
+            response = sds.receive_set_safety_preset_response()
             assert response.payload["success"] == True, "Safety preset write failed"
             
             sds.send_get_safety_preset_request(namespace, 
