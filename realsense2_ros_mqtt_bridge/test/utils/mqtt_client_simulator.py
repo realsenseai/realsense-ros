@@ -20,7 +20,7 @@ LOGGER = logging.getLogger()
 
 from paho.mqtt import client as paho_mqtt_client
 
-class SDSSimulator:
+class MQTTClientSimulator:
     def __init__(self, mqtt_broker_ip, mqtt_broker_port):
         """
         Initialize the client.
@@ -348,19 +348,6 @@ class SDSSimulator:
         return payload
 
 
-    def set_safety_interface_config(self, camera_namespace, camera_name, sp):
-        """
-        Send a request to set a safety interface config.
-
-        Args:
-            camera_namespace (str): The namespace of the camera.
-            camera_name (str): The name of the camera.
-            sp (str): The safety config.
-        """
-        self.send_set_safety_interface_config_request(camera_namespace, camera_name, sp)
-        return self.receive_set_safety_interface_config_response()
-
-
     def send_get_safety_preset_request(self, camera_namespace, camera_name, index):
         """
         Send a request to get a safety preset.
@@ -406,6 +393,9 @@ class SDSSimulator:
         return self.receive_get_safety_preset_response()
 
 
+ 
+
+
     def send_set_safety_interface_config_request(self, camera_namespace, camera_name, sp):
         """
         Send a request to set a safety interface config.
@@ -439,7 +429,6 @@ class SDSSimulator:
         #assert payload["success"] == "true", "set_safety_interface_config_response failed" + payload["err_msg"]
         return payload
 
-
     def set_safety_interface_config(self, camera_namespace, camera_name, sp):
         """
         Send a request to set a safety interface config.
@@ -452,6 +441,7 @@ class SDSSimulator:
         self.send_set_safety_interface_config_request(camera_namespace, camera_name, sp)
         return self.receive_set_safety_interface_config_response()
 
+ 
     def send_get_safety_interface_config_request(self, camera_namespace, camera_name, index=2):
         """
         Send a request to set a safety interface config.
@@ -497,8 +487,8 @@ class SDSSimulator:
             sp (str): The safety preset.
             index (int): The index of the safety config.
         """
-        self.send_set_safety_interface_config_request(camera_namespace, camera_name, index=2)
-        return self.receive_set_safety_interface_config_response()
+        self.send_get_safety_interface_config_request(camera_namespace, camera_name, index=2)
+        return self.receive_get_safety_interface_config_response()
 
 
     def send_get_calib_config_request(self, camera_namespace, camera_name):

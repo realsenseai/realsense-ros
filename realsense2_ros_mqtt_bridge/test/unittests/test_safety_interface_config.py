@@ -17,7 +17,7 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 
 from camera_node_simulator import RSCameraSimulator
-from sds_simulator import SDSSimulator
+from mqtt_client_simulator import MQTTClientSimulator
 import logging
 
 #LOGGER = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def test_safety_interface_config():
         namespace = 'camera'
         name = 'camera'
         camera = RSCameraSimulator(namespace, name)
-        sds = SDSSimulator("localhost", 1883)
+        sds = MQTTClientSimulator("localhost", 1883)
         sds.start_client()
         camera.start()
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
@@ -45,7 +45,7 @@ def test_safety_interface_config():
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
         camera.create_safety_interface_config_service()
-        for index in range(0,2):
+        for index in range(0,3):
             sds.send_get_safety_interface_config_request(namespace, 
                 name, 
                 index)

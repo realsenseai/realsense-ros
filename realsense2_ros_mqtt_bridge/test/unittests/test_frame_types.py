@@ -17,7 +17,7 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 
 from camera_node_simulator import RSCameraSimulator
-from sds_simulator import SDSSimulator
+from mqtt_client_simulator import MQTTClientSimulator
 import logging
 
 #LOGGER = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ def test_frame_types():
         namespace = 'camera'
         name = 'camera'
         camera = RSCameraSimulator(namespace, name)
-        sds = SDSSimulator("localhost", 1883)
+        sds = MQTTClientSimulator("localhost", 1883)
         sds.start_client()
         camera.start()
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
