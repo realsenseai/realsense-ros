@@ -26,7 +26,6 @@ LOGGER = logging.getLogger()
 import pytest
 
 @pytest.mark.skip(reason="under development")
-
 def test_triggered_calibration():
     #initialization starts....
     try:
