@@ -51,20 +51,18 @@ def test_calib_config():
         
         response = sds.receive_get_calib_config_response()
         calib_data = "Calibration data"
-        assert response.payload["success"] == True, "Calib config read failed"
+        assert response['calib_config'] == 'Uninitialized', "Calib config read returned unexpected value: " + response['calib_config']
         sds.send_set_calib_config_request(namespace, 
             name,
             calib_data)
 
         response = sds.receive_set_calib_config_response()
-        assert response.payload["success"] == True, "Calib config write failed"
-        
+       
         sds.send_get_calib_config_request(namespace, 
             name)
         
         response = sds.receive_get_calib_config_response()
-        assert response.payload["success"] == True, "Calib config read failed"
-        assert response.payload["calib_config"] == calib_data, "Written calib config is not matching with the read one"
+        assert response["calib_config"] == calib_data, "Written calib config is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:

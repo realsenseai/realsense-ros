@@ -51,27 +51,25 @@ def test_application_config():
         
         response = sds.receive_get_application_config_response()
         Application_data = "Application data"
-        assert response.payload["success"] == True, "Application config read failed"
+
         sds.send_set_application_config_request(namespace, 
             name,
             Application_data)
 
         response = sds.receive_set_application_config_response()
-        assert response.payload["success"] == True, "Application config write failed"
         
         sds.send_get_application_config_request(namespace, 
             name)
         
         response = sds.receive_get_application_config_response()
-        assert response.payload["success"] == True, "Application config read failed"
-        assert response.payload["application_config"] == Application_data, "Written Application config is not matching with the read one"
+        assert response["application_config"] == Application_data, "Written Application config is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         LOGGER.error("Test failed")
-        LOGGER.error(e)
+        #LOGGER.error(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
     camera.stop()
     LOGGER.info("Test completed")

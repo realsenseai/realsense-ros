@@ -51,21 +51,19 @@ def test_safety_preset():
                 index)
             
             response = sds.receive_get_safety_preset_response()
-            assert response.payload["success"] == True, "Safety preset read failed"
+            assert response["preset"] == "Uninitialized", "Safety preset read failed"
             sp = "Index is " + str(index)
             sds.send_set_safety_preset_request(namespace, 
                 name,
                 sp,
                 index)
             response = sds.receive_set_safety_preset_response()
-            assert response.payload["success"] == True, "Safety preset write failed"
             
             sds.send_get_safety_preset_request(namespace, 
                 name, 
                 index)
             response = sds.receive_get_safety_preset_response()
-            assert response.payload["success"] == True, "Safety preset read failed"
-            assert response.payload["preset"] == str(request.index), "Written safety preset is not matching with the read one"
+            assert response["preset"] == sp, "Written safety preset is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:

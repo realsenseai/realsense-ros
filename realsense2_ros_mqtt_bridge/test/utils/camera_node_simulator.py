@@ -20,13 +20,13 @@ from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import Image
 from realsense2_camera_msgs.srv import SafetyPresetRead
 from realsense2_camera_msgs.srv import SafetyPresetWrite
-from realsense2_camera_msgs.srv import SafetyInterfaceRead
-from realsense2_camera_msgs.srv import SafetyInterfaceWrite
+from realsense2_camera_msgs.srv import SafetyInterfaceConfigRead
+from realsense2_camera_msgs.srv import SafetyInterfaceConfigWrite
 from realsense2_camera_msgs.srv import CalibConfigRead
 from realsense2_camera_msgs.srv import CalibConfigWrite
 from realsense2_camera_msgs.srv import ApplicationConfigRead
 from realsense2_camera_msgs.srv import ApplicationConfigWrite
-from realsense2_camera_msgs.action import TriggeredCaibration
+#from realsense2_camera_msgs.action import TriggeredCaibration
 
 import threading
 import logging
@@ -204,14 +204,14 @@ class RSCameraSimulator(Node, threading.Thread):
         service_name = f'/{self.namespace}/{self.name}/safety_preset_read'
         self.safety_preset_read_srv = self.create_service(SafetyPresetRead, service_name, self.safety_preset_read_cb)
         service_name = f'/{self.namespace}/{self.name}/safety_preset_write'
-        self.safety_preset_write_srv = self.create_service(SafetyPresetwrite, service_name, self.safety_reset_write_cb)
-        self.safety_preset = [64]
+        self.safety_preset_write_srv = self.create_service(SafetyPresetWrite, service_name, self.safety_preset_write_cb)
+        self.safety_preset = ["Uninitialized"] * 64
     
     def safety_preset_read_cb(self, request, response):
         LOGGER.info(f'Safety preset read for index {request.index}')
         response.success = True
         response.error_message = ''
-        if self.safety_preset[request.index] == None
+        if self.safety_preset[request.index] == None:
             response.preset =  str(request.index)
         else:
             response.preset =  self.safety_preset[request.index]
@@ -229,20 +229,17 @@ class RSCameraSimulator(Node, threading.Thread):
         self.safety_interface_config_read_srv = self.create_service(SafetyInterfaceConfigRead, service_name, self.safety_interface_config_read_cb)
         service_name = f'/{self.namespace}/{self.name}/safety_interface_config_write'
         self.safety_interface_config_srv = self.create_service(SafetyInterfaceConfigWrite, service_name, self.safety_interface_config_write_cb)
-        self.safety_interface_config = [3]
+        self.safety_interface_config = ["Uninitialized"] * 3
     
     def safety_interface_config_read_cb(self, request, response):
         LOGGER.info(f'Safety interface config read for calib location {request.calib_location}')
         response.success = True
         response.error_message = ''
-        if self.safety_interface_config[request.calib_location] == None
-            response.safety_interface_config =  None
-        else:
-            response.safety_interface_config =  self.safety_interface_config[request.calib_location]
+        response.safety_interface_config =  self.safety_interface_config[request.calib_location]
         return response
 
     def safety_interface_config_write_cb(self, request, response):
-        LOGGER.info(f'Safety interface config write for index {request.index} with data {request.preset}')
+        LOGGER.info(f'Safety interface config write with data {request.preset}')
         response.success = True
         response.error_message = ''
         self.safety_interface_config[2] = request.safety_interface_config
@@ -253,7 +250,7 @@ class RSCameraSimulator(Node, threading.Thread):
         self.calib_config_read_srv = self.create_service(CalibConfigRead, service_name, self.calib_config_read_cb)
         service_name = f'/{self.namespace}/{self.name}/calib_config_write'
         self.calib_config_srv = self.create_service(CalibConfigWrite, service_name, self.calib_config_write_cb)
-        self.calib_config = None
+        self.calib_config = "Uninitialized"
     
     def calib_config_read_cb(self, request, response):
         LOGGER.info(f'Calib config read called')
@@ -274,7 +271,7 @@ class RSCameraSimulator(Node, threading.Thread):
         self.application_config_read_srv = self.create_service(ApplicationConfigRead, service_name, self.application_config_read_cb)
         service_name = f'/{self.namespace}/{self.name}/application_config_write'
         self.application_config_srv = self.create_service(ApplicationConfigWrite, service_name, self.application_config_write_cb)
-        self.application_config = None
+        self.application_config = "Uniinitialized"
     
     def application_config_read_cb(self, request, response):
         LOGGER.info(f'Application config read called')
@@ -289,7 +286,7 @@ class RSCameraSimulator(Node, threading.Thread):
         response.error_message = ''
         self.application_config = request.application_config
         return response
-    
+    '''
     def create_triggered_calibration_action(self):
         action_name = f'/{self.namespace}/{self.name}/triggered_calibration'
         self._action_server = ActionServer(
@@ -302,7 +299,7 @@ class RSCameraSimulator(Node, threading.Thread):
         self.tc_started = True
         self.tc_progress = 1
 
-
+    '''
 if __name__ == '__main__':
     rclpy.init()
     import os

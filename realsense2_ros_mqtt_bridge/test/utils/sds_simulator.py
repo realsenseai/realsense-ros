@@ -312,6 +312,55 @@ class SDSSimulator:
         self.send_get_frame_request(camera_namespace, camera_name, stream_name)
         return self.receive_get_frame_response()
     
+
+    def send_set_safety_preset_request(self, camera_namespace, camera_name, sp, index):
+        """
+        Send a request to set a send_set_safety_preset_request.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            sp (str): The safety preset.
+            index (int): The index of the safety preset.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'preset': sp,
+            'index':index,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'set_safety_preset_request')
+
+    def receive_set_safety_preset_response(self):
+        """
+        receive response to get to set a set_safety_preset.
+
+        Args:
+        """
+        msg = self.get_message()
+        assert msg.topic == "set_safety_preset_response", "Unexpected topic: set_safety_preset_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in set_safety_preset_response")
+        assert payload["success"] == True, "set_safety_preset_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "set_safety_preset_response failed" + payload["err_msg"]
+        return payload
+
+
+    def set_safety_interface_config(self, camera_namespace, camera_name, sp):
+        """
+        Send a request to set a safety interface config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            sp (str): The safety config.
+        """
+        self.send_set_safety_interface_config_request(camera_namespace, camera_name, sp)
+        return self.receive_set_safety_interface_config_response()
+
+
     def send_get_safety_preset_request(self, camera_namespace, camera_name, index):
         """
         Send a request to get a safety preset.
@@ -336,9 +385,13 @@ class SDSSimulator:
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "get_safety_preset_response", "Unexpected topic: get_safety_preset_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in get_safety_preset_response")
+        assert payload["success"] == True, "get_safety_preset_response failed" + payload["err_msg"]
+        #aassert payload["success"] == "true", "get_safety_preset_response failed" + payload["err_msg"]
+        return payload
 
     def get_safety_preset(self, camera_namespace, camera_name, index):
         """
@@ -378,9 +431,13 @@ class SDSSimulator:
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "set_safety_interface_config_response", "Unexpected topic: set_safety_interface_config_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in set_safety_interface_config_response")
+        assert payload["success"] == True, "set_safety_interface_config_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "set_safety_interface_config_response failed" + payload["err_msg"]
+        return payload
 
 
     def set_safety_interface_config(self, camera_namespace, camera_name, sp):
@@ -412,7 +469,7 @@ class SDSSimulator:
         }
         j = json.dumps(request_dict)
         self.locked = True
-        self.publish(j, 'set_safety_interface_config_request')
+        self.publish(j, 'get_safety_interface_config_request')
 
     def receive_get_safety_interface_config_response(self):
         """
@@ -420,9 +477,14 @@ class SDSSimulator:
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "get_safety_interface_config_response", "Unexpected topic: get_safety_interface_config_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in get_safety_interface_config_response")
+        assert payload["success"] == True, "get_safety_interface_config_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "get_safety_interface_config_response failed" + payload["err_msg"]
+        return payload
+
 
 
     def get_safety_interface_config(self, camera_namespace, camera_name, index):
@@ -439,7 +501,7 @@ class SDSSimulator:
         return self.receive_set_safety_interface_config_response()
 
 
-    def send_get_calib_config(self, camera_namespace, camera_name):
+    def send_get_calib_config_request(self, camera_namespace, camera_name):
         """
         Send a request to get a calib config.
 
@@ -455,15 +517,19 @@ class SDSSimulator:
         self.locked = True
         self.publish(j, 'get_calib_config_request')
 
-    def receive_get_calib_config(self):
+    def receive_get_calib_config_response(self):
         """
         receive the response to a request to get a calib config.
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "get_calib_config_response", "Unexpected topic: get_calib_config_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in get_calib_config_response")
+        assert payload["success"] == True, "get_calib_config_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "get_calib_config_response failed" + payload["err_msg"]
+        return payload
 
     def get_calib_config(self, camera_namespace, camera_name):
         """
@@ -473,11 +539,11 @@ class SDSSimulator:
             camera_namespace (str): The namespace of the camera.
             camera_name (str): The name of the camera.
         """
-        self.send_get_calib_config(camera_namespace, camera_name)
-        return self.receive_get_calib_config()
+        self.send_get_calib_config_request(camera_namespace, camera_name)
+        return self.receive_get_calib_config_response()
 
 
-    def send_set_calib_config(self, camera_namespace, camera_name, calib_config):
+    def send_set_calib_config_request(self, camera_namespace, camera_name, calib_config):
         """
         Send a request to set a calib config.
 
@@ -495,15 +561,19 @@ class SDSSimulator:
         self.locked = True
         self.publish(j, 'set_calib_config_request')
 
-    def receive_set_calib_config(self):
+    def receive_set_calib_config_response(self):
         """
         Get response to a request to set a calib config.
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "set_calib_config_response", "Unexpected topic: set_calib_config_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in set_calib_config_response")
+        assert payload["success"] == True, "set_calib_config_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "set_calib_config_response failed" + payload["err_msg"]
+        return payload
 
     def set_calib_config(self, camera_namespace, camera_name, calib_config):
         """
@@ -514,11 +584,11 @@ class SDSSimulator:
             camera_name (str): The name of the camera.
             calib_config (str): The calib config.
         """
-        self.send_set_calib_config(camera_namespace, camera_name, calib_config)
-        return self.receive_set_calib_config()
+        self.send_set_calib_config_request(camera_namespace, camera_name, calib_config)
+        return self.receive_set_calib_config_response()
  
 
-     def send_get_application_config_request(self, camera_namespace, camera_name):
+    def send_get_application_config_request(self, camera_namespace, camera_name):
         """
         Send a request to get an application config.
 
@@ -534,17 +604,21 @@ class SDSSimulator:
         self.locked = True
         self.publish(j, 'get_application_config_request')
 
-     def receive_get_application_config_response(self):
+    def receive_get_application_config_response(self):
         """
         Send a request to get an application config.
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "get_application_config_response", "Unexpected topic: get_application_config_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in get_application_config_response")
+        assert payload["success"] == True, "get_application_config_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "get_application_config_response failed" + payload["err_msg"]
+        return payload
 
-     def get_application_config(self, camera_namespace, camera_name):
+    def get_application_config(self, camera_namespace, camera_name):
         """
         Send a request to get an application config.
 
@@ -582,9 +656,13 @@ class SDSSimulator:
 
         Args:
         """
-        while self.locked:
-            pass
-        return self.msg
+        msg = self.get_message()
+        assert msg.topic == "set_application_config_response", "Unexpected topic: set_application_config_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        LOGGER.warning("payload[success] is not a string in set_application_config_response")
+        assert payload["success"] == True, "set_application_config_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "set_application_config_response failed" + payload["err_msg"]
+        return payload
 
     def set_application_config(self, camera_namespace, camera_name, application_config):
         """

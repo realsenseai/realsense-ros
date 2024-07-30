@@ -51,19 +51,19 @@ def test_triggered_calibration():
         
         response = sds.receive_get_triggered_calibration_response()
         Application_data = "Application data"
-        assert response.payload["success"] == True, "Application config read failed"
+        assert response.payload["success"] == "true", "Application config read failed"
         sds.send_set_triggered_calibration_request(namespace, 
             name,
             Application_data)
 
         response = sds.receive_set_triggered_calibration_response()
-        assert response.payload["success"] == True, "Application config write failed"
+        assert response.payload["success"] == "true", "Application config write failed"
         
         sds.send_get_triggered_calibration_request(namespace, 
             name)
         
         response = sds.receive_get_triggered_calibration_response()
-        assert response.payload["success"] == True, "Application config read failed"
+        assert response.payload["success"] == "true", "Application config read failed"
         assert response.payload["triggered_calibration"] == Application_data, "Written Application config is not matching with the read one"
     #cleanup starts....
 
