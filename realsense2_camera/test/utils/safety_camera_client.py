@@ -203,3 +203,35 @@ class CameraClient(Node):
         '''
         self.tc_done = True
         self.calibration_result = result
+    def dryrun_calibration(self):
+        self.tc_done = False
+        goal_msg = TriggeredCalibration.Goal()
+        goal_msg.json = "calib dryrun"
+        LOGGER.info(goal_msg)
+        self.action_client.wait_for_server()
+        self.send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_dryrun_feedback_callback)
+        self.send_goal_future.add_done_callback(self.ros_action_dryrun_goal_response_callback)
+
+    def ros_action_dryrun_feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+        LOGGER.info('TriggeredCalibrationHandler: Received feedback for dryrun: {0}'.format(feedback.progress))
+
+    def ros_action_dryrun_goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            LOGGER.info('TriggeredCalibrationHandler: Goal for dryrun rejected')
+            return
+        LOGGER.info('TriggeredCalibrationHandler: Goal for dryrun accepted')
+        self.get_result_future = goal_handle.get_result_async()
+        self.get_result_future.add_done_callback(self.ros_action_dryrun_result_callback)
+
+    def ros_action_dryrun_result_callback(self, future):
+        result = future.result().result
+        LOGGER.info('Success: {0}'.format(result.success))
+        LOGGER.info('Error: {0}'.format(result.error_msg))
+        LOGGER.info('Calibration: {0}'.format(result.calibration))
+        LOGGER.info('Health: {0}'.format(result.health))
+        LOGGER.info('Progress: 100.0')
+        self.tc_done = True
+        self.calibration_result = result
+
