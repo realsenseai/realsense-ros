@@ -26,6 +26,7 @@ from realsense2_camera_msgs.srv import CalibConfigRead
 from realsense2_camera_msgs.srv import CalibConfigWrite
 from realsense2_camera_msgs.srv import ApplicationConfigRead
 from realsense2_camera_msgs.srv import ApplicationConfigWrite
+from realsense2_camera_msgs.action import TriggeredCaibration
 
 import threading
 import logging
@@ -288,8 +289,18 @@ class RSCameraSimulator(Node, threading.Thread):
         response.error_message = ''
         self.application_config = request.application_config
         return response
-
-
+    
+    def create_triggered_calibration_action(self):
+        action_name = f'/{self.namespace}/{self.name}/triggered_calibration'
+        self._action_server = ActionServer(
+            self,
+            TriggeredCalibration,
+            action_name,
+            self.start_triggered_calibration)
+    
+    def start_triggered_calibration(self. goal):
+        self.tc_started = True
+        self.tc_progress = 1
 
 
 if __name__ == '__main__':

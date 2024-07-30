@@ -597,3 +597,31 @@ class SDSSimulator:
         """
         self.send_set_application_config_request(camera_namespace, camera_name, application_config)
         return self.receive_set_application_config_response()
+
+    def send_triggered_calibration_request(self, camera_namespace, camera_name):
+        """
+        Send request to run triggered calibration action.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.publish(j, 'triggered_calibration_request')
+    
+    def receive_triggered_calibration_response(self):
+        """
+        Receive rseponse to run triggered calibration action.
+
+        Args:
+        """
+        while self.locked:
+            pass
+        msg  = self.msg
+        #multple responses expected
+        self.msg = None
+        return msg
