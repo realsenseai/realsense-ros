@@ -61,7 +61,7 @@ def test_safety_interface_config():
                 name, 
                 index)
             response = sds.receive_get_safety_interface_config_response()
-            assert response["preset"] == sp, "Written safety interface config is not matching with the read one"
+            assert response["safety_interface_config"] == sp, "Written safety interface config is not matching with the read one"
     #cleanup starts....
 
     except Exception as e:

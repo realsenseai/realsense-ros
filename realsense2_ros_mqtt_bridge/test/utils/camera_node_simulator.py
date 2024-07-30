@@ -228,7 +228,7 @@ class RSCameraSimulator(Node, threading.Thread):
         service_name = f'/{self.namespace}/{self.name}/safety_interface_config_read'
         self.safety_interface_config_read_srv = self.create_service(SafetyInterfaceConfigRead, service_name, self.safety_interface_config_read_cb)
         service_name = f'/{self.namespace}/{self.name}/safety_interface_config_write'
-        self.safety_interface_config_srv = self.create_service(SafetyInterfaceConfigWrite, service_name, self.safety_interface_config_write_cb)
+        self.safety_interface_config_write_srv = self.create_service(SafetyInterfaceConfigWrite, service_name, self.safety_interface_config_write_cb)
         self.safety_interface_config = ["Uninitialized"] * 3
     
     def safety_interface_config_read_cb(self, request, response):
@@ -239,7 +239,7 @@ class RSCameraSimulator(Node, threading.Thread):
         return response
 
     def safety_interface_config_write_cb(self, request, response):
-        LOGGER.info(f'Safety interface config write with data {request.preset}')
+        LOGGER.info(f'Safety interface config write with data {request.safety_interface_config}')
         response.success = True
         response.error_message = ''
         self.safety_interface_config[2] = request.safety_interface_config
