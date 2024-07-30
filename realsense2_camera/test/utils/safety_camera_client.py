@@ -142,7 +142,7 @@ class CameraClient(Node):
         time.sleep(0.5)
         LOGGER.info("Param enable_labeled_point_cloud: %s", self.get_bool_param('enable_labeled_point_cloud'))
 
-    def send_goal(self):
+    def start_calibration(self):
         self.tc_done = False
         goal_msg = TriggeredCalibration.Goal()
         LOGGER.info(goal_msg)
@@ -153,8 +153,6 @@ class CameraClient(Node):
     def ros_action_feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
         LOGGER.info('TriggeredCalibrationHandler: Received feedback: {0}'.format(feedback.progress))
-
-
 
     def ros_action_goal_response_callback(self, future):
         goal_handle = future.result()
@@ -172,5 +170,36 @@ class CameraClient(Node):
         LOGGER.info('Calibration: {0}'.format(result.calibration))
         LOGGER.info('Health: {0}'.format(result.health))
         LOGGER.info('Progress: 100.0')
+        self.tc_done = True
+        self.calibration_result = result
+
+    def abort_calibration(self):
+        self.tc_done = False
+        goal_msg = TriggeredCalibration.Goal()
+        goal_msg.json = "calib abort"
+        LOGGER.info(goal_msg)
+        self.action_client.wait_for_server()
+        self.send_goal_future = self.action_client.send_goal_async(goal_msg)
+        self.send_goal_future.add_done_callback(self.ros_action_abort_goal_response_callback)
+
+    def ros_action_abort_goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            LOGGER.error('TriggeredCalibrationHandler: abort rejected')
+            return
+        LOGGER.info('TriggeredCalibrationHandler: abort accepted')
+        self.get_result_future = goal_handle.get_result_async()
+        self.get_result_future.add_done_callback(self.ros_action_abort_result_callback)
+
+    def ros_action_abort_result_callback(self, future):
+        result = future.result().result
+        LOGGER.info('Result: {0}'.format(result))
+        '''
+        LOGGER.info('Success: {0}'.format(result.success))
+        LOGGER.info('Error: {0}'.format(result.error_msg))
+        LOGGER.info('Calibration: {0}'.format(result.calibration))
+        LOGGER.info('Health: {0}'.format(result.health))
+        LOGGER.info('Progress: 100.0')
+        '''
         self.tc_done = True
         self.calibration_result = result

@@ -39,29 +39,17 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 from safety_camera_client import CameraClient
 
 #@pytest.mark.skip(reason="under development")
-def test_triggered_calibration():
+def test_abort_triggered_calibration():
 
     tester = CameraClient()
     try:
         tester.preapare_for_calibration()
         tester.start_calibration()
-        
+        time.sleep(1)
+        tester.abort_calibration()
         while tester.tc_done == False:
             rclpy.spin_once(tester)
             time.sleep(1)
-
-        calib_result = tester.calibration_result
-
-        assert calib_result.success == True, "First calibration run failed"
-        time.sleep(0.5)
-
-        tester.start_calibration()
-        while tester.tc_done == False:
-            rclpy.spin_once(tester)
-            time.sleep(1)
-        assert tester.calibration_result.success == True, "Second calibration run failed"
-
-        assert calib_result.calibration != tester.calibration_result.calibration, "Two calibrations gave the same data"
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
