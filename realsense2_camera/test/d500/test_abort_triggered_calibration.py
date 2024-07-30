@@ -23,13 +23,32 @@ import pytest
 import rclpy
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 from safety_camera_client import CameraClient
+from pytest_rs_utils import launch_descr_with_parameters
+import pytest_live_camera_utils
 
-#@pytest.mark.skip(reason="under development")
-def test_abort_triggered_calibration():
+test_params_align_depth_color_d585s = {
+    'camera_namespace': "robot1",
+    'camera_name': 'c_333622320031',
+    'device_type': 'D585S',
+    }
 
+@pytest.mark.parametrize("launch_descr_with_parameters",[
+    pytest.param(test_params_align_depth_color_d585s, marks=pytest.mark.d585s),
+    ]
+    ,indirect=True)
+
+def test_abort_triggered_calibration(launch_descr_with_parameters):
+    params = launch_descr_with_parameters[1]
     tester = CameraClient()
     try:
-        tester.preapare_for_calibration()
+        if pytest_live_camera_utils.check_if_camera_connected(params['device_type']) == False:
+            LOGGER.error("Device not found? : " + params['device_type'])
+            assert False
+            return
+        tester.wait_for_node(params['camera_name'])
+        time.sleep(3)
+
+        tester.prepare_for_calibration()
         tester.start_calibration()
         time.sleep(1)
         tester.abort_calibration()

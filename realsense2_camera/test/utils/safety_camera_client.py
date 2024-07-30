@@ -51,6 +51,18 @@ class CameraClient(Node):
         self.create_service_client_ifs(f'/{namespace}/{name}')
         self.calibration_result = None
     
+    def wait_for_node(self, node_name, timeout=8.0):
+        start = time.time()
+        flag = False
+        print('Waiting for node... ' + node_name)
+        while time.time() - start < timeout:
+            print(node_name + ": waiting for the node to come up")
+            flag = node_name in self.get_node_names()
+            if flag:
+                return True, ""
+            time.sleep(timeout/5)
+        return False, "Timed out waiting for "+ str(timeout)+  "seconds"
+
     def create_service_client_ifs(self, camera_name):
         self.set_param_if = self.create_client(SetParameters, camera_name + '/set_parameters')
         self.get_param_if = self.create_client(GetParameters, camera_name + '/get_parameters')
@@ -107,7 +119,7 @@ class CameraClient(Node):
             return None
         else:
             return value.bool_value
-    def preapare_for_calibration(self):
+    def prepare_for_calibration(self):
         self.set_integer_param('safety_camera.safety_mode',2)
         time.sleep(0.5)
         LOGGER.info("Param safety_camera.safety_mode: %s", str(self.get_integer_param('safety_camera.safety_mode')))
@@ -157,12 +169,15 @@ class CameraClient(Node):
         time.sleep(0.5)
         LOGGER.info("Param enable_labeled_point_cloud: %s", self.get_bool_param('enable_labeled_point_cloud'))
 
-    def start_calibration(self):
+    def start_calibration(self, with_feedback=True):
         self.tc_done = False
         goal_msg = TriggeredCalibration.Goal()
         LOGGER.info(goal_msg)
         self.action_client.wait_for_server()
-        self.send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_feedback_callback)
+        if with_feedback ==True:
+            self.send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_feedback_callback)
+        else:
+            self.send_goal_future = self.action_client.send_goal_async(goal_msg)
         self.send_goal_future.add_done_callback(self.ros_action_goal_response_callback)
 
     def ros_action_feedback_callback(self, feedback_msg):
@@ -209,19 +224,12 @@ class CameraClient(Node):
     def ros_action_abort_result_callback(self, future):
         result = future.result().result
         LOGGER.info('Result: {0}'.format(result))
-        '''
-        LOGGER.info('Success: {0}'.format(result.success))
-        LOGGER.info('Error: {0}'.format(result.error_msg))
-        LOGGER.info('Calibration: {0}'.format(result.calibration))
-        LOGGER.info('Health: {0}'.format(result.health))
-        LOGGER.info('Progress: 100.0')
-        '''
         self.tc_done = True
         self.calibration_result = result
     def dryrun_calibration(self):
         self.tc_done = False
         goal_msg = TriggeredCalibration.Goal()
-        goal_msg.json = "calib dryrun"
+        goal_msg.json = "calib dry run"
         LOGGER.info(goal_msg)
         self.action_client.wait_for_server()
         self.send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_dryrun_feedback_callback)
