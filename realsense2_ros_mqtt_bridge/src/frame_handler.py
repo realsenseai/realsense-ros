@@ -80,7 +80,7 @@ class FrameHandler:
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
             'stream_name': stream_name,
-            'success': 'true',
+            'success': True,
             'error_msg': '',
             'frame': ''
         }
@@ -90,7 +90,7 @@ class FrameHandler:
             mqtt_response['frame'] = str(self.image)
         else:
             self.mqtt_ros_node.ROS_WARN('Failed to get frame')
-            mqtt_response['success'] = 'false'
+            mqtt_response['success'] = False
             mqtt_response['error_msg'] = 'unsupported type'
 
         self.mqtt_ros_node.mqtt_client.publish('get_frame_response',

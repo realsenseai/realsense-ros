@@ -110,7 +110,7 @@
 * mqtt response message example:
   ```
     {
-      "success": "true",
+      "success": True,
       "error_msg": "",
       "available_nodes_count": "1",
       "available_nodes":
@@ -175,7 +175,7 @@
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
     "parameter_name": "rgb_camera.exposure",
-    "success": "true",
+    "success": True,
     "error_msg": "",
     "parameter_type": "integer",
     "parameter_value": "6012"
@@ -207,7 +207,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": ""
   }
   ```
@@ -236,7 +236,7 @@
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
     "stream_name": "color"
-    "success": "true",
+    "success": True,
     "error_msg": "",
     "frame": "[0, 118, 124, 0, 0, ...., 255]" # array of bytes
   }
@@ -264,7 +264,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": "",
     "preset": "{safety preset as json}"
   }
@@ -292,7 +292,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -319,7 +319,7 @@
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
     "safety_inteface_config": "{safety interface config as JSON}",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -346,7 +346,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -373,7 +373,7 @@
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
     "calib_config": "{calib config as JSON}",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -401,7 +401,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -428,7 +428,7 @@
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
     "application_config": "{application config as JSON}",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -456,7 +456,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": "",
   }
   ```
@@ -495,7 +495,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "success": "true",
+    "success": True,
     "error_msg": "",
     "calibration": {calibration table as json}
     "health": 3.0

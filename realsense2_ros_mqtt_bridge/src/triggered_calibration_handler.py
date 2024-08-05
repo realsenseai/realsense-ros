@@ -70,7 +70,7 @@ class TriggeredCalibrationHandler:
         mqtt_response = {
             'camera_namespace': self.camera_namespace,
             'camera_name': self.camera_name,
-            'success': 'false',
+            'success': False,
             'error_msg': '',
             'calibration': '{}',
             'health': '0',
