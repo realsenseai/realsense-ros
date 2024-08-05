@@ -99,6 +99,7 @@ class MQTTBridgeNode(Node):
         """Define the topics our MQTTBridgeNode needs to listen to."""
         self.mqtt_requests_topics = [
             'enumerate_devices_request',
+            'get_device_info_request',
             'get_param_request',
             'set_param_request',
             'get_frame_request',
@@ -203,6 +204,8 @@ class MQTTBridgeNode(Node):
 
         if msg.topic == 'enumerate_devices_request':
             self.device_handler.handle_enumerate_devices_request(mqtt_request)
+        elif msg.topic == 'get_device_info_request':
+            self.device_handler.handle_get_device_info_request(mqtt_request)
         elif msg.topic == 'get_param_request':
             self.parameter_handler.handle_get_param_request(mqtt_request)
         elif msg.topic == 'set_param_request':

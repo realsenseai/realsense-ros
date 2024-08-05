@@ -15,6 +15,7 @@
 import json
 
 from .service_handler import ServiceHandler
+from realsense2_camera_msgs.srv import DeviceInfo
 
 class DeviceHandler(ServiceHandler):
     """
@@ -91,3 +92,46 @@ class DeviceHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('enumerate_devices_response message sent')
+
+    def handle_get_device_info_request(self, mqtt_request):
+        """
+        Handle the get device info MQTT request.
+
+        Args:
+            mqtt_request (dict): The MQTT request message containing the
+            camera namespace and camera name of the device.
+        """
+        self.mqtt_ros_node.ROS_DEBUG('get_device_info message received')
+
+        camera_namespace = mqtt_request['camera_namespace']
+        camera_name = mqtt_request['camera_name']
+
+        service_name = f'/{camera_namespace}/{camera_name}/device_info'
+
+        ros_client_get_device_info = self.create_ros_client(DeviceInfo, service_name)
+        if not ros_client_get_device_info:
+            return
+
+        ros_request = DeviceInfo.Request()
+
+        future = ros_client_get_device_info.call_async(ros_request)
+        self.wait_for_future(future)
+
+        ros_response = future.result()
+
+        mqtt_response = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'device_name' : ros_response.device_name,
+            'serial_number': ros_response.serial_number,
+            'firmware_version': ros_response.firmware_version,
+            'usb_type_descriptor': ros_response.usb_type_descriptor,
+            'firmware_update_id': ros_response.firmware_update_id,
+            'sensors': ros_response.sensors,
+            'physical_port': ros_response.physical_port
+        }
+        self.mqtt_ros_node.mqtt_client.publish('get_device_info_response',
+                                               json.dumps(mqtt_response),
+                                               qos=2)
+        self.mqtt_ros_node.ROS_DEBUG('get_device_info_response message sent')
+        ros_client_get_device_info.destroy()
