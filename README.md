@@ -1082,6 +1082,7 @@ Each of the above filters have it's own parameters, following the naming convent
     - `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
     - `depth_module.emitter_enabled: true` # enable emitter in depth module
     - `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+    - `enable_color: false` # turn off color stream
     - `enable_depth: false` # turn off depth stream
     - `enable_infra1: false` # turn off infra1 stream
     - `enable_infra2: false` # turn off infra2 stream
@@ -1089,6 +1090,20 @@ Each of the above filters have it's own parameters, following the naming convent
     - `enable_labeled_point_cloud: false` # turn off labeled pointcloud stream
     - `enable_occupancy: false` # turn off occupancy stream
   - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
+  ```
+  ros2 param set /camera/camera safety_camera.safety_mode 2
+  ros2 param set /camera/camera depth_module.visual_preset 1
+  ros2 param set /camera/camera depth_module.emitter_enabled true
+  ros2 param set /camera/camera depth_module.enable_auto_exposure true
+  ros2 param set /camera/camera enable_color false
+  ros2 param set /camera/camera enable_depth false
+  ros2 param set /camera/camera enable_infra1 false
+  ros2 param set /camera/camera enable_infra2 false
+  ros2 param set /camera/camera enable_safety false
+  ros2 param set /camera/camera enable_labeled_point_cloud false
+  ros2 param set /camera/camera enable_occupancy false
+  ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}' --feedback
+  ```
   - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
   - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
   - If failed, it will return the error message inside the result. For example:
