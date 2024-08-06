@@ -112,7 +112,7 @@ class RSCameraSimulator(Node, threading.Thread):
         msg.step = np.shape(frame)[2] * np.shape(frame)[1]
         msg.data = np.array(frame).tobytes()
         # publishes message
-        # LOGGER.debug("Publishing color frame...")
+        # LOGGER.debug("Publishing depth frame...")
         self.depth_frame.publish(msg)
 
     def publish_infra1_frame(self):
@@ -127,7 +127,7 @@ class RSCameraSimulator(Node, threading.Thread):
         msg.step = np.shape(frame)[2] * np.shape(frame)[1]
         msg.data = np.array(frame).tobytes()
         # publishes message
-        # LOGGER.debug("Publishing color frame...")
+        # LOGGER.debug("Publishing infra1 frame...")
         self.infra1_frame.publish(msg)
 
     def publish_infra2_frame(self):
@@ -142,7 +142,7 @@ class RSCameraSimulator(Node, threading.Thread):
         msg.step = np.shape(frame)[2] * np.shape(frame)[1]
         msg.data = np.array(frame).tobytes()
         # publishes message
-        # LOGGER.debug("Publishing color frame...")
+        # LOGGER.debug("Publishing infra2 frame...")
         self.infra2_frame.publish(msg)
 
     def start_publish_color_frame(self):

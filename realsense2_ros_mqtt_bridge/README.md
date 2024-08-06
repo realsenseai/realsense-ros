@@ -17,6 +17,7 @@
 - [Parameters](#parameters)
 - [Client Usage](#client-usage)
   - [Enumerate Devices](#enumerate-devices)
+  - [Get Device Info](#get-device-info)
   - [Get Parameter](#get-parameter)
   - [Set Parameter](#set-parameter)
   - [Get Frame](#get-frame)
@@ -118,6 +119,37 @@
         ]"
     }
   ```
+## Get Device Info
+* mqtt request message example
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic
+  ```
+  get_device_info_request
+  ```
+* response topic
+  ```
+  get_device_info_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "camera",
+    "camera_name": "camera",
+    "device_name": "intel_realsense_d585s",
+    "serial_number": "333622320169",
+    "firmware_version": "8.17.15566.148",
+    "usb_type_descriptor": "3.2",
+    "firmware_update_id": "333622320169",
+    "sensors": "depth_module,rgb_camera,safety_camera,depth_mapping_camera,motion_module",
+    "physical_port": "/sys/devices/pci0000:00/0000:00:14.0/usb2/2-1/2-1:1.0/video4linux/video0",
+  }
+  ```
+
 
 ## Get Parameter
 ***See [available parameters and their types](#supported-parameters-for-setget)***
