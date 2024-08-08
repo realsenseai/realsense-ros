@@ -26,6 +26,7 @@ from realsense2_camera_msgs.srv import CalibConfigRead
 from realsense2_camera_msgs.srv import CalibConfigWrite
 from realsense2_camera_msgs.srv import ApplicationConfigRead
 from realsense2_camera_msgs.srv import ApplicationConfigWrite
+from realsense2_camera_msgs.srv import DeviceInfo
 #from realsense2_camera_msgs.action import TriggeredCaibration
 
 import threading
@@ -253,7 +254,7 @@ class RSCameraSimulator(Node, threading.Thread):
         self.calib_config = "Uninitialized"
     
     def calib_config_read_cb(self, request, response):
-        LOGGER.info(f'Calib config read called')
+        LOGGER.info(f'Calib config read called {response}')
         response.success = True
         response.error_message = ''
         response.calib_config =  self.calib_config
@@ -285,6 +286,24 @@ class RSCameraSimulator(Node, threading.Thread):
         response.success = True
         response.error_message = ''
         self.application_config = request.application_config
+        return response
+
+    def create_device_info_service(self):
+        LOGGER.info(f'Created the device info service')
+        service_name = f'/{self.namespace}/{self.name}/device_info'
+        self.device_info_srv = self.create_service(DeviceInfo, service_name, self.device_info_read_cb)
+
+    
+    def device_info_read_cb(self, request, response):
+        LOGGER.debug(f'DeviceInfo read called \n{request} \n{response}')
+        response.device_name = "Camera" #string device_name
+        response.serial_number = "1234" #string serial_number
+        response.firmware_version = "1.2.3" #string firmware_version
+        response.usb_type_descriptor = "USB 3.1" #string usb_type_descriptor
+        response.firmware_update_id = "1" #string firmware_update_id
+        response.sensors = "color"#string sensors
+        response.physical_port = "1" #string physical_port
+        LOGGER.info(f'DeviceInfo response: {response}')
         return response
     '''
     def create_triggered_calibration_action(self):

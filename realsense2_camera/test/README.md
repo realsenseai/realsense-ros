@@ -32,6 +32,11 @@ It is expected that the class based test is used as the test format for most of 
 
 An assert command can be used to indicate if the test failed or passed. Please see the template for more info.
 
+Some of the tests have a timeout marker such as "@pytest.mark.timeout(10)". A python package "pytest-timeout" is needed if marker has to work. To install the package, the following command can be used 
+```
+pip install pytest-timeout
+``` 
+
 ### Adding a new test folder
 It is recommended to use the test folder itself for storing all the pytests. However, if the user wants to add a different folder for a set of tests, please ensure that the file name format mentioned above is followed. The folder path should be added to realsense_camera/CMakeLists.txt as below for the infra to detect the new test folder and the tests within.
 

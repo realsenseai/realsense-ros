@@ -22,7 +22,7 @@ import pytest
 
 import rclpy
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
-from safety_camera_client import CameraClient
+from safety_camera_client import TriggeredCalibrationCameraClient as CameraClient
 from pytest_rs_utils import launch_descr_with_parameters
 import pytest_live_camera_utils
 
@@ -37,6 +37,7 @@ test_params_align_depth_color_d585s = {
     ]
     ,indirect=True)
 
+@pytest.mark.timeout(10)
 def test_abort_triggered_calibration(launch_descr_with_parameters):
     params = launch_descr_with_parameters[1]
     tester = CameraClient()
