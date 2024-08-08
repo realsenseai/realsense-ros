@@ -105,6 +105,7 @@ class MQTTClientSimulator:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
         self.mqtt_client.subscribe('set_parameter_response')
         self.mqtt_client.subscribe('get_frame_response')
@@ -665,6 +666,55 @@ class MQTTClientSimulator:
         """
         self.send_set_application_config_request(camera_namespace, camera_name, application_config)
         return self.receive_set_application_config_response()
+
+
+    def send_get_device_info_request(self, camera_namespace, camera_name):
+        """
+        Send a request to get the device info.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_device_info_request')
+
+    def receive_get_device_info_response(self):
+        """
+        Send a request to get the device info.
+
+        Args:
+        """
+        msg = self.get_message()
+        assert msg.topic == "get_device_info_response", "Unexpected topic: get_device_info_response expected, received " + msg.topic
+        #payload = json.loads(msg.payload)
+        #LOGGER.info(msg.topic)
+        payload = json.loads(msg.payload)
+        '''
+        LOGGER.warning("payload[success] is not a string in get_device_info_response")
+        #assert payload["success"] == True, "get_device_info_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "get_device_info_response failed" + payload["err_msg"]
+        '''
+        return payload
+
+    def get_device_info(self, camera_namespace, camera_name):
+        """
+        Send a request to get an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        self.send_get_device_info_request(camera_namespace, camera_name)
+        return self.receive_get_device_info_response()
+
+
+
 
     def send_triggered_calibration_request(self, camera_namespace, camera_name):
         """
