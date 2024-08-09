@@ -22,7 +22,7 @@ import pytest
 
 import rclpy
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
-from safety_camera_client import TriggeredCalibrationCameraClient as TriggeredCalibrationCameraClient
+from safety_camera_client import TriggeredCalibrationCameraClient
 from pytest_rs_utils import launch_descr_with_parameters
 import pytest_live_camera_utils
 
