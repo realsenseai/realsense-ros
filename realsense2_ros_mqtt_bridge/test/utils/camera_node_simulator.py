@@ -12,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
+import time
+import threading
 import numpy as np
 from rclpy.node import Node
 import rclpy
 
 from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import Image
+
 from realsense2_camera_msgs.srv import SafetyPresetRead
 from realsense2_camera_msgs.srv import SafetyPresetWrite
 from realsense2_camera_msgs.srv import SafetyInterfaceConfigRead
@@ -27,9 +31,12 @@ from realsense2_camera_msgs.srv import CalibConfigWrite
 from realsense2_camera_msgs.srv import ApplicationConfigRead
 from realsense2_camera_msgs.srv import ApplicationConfigWrite
 from realsense2_camera_msgs.srv import DeviceInfo
-#from realsense2_camera_msgs.action import TriggeredCaibration
+from realsense2_camera_msgs.action import TriggeredCalibration
+from rclpy.action import ActionServer, CancelResponse, GoalResponse
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import ExternalShutdownException
+from rclpy.executors import MultiThreadedExecutor
 
-import threading
 import logging
 LOGGER = logging.getLogger()
 
@@ -51,10 +58,14 @@ class RSCameraSimulator(Node, threading.Thread):
         self.infra2_frame = None
         self.namespace = namespace 
         self.name = name
+        self.goal_queue = collections.deque()
+        self.goal_queue_lock = threading.Lock()
+        self.current_goal = None
 
     def run(self):
         LOGGER.debug("Thread started...")
         loop_count = 0
+        executor = MultiThreadedExecutor()
         while(self._stop_event.is_set() == False):
             if loop_count > 10:
                 LOGGER.debug("Spinning...")
@@ -67,7 +78,7 @@ class RSCameraSimulator(Node, threading.Thread):
                 self.publish_infra1_frame()
             if self.infra2_frame != None:
                 self.publish_infra2_frame()
-            rclpy.spin_once(self, timeout_sec=0.01)
+            rclpy.spin_once(self, timeout_sec=0.01, executor=executor)
 
         LOGGER.info("destroying the publisher")
         if self.color_frame != None:
@@ -305,20 +316,98 @@ class RSCameraSimulator(Node, threading.Thread):
         response.physical_port = "1" #string physical_port
         LOGGER.info(f'DeviceInfo response: {response}')
         return response
-    '''
+    
     def create_triggered_calibration_action(self):
         action_name = f'/{self.namespace}/{self.name}/triggered_calibration'
+        '''
         self._action_server = ActionServer(
             self,
             TriggeredCalibration,
             action_name,
-            self.start_triggered_calibration)
-    
-    def start_triggered_calibration(self. goal):
-        self.tc_started = True
-        self.tc_progress = 1
+            self.triggered_calibration_handler)
+        '''
+        self._action_server = ActionServer(
+            self,
+            TriggeredCalibration,
+            action_name,
+            handle_accepted_callback=self.handle_accepted_callback,
+            execute_callback=self.triggered_calibration_handler,
+            goal_callback=self.goal_callback,
+            cancel_callback=self.cancel_callback,
+            callback_group=ReentrantCallbackGroup())
+        
+    def handle_accepted_callback(self, goal_handle):
+        """Start or defer execution of an already accepted goal."""
+        with self.goal_queue_lock:
+            if self.current_goal is not None:
+                # Put incoming goal in the queue
+                self.goal_queue.append(goal_handle)
+                LOGGER.info('Goal put in the queue')
+            else:
+                # Start goal execution right away
+                self.current_goal = goal_handle
+                LOGGER.info('Start the execution')
+                self.current_goal.execute()
 
-    '''
+    def goal_callback(self, goal_request):
+        """Accept or reject a client request to begin an action."""
+        LOGGER.info('Received goal request')
+        return GoalResponse.ACCEPT
+
+    def cancel_callback(self, goal_handle):
+        """Accept or reject a client request to cancel an action."""
+        LOGGER.info('Received cancel request')
+        return CancelResponse.ACCEPT
+    
+    def triggered_calibration_handler(self, goal_handle):
+        LOGGER.info(f'Calibration request: {goal_handle.request.json}')
+        """Execute a goal."""
+        try:
+            LOGGER.info('Executing goal...')
+            # Append the seeds for the Fibonacci sequence
+            feedback_msg = TriggeredCalibration.Feedback()
+
+            # Start executing the action
+            for i in range(1, 100):
+                if goal_handle.is_cancel_requested:
+                    goal_handle.canceled()
+                    LOGGER.info('Goal canceled')
+                    return TriggeredCalibration.Result()
+
+                # Update Fibonacci sequence
+                feedback_msg.progress = float(i)
+
+                LOGGER.info(
+                    'Publishing feedback: {0}'.format(feedback_msg.progress))
+
+                # Publish the feedback
+                goal_handle.publish_feedback(feedback_msg)
+
+                # Sleep for demonstration purposes
+                time.sleep(0.1)
+
+            goal_handle.succeed()
+
+            # Populate result message
+            result = TriggeredCalibration.Result()
+            result.success = True
+            result.calibration = f'{goal_handle.request.json}'
+
+            LOGGER.info(
+                'Returning result: {0}'.format(result))
+
+            return result
+        finally:
+            with self.goal_queue_lock:
+                try:
+                    # Start execution of the next goal in the queue.
+                    self.current_goal = self.goal_queue.popleft()
+                    LOGGER.info('Next goal pulled from the queue')
+                    self.current_goal.execute()
+                except IndexError:
+                    # No goal in the queue.
+                    self.current_goal = None
+    
 if __name__ == '__main__':
     rclpy.init()
     import os

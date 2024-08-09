@@ -727,8 +727,11 @@ class MQTTClientSimulator:
         request_dict = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
+            'json':'calib run',
         }
         j = json.dumps(request_dict)
+        self.msg = None
+        self.locked = True
         self.publish(j, 'triggered_calibration_request')
     
     def receive_triggered_calibration_response(self):
@@ -740,6 +743,11 @@ class MQTTClientSimulator:
         while self.locked:
             pass
         msg  = self.msg
+        assert msg.topic == "triggered_calibration_response", "Unexpected topic: triggered_calibration_response expected, received " + msg.topic
         #multple responses expected
+        payload = json.loads(msg.payload)
+        LOGGER.debug(msg.payload)
+        if payload['progress'] != 100.0:
+            self.locked = True
         self.msg = None
-        return msg
+        return payload
