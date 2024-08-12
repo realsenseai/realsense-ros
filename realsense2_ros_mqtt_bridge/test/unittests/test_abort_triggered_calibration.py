@@ -47,17 +47,23 @@ def test_triggered_calibration():
         camera.create_triggered_calibration_action()
 
         sds.send_triggered_calibration_request(namespace, 
-            name, dryrun=True)
+            name)
         while True:
             response = sds.receive_triggered_calibration_response()
             LOGGER.debug(f"Response: {response}")
-            if response['progress'] == 100.0:
-                #should we check for health?
-                assert response['success'] == True, 'Triggered calibraton was not successful'
-                assert response['calibration'] == "calib dry run", 'Unexpected calibration value received'
+            if response['progress'] > 2.0:
+                sds.abort_triggered_calibration_request(namespace, name)
                 break
 
+        response = sds.receive_triggered_calibration_response()
+        LOGGER.debug(f"Response: {response}")
+        assert response['success'] == True, 'Triggered calibraton abort was not successful'
+        LOGGER.debug(f"Test is incomplete, not sure what else should be checked (to be revisited once RSDEV-2647 and RSDEV-2615 are complete)")
+
+
         #print(response.payload)
+
+    #cleanup starts....
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -65,8 +71,6 @@ def test_triggered_calibration():
         LOGGER.error("Test failed")
         LOGGER.error(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
-    finally:
-        #cleanup starts....
-        camera.stop()
-        LOGGER.info("Test completed")
-        #cleanup ends....
+    camera.stop()
+    LOGGER.info("Test completed")
+    #cleanup ends....

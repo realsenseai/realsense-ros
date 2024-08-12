@@ -731,7 +731,7 @@ class MQTTClientSimulator:
         }
         if dryrun == True:
             request_dict['json'] = 'calib dry run'
-        print(request_dict)
+        LOGGER.debug(f"triggered calib request:{request_dict}")
         j = json.dumps(request_dict)
         self.msg = None
         self.locked = True
@@ -754,3 +754,22 @@ class MQTTClientSimulator:
             self.locked = True
         self.msg = None
         return payload
+    
+    def abort_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):
+        """
+        Send request to run triggered calibration action.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'json':'calib abort',
+        }
+        LOGGER.debug(f"triggered calib request:{request_dict}")
+        j = json.dumps(request_dict)
+        self.msg = None
+        self.locked = True
+        self.publish(j, 'triggered_calibration_request')

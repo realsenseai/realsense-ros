@@ -52,6 +52,7 @@ def test_triggered_calibration():
             response = sds.receive_triggered_calibration_response()
             LOGGER.debug(f"Response: {response}")
             if response['progress'] == 100.0:
+                assert response['success'] == True, 'Triggered calibraton was not successful'
                 assert response['calibration'] == "calib run", 'Unexpected calibration value received'
                 break
 
