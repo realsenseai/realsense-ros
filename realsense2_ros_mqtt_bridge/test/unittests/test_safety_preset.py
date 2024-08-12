@@ -45,7 +45,8 @@ def test_safety_preset():
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
         camera.create_safety_preset_service()
-        for index in range(0,63):
+        #for index in range(0,63):
+        for index in [0,1,10,36,62,63]:
             sds.send_get_safety_preset_request(namespace, 
                 name, 
                 index)

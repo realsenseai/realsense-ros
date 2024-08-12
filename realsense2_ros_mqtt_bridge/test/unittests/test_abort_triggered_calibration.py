@@ -54,11 +54,13 @@ def test_triggered_calibration():
             if response['progress'] > 2.0:
                 sds.abort_triggered_calibration_request(namespace, name)
                 break
-
-        response = sds.receive_triggered_calibration_response()
-        LOGGER.debug(f"Response: {response}")
-        assert response['success'] == True, 'Triggered calibraton abort was not successful'
-        LOGGER.debug(f"Test is incomplete, not sure what else should be checked (to be revisited once RSDEV-2647 and RSDEV-2615 are complete)")
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.debug(f"Response: {response}")
+            if response['success'] == True:
+                break
+        assert response['error_msg'] == "aborted", 'Unexpected calibration value received'
+        LOGGER.warning(f"Test is incomplete, not sure what else should be checked (to be revisited once RSDEV-2647 and RSDEV-2615 are complete)")
 
 
         #print(response.payload)

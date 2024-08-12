@@ -372,7 +372,11 @@ class RSCameraSimulator(Node, threading.Thread):
                 if goal_handle.is_cancel_requested:
                     goal_handle.canceled()
                     LOGGER.info('Goal canceled')
-                    return TriggeredCalibration.Result()
+                    result = TriggeredCalibration.Result()
+                    result.success = True
+                    result.error_msg = 'aborted'
+                    LOGGER.warning('Calibration aborted and senting status success and error message aborted. This needs to be ratified after understanding the actual implementation')
+                    return result
 
                 # Update Fibonacci sequence
                 feedback_msg.progress = float(i)
@@ -384,7 +388,7 @@ class RSCameraSimulator(Node, threading.Thread):
                 goal_handle.publish_feedback(feedback_msg)
 
                 # Sleep for demonstration purposes
-                time.sleep(0.1)
+                time.sleep(0.01)
 
             goal_handle.succeed()
 

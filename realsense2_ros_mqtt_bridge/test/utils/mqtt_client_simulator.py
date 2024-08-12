@@ -73,7 +73,6 @@ class MQTTClientSimulator:
         """
         msg_count = 1
         while True:
-            time.sleep(1)
             result = self.mqtt_client.publish(topic, msg, qos=2)
             # result: [0, 1]
             status = result[0]
@@ -84,6 +83,7 @@ class MQTTClientSimulator:
             msg_count += 1
             if msg_count > 1:
                 break
+            time.sleep(0.01)
 
     def on_message(self, client, userdata, msg):
         """
