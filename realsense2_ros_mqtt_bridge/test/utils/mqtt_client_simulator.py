@@ -716,7 +716,7 @@ class MQTTClientSimulator:
 
 
 
-    def send_triggered_calibration_request(self, camera_namespace, camera_name):
+    def send_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):
         """
         Send request to run triggered calibration action.
 
@@ -729,6 +729,9 @@ class MQTTClientSimulator:
             'camera_name': camera_name,
             'json':'calib run',
         }
+        if dryrun == True:
+            request_dict['json'] = 'calib dry run'
+        print(request_dict)
         j = json.dumps(request_dict)
         self.msg = None
         self.locked = True

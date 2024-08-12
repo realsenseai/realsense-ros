@@ -351,7 +351,7 @@ class RSCameraSimulator(Node, threading.Thread):
 
     def goal_callback(self, goal_request):
         """Accept or reject a client request to begin an action."""
-        LOGGER.info('Received goal request')
+        LOGGER.info(f'Received goal request {goal_request}')
         return GoalResponse.ACCEPT
 
     def cancel_callback(self, goal_handle):

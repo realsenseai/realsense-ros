@@ -47,17 +47,15 @@ def test_triggered_calibration():
         camera.create_triggered_calibration_action()
 
         sds.send_triggered_calibration_request(namespace, 
-            name)
+            name, dryrun=True)
         while True:
             response = sds.receive_triggered_calibration_response()
             LOGGER.debug(f"Response: {response}")
             if response['progress'] == 100.0:
-                assert response['calibration'] == "calib run", 'Unexpected calibration value received'
+                assert response['calibration'] == "calib dry run", 'Unexpected calibration value received'
                 break
 
         #print(response.payload)
-
-    #cleanup starts....
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -65,6 +63,8 @@ def test_triggered_calibration():
         LOGGER.error("Test failed")
         LOGGER.error(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
-    camera.stop()
-    LOGGER.info("Test completed")
-    #cleanup ends....
+    finally:
+        #cleanup starts....
+        camera.stop()
+        LOGGER.info("Test completed")
+        #cleanup ends....
