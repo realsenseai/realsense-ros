@@ -25,7 +25,7 @@ LOGGER = logging.getLogger()
 
 import pytest
 
-@pytest.mark.skip(reason="under development")
+#@pytest.mark.skip(reason="under development")
 def test_triggered_calibration():
     #initialization starts....
     try:
@@ -44,27 +44,20 @@ def test_triggered_calibration():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        camera.create_triggered_calibration_service()
+        camera.create_triggered_calibration_action()
 
-        sds.send_get_triggered_calibration_request(namespace, 
+        sds.send_triggered_calibration_request(namespace, 
             name)
-        
-        response = sds.receive_get_triggered_calibration_response()
-        Application_data = "Application data"
-        assert response.payload["success"] == "true", "Application config read failed"
-        sds.send_set_triggered_calibration_request(namespace, 
-            name,
-            Application_data)
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.debug(f"Response: {response}")
+            if response['progress'] == 100.0:
+                assert response['success'] == True, 'Triggered calibraton was not successful'
+                assert response['calibration'] == "calib run", 'Unexpected calibration value received'
+                break
 
-        response = sds.receive_set_triggered_calibration_response()
-        assert response.payload["success"] == "true", "Application config write failed"
-        
-        sds.send_get_triggered_calibration_request(namespace, 
-            name)
-        
-        response = sds.receive_get_triggered_calibration_response()
-        assert response.payload["success"] == "true", "Application config read failed"
-        assert response.payload["triggered_calibration"] == Application_data, "Written Application config is not matching with the read one"
+        #print(response.payload)
+
     #cleanup starts....
 
     except Exception as e:

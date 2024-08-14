@@ -41,15 +41,10 @@ LOGGER = logging.getLogger()
 import time
 
 class CameraClient(Node):
-    def __init__(self, namespace="robot1", name='c_333622320031'):
+    def __init__(self, testname, namespace="robot1", name='c_333622320031'):
         if not rclpy.ok():
             rclpy.init()
-        testname = name+"Test"
         super().__init__(testname)
-        action_name = f'/{namespace}/{name}/triggered_calibration'
-        self.action_client = ActionClient(self, TriggeredCalibration, action_name)
-        self.create_service_client_ifs(f'/{namespace}/{name}')
-        self.calibration_result = None
     
     def wait_for_node(self, node_name, timeout=8.0):
         start = time.time()
@@ -119,6 +114,18 @@ class CameraClient(Node):
             return None
         else:
             return value.bool_value
+        
+
+class TriggeredCalibrationCameraClient(CameraClient):
+    def __init__(self, namespace="robot1", name='c_333622320031'):
+        testname = name+"Test"
+        super().__init__(testname, namespace, name)
+        action_name = f'/{namespace}/{name}/triggered_calibration'
+        self.action_client = ActionClient(self, TriggeredCalibration, action_name)
+        self.create_service_client_ifs(f'/{namespace}/{name}')
+        self.calibration_result = None
+
+
     def prepare_for_calibration(self):
         self.set_integer_param('safety_camera.safety_mode',2)
         time.sleep(0.5)

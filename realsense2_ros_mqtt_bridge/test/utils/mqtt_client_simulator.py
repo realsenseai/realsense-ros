@@ -73,7 +73,6 @@ class MQTTClientSimulator:
         """
         msg_count = 1
         while True:
-            time.sleep(1)
             result = self.mqtt_client.publish(topic, msg, qos=2)
             # result: [0, 1]
             status = result[0]
@@ -84,6 +83,7 @@ class MQTTClientSimulator:
             msg_count += 1
             if msg_count > 1:
                 break
+            time.sleep(0.01)
 
     def on_message(self, client, userdata, msg):
         """
@@ -105,6 +105,7 @@ class MQTTClientSimulator:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
         self.mqtt_client.subscribe('set_parameter_response')
         self.mqtt_client.subscribe('get_frame_response')
@@ -666,9 +667,10 @@ class MQTTClientSimulator:
         self.send_set_application_config_request(camera_namespace, camera_name, application_config)
         return self.receive_set_application_config_response()
 
-    def send_triggered_calibration_request(self, camera_namespace, camera_name):
+
+    def send_get_device_info_request(self, camera_namespace, camera_name):
         """
-        Send request to run triggered calibration action.
+        Send a request to get the device info.
 
         Args:
             camera_namespace (str): The namespace of the camera.
@@ -679,6 +681,60 @@ class MQTTClientSimulator:
             'camera_name': camera_name,
         }
         j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_device_info_request')
+
+    def receive_get_device_info_response(self):
+        """
+        Send a request to get the device info.
+
+        Args:
+        """
+        msg = self.get_message()
+        assert msg.topic == "get_device_info_response", "Unexpected topic: get_device_info_response expected, received " + msg.topic
+        #payload = json.loads(msg.payload)
+        #LOGGER.info(msg.topic)
+        payload = json.loads(msg.payload)
+        '''
+        LOGGER.warning("payload[success] is not a string in get_device_info_response")
+        #assert payload["success"] == True, "get_device_info_response failed" + payload["err_msg"]
+        #assert payload["success"] == "true", "get_device_info_response failed" + payload["err_msg"]
+        '''
+        return payload
+
+    def get_device_info(self, camera_namespace, camera_name):
+        """
+        Send a request to get an application config.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        self.send_get_device_info_request(camera_namespace, camera_name)
+        return self.receive_get_device_info_response()
+
+
+
+
+    def send_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):
+        """
+        Send request to run triggered calibration action.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'json':'calib run',
+        }
+        if dryrun == True:
+            request_dict['json'] = 'calib dry run'
+        LOGGER.debug(f"triggered calib request:{request_dict}")
+        j = json.dumps(request_dict)
+        self.msg = None
+        self.locked = True
         self.publish(j, 'triggered_calibration_request')
     
     def receive_triggered_calibration_response(self):
@@ -690,6 +746,30 @@ class MQTTClientSimulator:
         while self.locked:
             pass
         msg  = self.msg
+        assert msg.topic == "triggered_calibration_response", "Unexpected topic: triggered_calibration_response expected, received " + msg.topic
         #multple responses expected
+        payload = json.loads(msg.payload)
+        LOGGER.debug(msg.payload)
+        if payload['progress'] != 100.0:
+            self.locked = True
         self.msg = None
-        return msg
+        return payload
+    
+    def abort_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):
+        """
+        Send request to run triggered calibration action.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'json':'calib abort',
+        }
+        LOGGER.debug(f"triggered calib request:{request_dict}")
+        j = json.dumps(request_dict)
+        self.msg = None
+        self.locked = True
+        self.publish(j, 'triggered_calibration_request')

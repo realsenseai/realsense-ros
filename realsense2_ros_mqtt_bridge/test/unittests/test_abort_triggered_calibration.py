@@ -23,10 +23,10 @@ import logging
 #LOGGER = logging.getLogger(__name__)
 LOGGER = logging.getLogger()
 
+import pytest
 
-
-
-def test_safety_preset():
+#@pytest.mark.skip(reason="under development")
+def test_triggered_calibration():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -44,27 +44,27 @@ def test_safety_preset():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        camera.create_safety_preset_service()
-        #for index in range(0,63):
-        for index in [0,1,10,36,62,63]:
-            sds.send_get_safety_preset_request(namespace, 
-                name, 
-                index)
-            
-            response = sds.receive_get_safety_preset_response()
-            assert response["preset"] == "Uninitialized", "Safety preset read failed"
-            sp = "Index is " + str(index)
-            sds.send_set_safety_preset_request(namespace, 
-                name,
-                sp,
-                index)
-            response = sds.receive_set_safety_preset_response()
-            
-            sds.send_get_safety_preset_request(namespace, 
-                name, 
-                index)
-            response = sds.receive_get_safety_preset_response()
-            assert response["preset"] == sp, "Written safety preset is not matching with the read one"
+        camera.create_triggered_calibration_action()
+
+        sds.send_triggered_calibration_request(namespace, 
+            name)
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.debug(f"Response: {response}")
+            if response['progress'] > 2.0:
+                sds.abort_triggered_calibration_request(namespace, name)
+                break
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.debug(f"Response: {response}")
+            if response['success'] == True:
+                break
+        assert response['error_msg'] == "aborted", 'Unexpected calibration value received'
+        LOGGER.warning(f"Test is incomplete, not sure what else should be checked (to be revisited once RSDEV-2647 and RSDEV-2615 are complete)")
+
+
+        #print(response.payload)
+
     #cleanup starts....
 
     except Exception as e:

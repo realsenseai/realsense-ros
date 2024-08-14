@@ -23,10 +23,10 @@ import logging
 #LOGGER = logging.getLogger(__name__)
 LOGGER = logging.getLogger()
 
+import pytest
 
-
-
-def test_safety_preset():
+#@pytest.mark.skip(reason="under development")
+def test_triggered_calibration():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -44,28 +44,20 @@ def test_safety_preset():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        camera.create_safety_preset_service()
-        #for index in range(0,63):
-        for index in [0,1,10,36,62,63]:
-            sds.send_get_safety_preset_request(namespace, 
-                name, 
-                index)
-            
-            response = sds.receive_get_safety_preset_response()
-            assert response["preset"] == "Uninitialized", "Safety preset read failed"
-            sp = "Index is " + str(index)
-            sds.send_set_safety_preset_request(namespace, 
-                name,
-                sp,
-                index)
-            response = sds.receive_set_safety_preset_response()
-            
-            sds.send_get_safety_preset_request(namespace, 
-                name, 
-                index)
-            response = sds.receive_get_safety_preset_response()
-            assert response["preset"] == sp, "Written safety preset is not matching with the read one"
-    #cleanup starts....
+        camera.create_triggered_calibration_action()
+
+        sds.send_triggered_calibration_request(namespace, 
+            name, dryrun=True)
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.debug(f"Response: {response}")
+            if response['progress'] == 100.0:
+                #should we check for health?
+                assert response['success'] == True, 'Triggered calibraton was not successful'
+                assert response['calibration'] == "calib dry run", 'Unexpected calibration value received'
+                break
+
+        #print(response.payload)
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -73,6 +65,8 @@ def test_safety_preset():
         LOGGER.error("Test failed")
         LOGGER.error(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
-    camera.stop()
-    LOGGER.info("Test completed")
-    #cleanup ends....
+    finally:
+        #cleanup starts....
+        camera.stop()
+        LOGGER.info("Test completed")
+        #cleanup ends....

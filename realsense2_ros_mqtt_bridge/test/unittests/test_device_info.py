@@ -26,7 +26,7 @@ LOGGER = logging.getLogger()
 
 
 
-def test_safety_preset():
+def test_device_info():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -44,27 +44,15 @@ def test_safety_preset():
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        camera.create_safety_preset_service()
-        #for index in range(0,63):
-        for index in [0,1,10,36,62,63]:
-            sds.send_get_safety_preset_request(namespace, 
-                name, 
-                index)
-            
-            response = sds.receive_get_safety_preset_response()
-            assert response["preset"] == "Uninitialized", "Safety preset read failed"
-            sp = "Index is " + str(index)
-            sds.send_set_safety_preset_request(namespace, 
-                name,
-                sp,
-                index)
-            response = sds.receive_set_safety_preset_response()
-            
-            sds.send_get_safety_preset_request(namespace, 
-                name, 
-                index)
-            response = sds.receive_get_safety_preset_response()
-            assert response["preset"] == sp, "Written safety preset is not matching with the read one"
+        camera.create_device_info_service()
+
+        sds.send_get_device_info_request(namespace, 
+            name)
+        
+        response = sds.receive_get_device_info_response()
+        assert response['device_name'] == 'Camera', "device_info read returned unexpected value in device_name: " + response['device_name']
+        assert response['serial_number'] == '1234', "device_info read returned unexpected value in serial_number: " + response['serial_number']
+        LOGGER.debug("response:", response)
     #cleanup starts....
 
     except Exception as e:
