@@ -176,11 +176,11 @@ class ParameterHandler(ServiceHandler):
 
         if result.successful:
             self.mqtt_ros_node.ROS_DEBUG('Parameter set successfully')
-            mqtt_response['success'] = 'true'
+            mqtt_response['success'] = True
             mqtt_response['error_msg'] = ''
         else:
             self.mqtt_ros_node.ROS_WARN('Failed to set parameter')
-            mqtt_response['success'] = 'false'
+            mqtt_response['success'] = False
             mqtt_response['error_msg'] = result.reason
 
         return mqtt_response
@@ -202,7 +202,7 @@ class ParameterHandler(ServiceHandler):
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
             'parameter_name': parameter_name,
-            'success': 'true',
+            'success': True,
             'error_msg': ''
         }
 
@@ -215,7 +215,7 @@ class ParameterHandler(ServiceHandler):
                 getattr(result, f'{result_type}_value'))
         else:
             self.mqtt_ros_node.ROS_WARN('Failed to retrieve parameter')
-            mqtt_response['success'] = 'false'
+            mqtt_response['success'] = False
             mqtt_response['error_msg'] = 'unsupported type'
 
         return mqtt_response

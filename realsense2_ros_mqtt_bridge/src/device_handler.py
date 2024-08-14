@@ -82,7 +82,7 @@ class DeviceHandler(ServiceHandler):
             camera_name_prefix)
 
         mqtt_response = {
-            'success': 'true',
+            'success': True,
             'error_msg': '',
             'available_nodes_count': str(nodes_count),
             'available_nodes': '[' + nodes_str + ']'

@@ -162,7 +162,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "enumerate_devices_response", "Unexpected topic: Enumerate device expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == "true", "Enumerate device failed" + payload["err_msg"]
+        assert payload["success"] == True, "Enumerate device failed" + payload["err_msg"]
         return payload
     
     def enumerate_devices(self, camera_namespace_prefix, camera_name_prefix):
@@ -212,7 +212,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_parameter_response", "Unexpected topic: set_param expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == "true", "set_param failed" + payload["err_msg"]
+        assert payload["success"] == True, "set_param failed" + payload["err_msg"]
         return payload
 
     def set_param(self, camera_namespace, camera_name,
@@ -261,7 +261,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_parameter_response", "Unexpected topic: get_param expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == "true", "get_param failed" + payload["err_msg"]
+        assert payload["success"] == True, "get_param failed" + payload["err_msg"]
         return payload
 
     def get_param(self, camera_namespace, camera_name, parameter_name):
@@ -343,9 +343,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_safety_preset_response", "Unexpected topic: set_safety_preset_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in set_safety_preset_response")
         assert payload["success"] == True, "set_safety_preset_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "set_safety_preset_response failed" + payload["err_msg"]
         return payload
 
 
@@ -376,9 +374,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_safety_preset_response", "Unexpected topic: get_safety_preset_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in get_safety_preset_response")
         assert payload["success"] == True, "get_safety_preset_response failed" + payload["err_msg"]
-        #aassert payload["success"] == "true", "get_safety_preset_response failed" + payload["err_msg"]
         return payload
 
     def get_safety_preset(self, camera_namespace, camera_name, index):
@@ -425,9 +421,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_safety_interface_config_response", "Unexpected topic: set_safety_interface_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in set_safety_interface_config_response")
         assert payload["success"] == True, "set_safety_interface_config_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "set_safety_interface_config_response failed" + payload["err_msg"]
         return payload
 
     def set_safety_interface_config(self, camera_namespace, camera_name, sp):
@@ -471,9 +465,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_safety_interface_config_response", "Unexpected topic: get_safety_interface_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in get_safety_interface_config_response")
         assert payload["success"] == True, "get_safety_interface_config_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "get_safety_interface_config_response failed" + payload["err_msg"]
         return payload
 
 
@@ -517,9 +509,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_calib_config_response", "Unexpected topic: get_calib_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in get_calib_config_response")
         assert payload["success"] == True, "get_calib_config_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "get_calib_config_response failed" + payload["err_msg"]
         return payload
 
     def get_calib_config(self, camera_namespace, camera_name):
@@ -561,9 +551,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_calib_config_response", "Unexpected topic: set_calib_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in set_calib_config_response")
         assert payload["success"] == True, "set_calib_config_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "set_calib_config_response failed" + payload["err_msg"]
         return payload
 
     def set_calib_config(self, camera_namespace, camera_name, calib_config):
@@ -604,9 +592,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_application_config_response", "Unexpected topic: get_application_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in get_application_config_response")
         assert payload["success"] == True, "get_application_config_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "get_application_config_response failed" + payload["err_msg"]
         return payload
 
     def get_application_config(self, camera_namespace, camera_name):
@@ -650,9 +636,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_application_config_response", "Unexpected topic: set_application_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.warning("payload[success] is not a string in set_application_config_response")
         assert payload["success"] == True, "set_application_config_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "set_application_config_response failed" + payload["err_msg"]
         return payload
 
     def set_application_config(self, camera_namespace, camera_name, application_config):
