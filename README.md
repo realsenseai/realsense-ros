@@ -876,7 +876,7 @@ Each of the above filters have it's own parameters, following the naming convent
 ### safety_interface_config_read:
   - Read safety interface config.
   - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigRead` for the full request/response fields.
-  - Call example: `ros2 service call /camera/camera/safety_interface_config_read realsense2_camera_msgs/srv/SafetyInterfaceConfigRead
+  - Call example: `ros2 service call /camera/camera/safety_interface_config_read realsense2_camera_msgs/srv/SafetyInterfaceConfigRead`
     <details>
     <summary>Click to see the full response of the call example</summary>
 
@@ -997,7 +997,7 @@ Each of the above filters have it's own parameters, following the naming convent
                 "l_0_sustained_rate_threshold": 20,
                 "l_1_total_threshold": 0,
                 "l_1_sustained_rate_threshold": 20,
-                "l_4_total_threshold": 0,
+                "l_2_total_threshold": 0,
                 "hkr_stl_timeout": 40,
                 "mcu_stl_timeout": 40,
                 "sustained_aicv_frame_drops": 0,
@@ -1020,7 +1020,7 @@ Each of the above filters have it's own parameters, following the naming convent
     <summary>Click to see full call example</summary>
 
     `
-    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27000001072883606]},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"gpio_stabilization_interval\":150,\"m12_safety_pins_configuration\":{\"gpio_0\":{\"direction\":0,\"functionality\":16},\"gpio_1\":{\"direction\":0,\"functionality\":17},\"gpio_2\":{\"direction\":1,\"functionality\":4},\"gpio_3\":{\"direction\":1,\"functionality\":5},\"gpio_4\":{\"direction\":1,\"functionality\":21},\"ground\":{\"direction\":0,\"functionality\":0},\"ossd1_a\":{\"direction\":1,\"functionality\":2},\"ossd1_b\":{\"direction\":1,\"functionality\":3},\"power\":{\"direction\":0,\"functionality\":1},\"preset1_a\":{\"direction\":0,\"functionality\":8},\"preset1_b\":{\"direction\":0,\"functionality\":9},\"preset2_a\":{\"direction\":0,\"functionality\":10},\"preset2_b\":{\"direction\":0,\"functionality\":11},\"preset3_a\":{\"direction\":0,\"functionality\":12},\"preset3_b\":{\"direction\":0,\"functionality\":13},\"preset4_a\":{\"direction\":0,\"functionality\":14},\"preset4_b\":{\"direction\":0,\"functionality\":15}},\"occupancy_grid_params\":{\"close_range_quorum\":82,\"grid_cell_seed\":55,\"long_range_quorum\":53,\"mid_range_quorum\":143},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"smcu_arbitration_params\":{\"hkr_stl_timeout\":40,\"l_0_sustained_rate_threshold\":20,\"l_0_total_threshold\":0,\"l_1_sustained_rate_threshold\":20,\"l_1_total_threshold\":0,\"l_4_total_threshold\":0,\"mcu_stl_timeout\":40,\"ossd_self_test_pulse_width\":1,\"sustained_aicv_frame_drops\":50}}}'}"
+    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27000001072883606]},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"gpio_stabilization_interval\":150,\"m12_safety_pins_configuration\":{\"gpio_0\":{\"direction\":0,\"functionality\":16},\"gpio_1\":{\"direction\":0,\"functionality\":17},\"gpio_2\":{\"direction\":1,\"functionality\":4},\"gpio_3\":{\"direction\":1,\"functionality\":5},\"gpio_4\":{\"direction\":1,\"functionality\":21},\"ground\":{\"direction\":0,\"functionality\":0},\"ossd1_a\":{\"direction\":1,\"functionality\":2},\"ossd1_b\":{\"direction\":1,\"functionality\":3},\"power\":{\"direction\":0,\"functionality\":1},\"preset1_a\":{\"direction\":0,\"functionality\":8},\"preset1_b\":{\"direction\":0,\"functionality\":9},\"preset2_a\":{\"direction\":0,\"functionality\":10},\"preset2_b\":{\"direction\":0,\"functionality\":11},\"preset3_a\":{\"direction\":0,\"functionality\":12},\"preset3_b\":{\"direction\":0,\"functionality\":13},\"preset4_a\":{\"direction\":0,\"functionality\":14},\"preset4_b\":{\"direction\":0,\"functionality\":15}},\"occupancy_grid_params\":{\"close_range_quorum\":82,\"grid_cell_seed\":55,\"long_range_quorum\":53,\"mid_range_quorum\":143},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"smcu_arbitration_params\":{\"hkr_stl_timeout\":40,\"l_0_sustained_rate_threshold\":20,\"l_0_total_threshold\":0,\"l_1_sustained_rate_threshold\":20,\"l_1_total_threshold\":0,\"l_2_total_threshold\":0,\"mcu_stl_timeout\":40,\"ossd_self_test_pulse_width\":1,\"sustained_aicv_frame_drops\":50}}}'}"
     `
     </details>
 
