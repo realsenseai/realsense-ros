@@ -661,8 +661,6 @@ Each of the above filters have it's own parameters, following the naming convent
 
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/jsons/calib_config_example.json)
-
 ### calib_config_write (for specific camera modules):
   - Write calibration config.
   - Note that writing calibration config is applicable only in Safey Service Mode
@@ -676,7 +674,7 @@ Each of the above filters have it's own parameters, following the naming convent
 
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/jsons/calib_config_example.json)
+  - [JSON calib config example](realsense2_camera/examples/d500_tables/calib_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.CalibConfigWrite_Response(success=True, error_message='')`
 
 ### safety_preset_read:
@@ -870,7 +868,7 @@ Each of the above filters have it's own parameters, following the naming convent
 
     </details>
 
-  - [JSON safety preset example](realsense2_camera/examples/safety_configs/safety_preset_example.json)
+  - [JSON safety preset example](realsense2_camera/examples/d500_tables/safety_preset_example.json)
   - Result example: `realsense2_camera_msgs.srv.SafetyPresetWrite_Response(success=True, error_message='')`
 
 ### safety_interface_config_read:
@@ -1024,7 +1022,7 @@ Each of the above filters have it's own parameters, following the naming convent
     `
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/safety_configs/safety_interface_config_example.json)
+  - [JSON safety interface config example](realsense2_camera/examples/d500_tables/safety_interface_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.SafetyInterfaceConfigWrite_Response(success=True, error_message='')`
 
 ### application_config_read:
@@ -1039,8 +1037,6 @@ Each of the above filters have it's own parameters, following the naming convent
 
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/jsons/application_config_example.json)
-
 ### application_config_write:
   - Write application config.
   - Note that writing application config is applicable only in Safey Service Mode
@@ -1054,7 +1050,7 @@ Each of the above filters have it's own parameters, following the naming convent
 
     </details>
 
-  - [JSON safety interface config example](realsense2_camera/examples/jsons/application_config_example.json)
+  - [JSON application config example](realsense2_camera/examples/d500_tables/application_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.ApplicationonfigWrite_Response(success=True, error_message='')`
 
 <hr>
