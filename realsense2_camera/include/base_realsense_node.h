@@ -197,7 +197,6 @@ namespace realsense2_camera
                                  const std::string& child_frame_id);
         void eraseTransformMsgs(const stream_index_pair& sip, const rs2::stream_profile& profile);
         void setup();
-        template<class T> void performActionInServiceMode(T action);
 
         //Safety Camera
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetRead>::SharedPtr _safety_preset_read_srv;

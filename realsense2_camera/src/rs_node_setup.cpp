@@ -80,32 +80,6 @@ void BaseRealSenseNode::monitoringProfileChanges()
     _monitoring_pc = std::make_shared<std::thread>(func);
 }
 
-template<class T>
-void BaseRealSenseNode::performActionInServiceMode(T action)
-{
-    auto safety_mode = RS2_SAFETY_MODE_RUN;
-
-    // Deleter to revert the safety mode to its original value.
-    auto deleter_to_revert_safety_mode = std::unique_ptr<rs2_safety_mode, std::function<void(rs2_safety_mode*)>>(&safety_mode,
-                                    [&](rs2_safety_mode* revert_safety_mode_to){
-                                            if (revert_safety_mode_to && _safety_sensor)
-                                            {
-                                                _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, *revert_safety_mode_to);
-                                            }
-                                        });
-
-    if (_safety_sensor)
-    {
-        safety_mode = static_cast<rs2_safety_mode>(_safety_sensor->get_option(RS2_OPTION_SAFETY_MODE));
-        if (safety_mode != RS2_SAFETY_MODE_SERVICE)
-        {
-            _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
-        }
-    }
-
-    action();
-}
-
 void BaseRealSenseNode::setAvailableSensors()
 {
     _dev_sensors = _dev.query_sensors();
@@ -123,14 +97,15 @@ void BaseRealSenseNode::setAvailableSensors()
                 std::string json_file_content = ss.str();
 
                 auto adv = _dev.as<rs400::advanced_mode>();
-
-                // Preset can only be loaded in SERVICE mode.
-                performActionInServiceMode([&]()
+                try
                 {
                     adv.load_json(json_file_content);
-                });
-
-                ROS_INFO_STREAM("JSON file is loaded! (" << _json_file_path << ")");
+                    ROS_INFO_STREAM("JSON file is loaded! (" << _json_file_path << ")");
+                }
+                catch (std::exception &e)
+                {
+                    ROS_WARN_STREAM("Failed to load preset from JSON: " << e.what());
+                }
             }
             else
                 ROS_WARN_STREAM("JSON file provided doesn't exist! (" << _json_file_path << ")");
@@ -192,12 +167,7 @@ void BaseRealSenseNode::setAvailableSensors()
         if (sensor.is<rs2::depth_sensor>())
         {
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
-
-            // Few Depth controls can only be updated in the SERVICE mode.
-            performActionInServiceMode([&]()
-            {
-                rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
-            });
+            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
         }
         else if (sensor.is<rs2::color_sensor>() ||
             sensor.is<rs2::safety_sensor>() ||
