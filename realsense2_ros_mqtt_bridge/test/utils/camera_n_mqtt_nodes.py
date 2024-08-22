@@ -58,7 +58,6 @@ class CameraNMqttNodes(Node):#, threading.Thread):
         if self.dummy == True:
             self.wait_for_node("realsense_ros_mqtt_bridge_node")
             return
-        
     def stop(self):
         return
     def create_device_info_service(self):
@@ -113,7 +112,6 @@ def get_camera_device_info(device_type, serial_no):
             return None
         split_line = short_data[line_no].split()
         device_info['firmware_version'] = split_line[3]
-
         #5th line contains physical port
         line_no = line_found+5
         if not "Physical Port" in short_data[line_no]:
@@ -205,7 +203,7 @@ def launch_descr_with_parameters(request):
     changed_params = request.param
     params = get_default_params()
     for key, value in changed_params.items():
-        params[key] = value   
+        params[key] = value
     if  'camera_name' not in changed_params:
         params['camera_name'] = 'camera_with_params'
     device_type = LaunchConfiguration('device_type', default=params['device_type'])

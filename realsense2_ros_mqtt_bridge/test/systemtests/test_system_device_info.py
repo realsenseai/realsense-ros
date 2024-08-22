@@ -62,7 +62,6 @@ def test_system_device_info(launch_descr_with_parameters):
 
         sds.send_get_device_info_request(namespace, 
             name)
-        
         response = sds.receive_get_device_info_response()
         LOGGER.info(f"response:{response}")
         device_info= camera_n_mqtt_nodes.get_camera_device_info(params['device_type'], response['serial_number'])
