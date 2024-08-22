@@ -51,7 +51,7 @@ def test_system_device_info(launch_descr_with_parameters):
 
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
             os.system("ros2 node list")
-    #initialization ends....
+        #initialization ends....
 
         LOGGER.info("Testing enumerate_devices")
         sds.send_enumerate_devices_request(namespace, name)

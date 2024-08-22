@@ -187,7 +187,6 @@ def get_rs_node_description(params):
     comment out the '#prefix' line, if you like gdb and want to debug the code, you may have to do more
     if you have more than one rs node.
     '''
-
     return launch_ros.actions.Node(
         package='realsense2_camera',
         namespace=params["camera_namespace"],
