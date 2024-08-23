@@ -81,18 +81,18 @@ def get_camera_device_info(device_type, serial_no):
         Device Name                   Serial Number       Firmware Version
         Intel RealSense D585S         416422320067        8.17.17151.218
         Device info: 
-            Name                          : 	Intel RealSense D585S
-            Serial Number                 : 	416422320067
-            Firmware Version              : 	8.17.17151.218
-            Physical Port                 : 	/sys/devices/pci0000:00/0000:00:14.0/usb2/2-5/2-5:1.0/video4linux/video0
-            Debug Op Code                 : 	180
-            Advanced Mode                 : 	NO
-            Product Id                    : 	0B6B
-            Camera Locked                 : 	YES
-            Usb Type Descriptor           : 	3.2
-            Product Line                  : 	D500
-            Firmware Update Id            : 	416422320067
-            Smcu Fw Version               : 	2.0.6.76
+            Name                          : Intel RealSense D585S
+            Serial Number                 : 416422320067
+            Firmware Version              : 8.17.17151.218
+            Physical Port                 : /sys/devices/pci0000:00/0000:00:14.0/usb2/2-5/2-5:1.0/video4linux/video0
+            Debug Op Code                 : 180
+            Advanced Mode                 : NO
+            Product Id                    : 0B6B
+            Camera Locked                 : YES
+            Usb Type Descriptor           : 3.2
+            Product Line                  : D500
+            Firmware Update Id            : 416422320067
+            Smcu Fw Version               : 2.0.6.76
         '''
         #if this order changes, test will fail
         length = len(short_data)
