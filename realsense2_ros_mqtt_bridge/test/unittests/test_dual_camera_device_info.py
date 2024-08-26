@@ -26,7 +26,7 @@ LOGGER = logging.getLogger()
 
 
 
-def test_device_info():
+def test_dual_camera_device_info():
     #initialization starts....
     try:
         namespace = 'camera'
@@ -38,6 +38,7 @@ def test_device_info():
         sds = MQTTClientSimulator("localhost", 1883)
         sds.start_client()
         camera.start()
+        camera1.start()
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
             os.system("ros2 node list")
     #initialization ends....
@@ -77,5 +78,6 @@ def test_device_info():
         LOGGER.error(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
     camera.stop()
+    camera1.stop()
     LOGGER.info("Test completed")
     #cleanup ends....
