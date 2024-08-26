@@ -69,7 +69,6 @@ def test_system_device_info(launch_descr_with_parameters):
         for key, value in device_info.items():
             LOGGER.info(f"checking:{key}")
             assert response[key] == value, f"device_info read returned unexpected value in {key}:Received {response['serial_number']}"
-        assert response['firmware_version'] == device_info['firmware_version'], "device_info read returned unexpected value in firmware_version: " + response['firmware_version']
     #cleanup starts....
 
     except Exception as e:

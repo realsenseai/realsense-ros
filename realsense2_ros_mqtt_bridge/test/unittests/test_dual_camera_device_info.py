@@ -69,6 +69,16 @@ def test_dual_camera_device_info():
         response = sds.receive_get_device_info_response()
         assert response['device_name'] == 'Camera', "device_info read returned unexpected value in device_name: " + response['device_name']
         assert response['serial_number'] == '1234', "device_info read returned unexpected value in serial_number: " + response['serial_number']
+
+
+        sds.send_get_device_info_request(namespace, 
+            name)
+        
+        response = sds.receive_get_device_info_response()
+        assert response['device_name'] == 'Camera', "device_info read returned unexpected value in device_name: " + response['device_name']
+        assert response['serial_number'] == '1234', "device_info read returned unexpected value in serial_number: " + response['serial_number']
+        LOGGER.debug("response:", response)
+
     #cleanup starts....
 
     except Exception as e:
