@@ -93,6 +93,7 @@ void BaseRealSenseNode::TriggeredCalibrationExecute(const std::shared_ptr<GoalHa
         auto progress_callback = [&](const float progress) {
                 _progress = progress;
                 goal_handle->publish_feedback(feedback);
+                ROS_INFO("TriggeredCalibrationAction: Published feedback... progress = %f", progress);
         };
 
         auto ans = ac_dev.run_on_chip_calibration(goal->json,
