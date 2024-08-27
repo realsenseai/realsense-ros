@@ -46,6 +46,16 @@ def test_triggered_calibration():
 
         camera.create_triggered_calibration_action()
 
+        #just call abort without a calibration run
+        sds.abort_triggered_calibration_request(namespace, name)
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.debug(f"Response: {response}")
+            if response['success'] == True:
+                break
+        assert response['error_msg'] == "No goal in progress", 'Unexpected error message received ' + response['error_msg']
+
+
         sds.send_triggered_calibration_request(namespace, 
             name)
         while True:
@@ -59,7 +69,8 @@ def test_triggered_calibration():
             LOGGER.debug(f"Response: {response}")
             if response['success'] == True:
                 break
-        assert response['error_msg'] == "aborted", 'Unexpected calibration value received'
+        assert response['error_msg'] == "", 'Unexpected error message received ' + response['error_msg']
+        assert response['calibration'] == "{}", 'Unexpected calibration value received ' + response['calibration']
         LOGGER.warning(f"Test is incomplete, not sure what else should be checked (to be revisited once RSDEV-2647 and RSDEV-2615 are complete)")
 
 
