@@ -730,13 +730,14 @@ class MQTTClientSimulator:
         while self.locked:
             pass
         msg  = self.msg
+        self.msg = None
+        LOGGER.info(f'response received: {msg.topic}')
         assert msg.topic == "triggered_calibration_response", "Unexpected topic: triggered_calibration_response expected, received " + msg.topic
         #multple responses expected
         payload = json.loads(msg.payload)
         LOGGER.debug(msg.payload)
         if payload['progress'] != 100.0:
             self.locked = True
-        self.msg = None
         return payload
     
     def abort_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):

@@ -59,7 +59,8 @@ def test_triggered_calibration():
             LOGGER.debug(f"Response: {response}")
             if response['success'] == True:
                 break
-        assert response['error_msg'] == "aborted", 'Unexpected calibration value received'
+        assert response['error_msg'] == "", 'Unexpected error message received ' + response['error_msg']
+        assert response['calibration'] == "{}", 'Unexpected calibration value received ' + response['calibration']
         LOGGER.warning(f"Test is incomplete, not sure what else should be checked (to be revisited once RSDEV-2647 and RSDEV-2615 are complete)")
 
 
