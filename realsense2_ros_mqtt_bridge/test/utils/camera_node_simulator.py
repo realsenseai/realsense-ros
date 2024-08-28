@@ -373,8 +373,9 @@ class RSCameraSimulator(Node, threading.Thread):
                     goal_handle.canceled()
                     LOGGER.info('Goal canceled')
                     result = TriggeredCalibration.Result()
-                    result.success = True
-                    result.error_msg = 'aborted'
+                    result.success = False
+                    result.error_msg = 'Canceled'
+                    result.calibration = '{}'
                     LOGGER.warning('Calibration aborted and senting status success and error message aborted. This needs to be ratified after understanding the actual implementation')
                     return result
 

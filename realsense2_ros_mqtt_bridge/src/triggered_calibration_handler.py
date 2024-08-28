@@ -24,25 +24,26 @@ class TriggeredCalibrationHandler:
         self.camera_name = None
         self.mqtt_ros_node = mqtt_ros_node
 
-    def ros_action_send_goal(self):
-        goal_msg = TriggeredCalibration.Goal()
+    def ros_action_send_goal(self, goal):
+        goal_msg = TriggeredCalibration.Goal(json=goal)
         self.action_client.wait_for_server()
         self.send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.ros_action_feedback_callback)
         self.send_goal_future.add_done_callback(self.ros_action_goal_response_callback)
 
     def ros_action_goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
+        self.goal_handle = future.result()
+        if not self.goal_handle.accepted:
             self.mqtt_ros_node.ROS_DEBUG('TriggeredCalibrationHandler: Goal rejected')
             return
 
         self.mqtt_ros_node.ROS_DEBUG('TriggeredCalibrationHandler: Goal accepted')
 
-        self.get_result_future = goal_handle.get_result_async()
+        self.get_result_future = self.goal_handle.get_result_async()
         self.get_result_future.add_done_callback(self.ros_action_result_callback)
 
     def ros_action_result_callback(self, future):
         result = future.result().result
+        self.mqtt_ros_node.ROS_DEBUG('ros_action_result_callback result{result}')
         self.mqtt_ros_node.ROS_DEBUG('Success: {0}'.format(result.success))
         self.mqtt_ros_node.ROS_DEBUG('Error: {0}'.format(result.error_msg))
         self.mqtt_ros_node.ROS_DEBUG('Calibration: {0}'.format(result.calibration))
@@ -63,6 +64,7 @@ class TriggeredCalibrationHandler:
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('triggered_calibration_response message sent')
         self.action_client.destroy()
+        self.action_client = None
 
     def ros_action_feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
@@ -84,10 +86,31 @@ class TriggeredCalibrationHandler:
     def handle_triggered_calibration_request(self, mqtt_request):
         self.mqtt_ros_node.ROS_DEBUG('triggered_calibration_request \
             message received')
+        if mqtt_request['json'] == 'calib abort':
+            #received am abort request, check if there was a pending goal.
+            if self.action_client is None or self.goal_handle is None:
+                self.mqtt_ros_node.ROS_DEBUG("No goal in progress, cancelled too early?")
+                mqtt_response = {
+                    'camera_namespace': self.camera_namespace,
+                    'camera_name': self.camera_name,
+                    'success': True,
+                    'error_msg': "No goal in progress, cancelled too early?",
+                    'calibration': '{}',
+                    'health': '0',
+                    'progress': 100.0
+                }
+                self.mqtt_ros_node.mqtt_client.publish('triggered_calibration_response',
+                                               json.dumps(mqtt_response),
+                                               qos=2)
+            else:
+                #cancel the goal in progress
+                self.mqtt_ros_node.ROS_DEBUG("cancelling the goal..")
+                future = self.goal_handle.cancel_goal_async()
+        else:
+            #all the requests other abort request is passed to the ActionServer 
+            self.camera_namespace = mqtt_request['camera_namespace']
+            self.camera_name = mqtt_request['camera_name']
+            action_name = f'/{self.camera_namespace}/{self.camera_name}/triggered_calibration'
 
-        self.camera_namespace = mqtt_request['camera_namespace']
-        self.camera_name = mqtt_request['camera_name']
-        action_name = f'/{self.camera_namespace}/{self.camera_name}/triggered_calibration'
-
-        self.action_client = ActionClient(self.mqtt_ros_node, TriggeredCalibration, action_name)
-        self.ros_action_send_goal()
+            self.action_client = ActionClient(self.mqtt_ros_node, TriggeredCalibration, action_name)
+            self.ros_action_send_goal(mqtt_request['json'])

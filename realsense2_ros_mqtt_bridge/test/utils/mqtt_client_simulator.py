@@ -132,7 +132,9 @@ class MQTTClientSimulator:
                 LOGGER.debug("Waiting for message..")
                 print_once = False
             pass
-        return self.msg
+        msg = self.msg
+        self.msg = None
+        return msg
 
 
     def send_enumerate_devices_request(self, camera_namespace_prefix, camera_name_prefix):
@@ -231,6 +233,15 @@ class MQTTClientSimulator:
                   parameter_name, parameter_value, parameter_type)
         return self.receive_set_param_response()
 
+    def set_integer_param(self, camera_namespace, camera_name,
+                  parameter_name, parameter_value):
+        return self.set_param(camera_namespace, camera_name,
+                  parameter_name, str(parameter_value), parameter_type="int")
+
+    def set_bool_param(self, camera_namespace, camera_name,
+                  parameter_name, parameter_value):
+        return self.set_param(camera_namespace, camera_name,
+                  parameter_name, str(parameter_value), parameter_type="boolean")
     
     def send_get_param_request(self, camera_namespace, camera_name, parameter_name):
         """
@@ -275,7 +286,8 @@ class MQTTClientSimulator:
         """
         self.send_get_param_request(camera_namespace, camera_name, parameter_name)
         return self.receive_get_param_response()
-    
+
+
     def send_get_frame_request(self, camera_namespace, camera_name, stream_name):
         """
         Send a request to get a frame.
@@ -727,16 +739,14 @@ class MQTTClientSimulator:
 
         Args:
         """
-        while self.locked:
-            pass
-        msg  = self.msg
+        msg  = self.get_message()
+        assert msg is not None, "Invalid message received"
+        LOGGER.info(f'response received: {msg.topic}')
         assert msg.topic == "triggered_calibration_response", "Unexpected topic: triggered_calibration_response expected, received " + msg.topic
         #multple responses expected
         payload = json.loads(msg.payload)
         LOGGER.debug(msg.payload)
-        if payload['progress'] != 100.0:
-            self.locked = True
-        self.msg = None
+        self.locked = True
         return payload
     
     def abort_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):
@@ -757,3 +767,53 @@ class MQTTClientSimulator:
         self.msg = None
         self.locked = True
         self.publish(j, 'triggered_calibration_request')
+
+    def prepare_for_calibration(self, camera_namespace, camera_name):
+        self.set_integer_param(camera_namespace, camera_name, 'safety_camera.safety_mode',2)
+        time.sleep(0.5)
+        LOGGER.info("Param safety_camera.safety_mode: %s", str(self.get_param(camera_namespace, camera_name, 'safety_camera.safety_mode')))
+        # switch to visual preset #1
+        self.set_integer_param(camera_namespace, camera_name, 'depth_module.visual_preset',1)
+        time.sleep(0.5)
+        LOGGER.info("Param depth_module.visual_preset: %s", self.get_param(camera_namespace, camera_name, 'depth_module.visual_preset'))
+
+        # enable emitter
+        self.set_bool_param(camera_namespace, camera_name, 'depth_module.emitter_enabled',True)
+        time.sleep(0.5)
+        LOGGER.info("Param depth_module.emitter_enabled: %s", self.get_param(camera_namespace, camera_name, 'depth_module.emitter_enabled'))
+
+        # enable auto exposuretc_done   CAMERA_NAME,
+        self.set_bool_param(camera_namespace, camera_name,  'depth_module.enable_auto_exposure',True)
+        time.sleep(0.5)
+        LOGGER.info("Param depth_module.enable_auto_exposure: %s", self.get_param(camera_namespace, camera_name, 'depth_module.enable_auto_exposure'))
+
+        # turn off depth streaming
+        self.set_bool_param(camera_namespace, camera_name, 'enable_depth',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_depth: %s", self.get_param(camera_namespace, camera_name, 'enable_depth'))
+        
+        # turn off infra1 streaming
+        self.set_bool_param(camera_namespace, camera_name, 'enable_infra1',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_infra1: %s", self.get_param(camera_namespace, camera_name, 'enable_infra1'))
+        # turn off infra2 streaming
+        self.set_bool_param(camera_namespace, camera_name, 'enable_infra2',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_infra2: %s", self.get_param(camera_namespace, camera_name, 'enable_infra2'))
+        # turn off safety streaming
+        self.set_bool_param(camera_namespace, camera_name, 'enable_safety',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_safety: %s", self.get_param(camera_namespace, camera_name, 'enable_safety'))
+        # turn off occupancy streaming
+        self.set_bool_param(camera_namespace, camera_name, 'enable_occupancy',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_occupancy: %s", self.get_param(camera_namespace, camera_name, 'enable_occupancy'))
+
+        self.set_bool_param(camera_namespace, camera_name, 'enable_color',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_color: %s", self.get_param(camera_namespace, camera_name, 'enable_color'))
+
+        # turn off lpcl streaming
+        self.set_bool_param(camera_namespace, camera_name, 'enable_labeled_point_cloud',False)
+        time.sleep(0.5)
+        LOGGER.info("Param enable_labeled_point_cloud: %s", self.get_param(camera_namespace, camera_name, 'enable_labeled_point_cloud'))

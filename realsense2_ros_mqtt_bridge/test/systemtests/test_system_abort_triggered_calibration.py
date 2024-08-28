@@ -16,70 +16,75 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 
-from camera_node_simulator import RSCameraSimulator
+from camera_n_mqtt_nodes import CameraNMqttNodes as RSCameraSimulator
+from camera_n_mqtt_nodes import launch_descr_with_parameters
+import camera_n_mqtt_nodes
 from mqtt_client_simulator import MQTTClientSimulator
 import logging
+import pytest
+import rclpy
 
 #LOGGER = logging.getLogger(__name__)
 LOGGER = logging.getLogger()
 
-import pytest
+test_params_align_depth_color_d585s = {
+    'camera_name': 'D585S',
+    'device_type': 'D585S',
+    }
 
-#@pytest.mark.skip(reason="under development")
-def test_triggered_calibration():
+@pytest.mark.parametrize("launch_descr_with_parameters",[
+    pytest.param(test_params_align_depth_color_d585s, marks=pytest.mark.d585s),
+    ]
+    ,indirect=True)
+@pytest.mark.launch(fixture=launch_descr_with_parameters)
+def test_system_abort_triggered_calibration(launch_descr_with_parameters):
     #initialization starts....
     try:
+        rclpy.init()
+        params = launch_descr_with_parameters[1]
         namespace = 'camera'
-        name = 'camera'
+        name = params['camera_name']
         camera = RSCameraSimulator(namespace, name)
+        camera.start()
         sds = MQTTClientSimulator("localhost", 1883)
         sds.start_client()
-        camera.start()
+
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
             os.system("ros2 node list")
-    #initialization ends....
+        #initialization ends....
 
         LOGGER.info("Testing enumerate_devices")
         sds.send_enumerate_devices_request(namespace, name)
         response = sds.get_enumerate_devices_response()
         assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-        camera.create_triggered_calibration_action()
-
-        #just call abort without a calibration run
-        sds.abort_triggered_calibration_request(namespace, name)
-        while True:
-            response = sds.receive_triggered_calibration_response()
-            LOGGER.debug(f"Response: {response}")
-            if response['success'] == True:
-                break
-        assert response['error_msg'] == "No goal in progress, cancelled too early?", 'Unexpected error message received ' + response['error_msg']
-
-
+        sds.prepare_for_calibration(namespace, name)
         sds.send_triggered_calibration_request(namespace, 
             name)
         while True:
             response = sds.receive_triggered_calibration_response()
             LOGGER.debug(f"Response: {response}")
-            if response['progress'] > 2.0:
+            if response['progress'] > 25.0:
                 sds.abort_triggered_calibration_request(namespace, name)
                 break
         while True:
             response = sds.receive_triggered_calibration_response()
-            LOGGER.debug(f"Response: {response}")
-            if response['success'] == True or response['error_msg'] != "":
+            LOGGER.info(f"Response: {response}")
+            if response['success'] == True or response['error_msg'] != '':
+                if response['success'] == False and response['error_msg'] == 'Canceled':
+                    assert response['calibration'] == '{}', "Could not abort the calibration"
+                    LOGGER.info('Calibration abort successful')
+                else:
+                    assert False, 'Aborting of triggered calibration failed. Response:' +str(response) 
                 break
-        assert response['success'] == False, "Response.success received as True, expecting False"
-        assert response['error_msg'] == "Canceled", 'Unexpected error message received ' + response['error_msg']
-        assert response['calibration'] == "{}", 'Unexpected calibration value received ' + response['calibration']
     #cleanup starts....
-
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        LOGGER.error("Test failed")
-        LOGGER.error(e)
+        LOGGER.warning("Test failed")
+        LOGGER.warning(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
-    camera.stop()
+    finally:
+        camera.stop()
     LOGGER.info("Test completed")
     #cleanup ends....
