@@ -37,7 +37,7 @@ test_params_align_depth_color_d585s = {
     ]
     ,indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
-def test_system_triggered_calibration(launch_descr_with_parameters):
+def test_system_dryrun_calibration(launch_descr_with_parameters):
     #initialization starts....
     try:
         rclpy.init()
@@ -61,7 +61,8 @@ def test_system_triggered_calibration(launch_descr_with_parameters):
         sds.prepare_for_calibration(namespace, name)
         
         sds.send_triggered_calibration_request(namespace, 
-            name)
+            name,
+            dryrun=True)
         while True:
             response = sds.receive_triggered_calibration_response()
             LOGGER.info(f"Response: {response}")

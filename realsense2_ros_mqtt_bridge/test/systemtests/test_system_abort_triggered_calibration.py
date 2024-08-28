@@ -64,18 +64,20 @@ def test_system_abort_triggered_calibration(launch_descr_with_parameters):
         while True:
             response = sds.receive_triggered_calibration_response()
             LOGGER.debug(f"Response: {response}")
-            if response['progress'] > 2.0:
+            if response['progress'] > 25.0:
                 sds.abort_triggered_calibration_request(namespace, name)
                 break
         while True:
             response = sds.receive_triggered_calibration_response()
-            LOGGER.debug(f"Response: {response}")
-            if response['success'] == True:
+            LOGGER.info(f"Response: {response}")
+            if response['success'] == True or response['error_msg'] != '':
+                if response['success'] == False and response['error_msg'] == 'Canceled':
+                    assert response['calibration'] == '{}', "Could not abort the calibration"
+                    LOGGER.info('Calibration abort successful')
+                else:
+                    assert False, 'Aborting of triggered calibration failed. Response:' +str(response) 
                 break
-        assert response['error_msg'] == "", 'Unexpected error message received ' + response['error_msg']
-        assert response['calibration'] == "{}", 'Unexpected calibration value received ' + response['calibration']
     #cleanup starts....
-
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
