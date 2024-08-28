@@ -746,8 +746,7 @@ class MQTTClientSimulator:
         #multple responses expected
         payload = json.loads(msg.payload)
         LOGGER.debug(msg.payload)
-        if payload['progress'] != 100.0:
-            self.locked = True
+        self.locked = True
         return payload
     
     def abort_triggered_calibration_request(self, camera_namespace, camera_name, dryrun=False):

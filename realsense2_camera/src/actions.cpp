@@ -83,7 +83,7 @@ void BaseRealSenseNode::TriggeredCalibrationExecute(const std::shared_ptr<GoalHa
     auto feedback = std::make_shared<TriggeredCalibration::Feedback>();
     float & _progress = feedback->progress;
     auto result = std::make_shared<TriggeredCalibration::Result>();
-
+    bool cancelled = false;
     try
     {
         rs2::auto_calibrated_device ac_dev = _dev.as<auto_calibrated_device>();
@@ -91,9 +91,24 @@ void BaseRealSenseNode::TriggeredCalibrationExecute(const std::shared_ptr<GoalHa
         int timeout_ms = 120000;  // 2 minutes timout
 
         auto progress_callback = [&](const float progress) {
+                if (goal_handle->is_canceling()) {
+                    if(!cancelled){
+                        ROS_INFO("Goal Canceled");
+                        auto abort_callback = [&](const float progress) {
+                            ROS_INFO("Abort progress callback called with progress %f", progress);
+                        };
+                        rs2::auto_calibrated_device ac_dev = _dev.as<auto_calibrated_device>();
+                        auto ans = ac_dev.run_on_chip_calibration("calib abort",
+                                        &health,
+                                        abort_callback,
+                                        timeout_ms);
+                        cancelled = true;
+                    }
+                    return;
+                }
                 _progress = progress;
                 goal_handle->publish_feedback(feedback);
-                ROS_INFO("TriggeredCalibrationAction: Published feedback... progress = %f", progress);
+                ROS_DEBUG("TriggeredCalibrationAction: Published feedback... progress = %f", progress);
         };
 
         auto ans = ac_dev.run_on_chip_calibration(goal->json,
@@ -101,11 +116,10 @@ void BaseRealSenseNode::TriggeredCalibrationExecute(const std::shared_ptr<GoalHa
                                                 progress_callback,
                                                 timeout_ms);
 
-        // the new calibration is the result without the first 3 bytes
-        rs2::calibration_table new_calib = std::vector<uint8_t>(ans.begin() + 3, ans.end());
-
         if (rclcpp::ok() && _progress == 100.0)
         {
+            // the new calibration is the result without the first 3 bytes
+            rs2::calibration_table new_calib = std::vector<uint8_t>(ans.begin() + 3, ans.end());
             result->calibration = vectorToJsonString(new_calib);
             result->health = health;
             result->success = true;
