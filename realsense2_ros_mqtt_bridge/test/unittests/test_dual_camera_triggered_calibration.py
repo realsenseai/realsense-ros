@@ -23,18 +23,21 @@ import logging
 #LOGGER = logging.getLogger(__name__)
 LOGGER = logging.getLogger()
 
-import pytest
 
-#@pytest.mark.skip(reason="under development")
-def test_triggered_calibration():
+
+
+def test_dual_camera_triggered_calibration():
     #initialization starts....
     try:
         namespace = 'camera'
-        name = 'camera'
-        camera = RSCameraSimulator(namespace, name)
+        name = 'camera2'
+        camera2 = RSCameraSimulator(namespace, name)
+        name1 = 'camera1'
+        camera1 = RSCameraSimulator(namespace, name1)
         sds = MQTTClientSimulator("localhost", 1883)
         sds.start_client()
-        camera.start()
+        camera2.start()
+        camera1.start()
         if LOGGER.getEffectiveLevel() <= logging.DEBUG:
             os.system("ros2 node list")
     #initialization ends....
@@ -42,16 +45,31 @@ def test_triggered_calibration():
         LOGGER.info("Testing enumerate_devices")
         sds.send_enumerate_devices_request(namespace, name)
         response = sds.get_enumerate_devices_response()
-        assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
+        assert int(response["available_nodes_count"]) > 0, f"Enumerate device failed, couldn't find the device {name}"
 
-        camera.create_triggered_calibration_action()
+        sds.send_enumerate_devices_request(namespace, name1)
+        response = sds.get_enumerate_devices_response()
+        assert int(response["available_nodes_count"]) > 0, f"Enumerate device failed, couldn't find the device {name1}"
+
+        camera2.create_triggered_calibration_action()
+        camera1.create_triggered_calibration_action()
 
         sds.send_triggered_calibration_request(namespace, 
             name)
+
         while True:
             response = sds.receive_triggered_calibration_response()
-            LOGGER.debug(f"Response: {response}")
-            if response['progress'] == 100.0:
+            LOGGER.info(f"Response: {response}")
+            if response['progress'] > 5.0:
+                break
+
+        sds.send_triggered_calibration_request(namespace, 
+            name1)
+
+        while True:
+            response = sds.receive_triggered_calibration_response()
+            LOGGER.info(f"Response: {response}")
+            if response['progress'] == 100.0 and response['camera_name'] == 'camera2':
                 assert response['success'] == True, 'Triggered calibraton was not successful'
                 assert response['calibration'] == "calib run", 'Unexpected calibration value received'
                 break
@@ -61,9 +79,10 @@ def test_triggered_calibration():
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        LOGGER.warning("Test failed")
+        LOGGER.warning(e)
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
-        LOGGER.error("Test failed")
-        LOGGER.error(e)
-    camera.stop()
+    camera2.stop()
+    camera1.stop()
     LOGGER.info("Test completed")
     #cleanup ends....

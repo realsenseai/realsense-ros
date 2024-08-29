@@ -1,0 +1,1096 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-8.3.2, pluggy-1.5.0
+rootdir: /home/nairps/ros2_ws/src/realsense-ros-private/realsense2_ros_mqtt_bridge
+plugins: launch-testing-2.0.4, ament-xmllint-0.14.4, ament-lint-0.14.4, launch-testing-ros-0.24.1, ament-copyright-0.14.4, launch-pytest-2.0.4, ament-pep257-0.14.4, ament-flake8-0.14.4, timeout-2.3.1, colcon-core-0.17.0, cov-3.0.0
+collected 1 item
+
+realsense2_ros_mqtt_bridge/test/unittests/test_dual_camera_triggered_calibration.py::test_dual_camera_triggered_calibration 
+-------------------------------- live log call ---------------------------------
+DEBUG    root:camera_node_simulator.py:48 Creating node... /camera/camera2
+DEBUG    root:camera_node_simulator.py:48 Creating node... /camera/camera1
+INFO     root:mqtt_client_simulator.py:59 Connected to MQTT Broker on ip:localhost port:1883
+DEBUG    root:camera_node_simulator.py:66 Thread started...
+DEBUG    root:camera_node_simulator.py:66 Thread started...
+/camera/camera1
+/camera/camera2
+/realsense_ros_mqtt_bridge_node
+INFO     root:test_dual_camera_triggered_calibration.py:45 Testing enumerate_devices
+DEBUG    root:mqtt_client_simulator.py:80 Send {"camera_namespace_prefix": "camera", "camera_name_prefix": "camera2"} to topic enumerate_devices_request
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"success": true, "error_msg": "", "available_nodes_count": "1", "available_nodes": "[{camera_namespace: camera, camera_name: camera2}]"} to topic enumerate_devices_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:80 Send {"camera_namespace_prefix": "camera", "camera_name_prefix": "camera1"} to topic enumerate_devices_request
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"success": true, "error_msg": "", "available_nodes_count": "1", "available_nodes": "[{camera_namespace: camera, camera_name: camera1}]"} to topic enumerate_devices_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:730 triggered calib request:{'camera_namespace': 'camera', 'camera_name': 'camera2', 'json': 'calib run'}
+DEBUG    root:mqtt_client_simulator.py:80 Send {"camera_namespace": "camera", "camera_name": "camera2", "json": "calib run"} to topic triggered_calibration_request
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:354 Received goal request realsense2_camera_msgs.action.TriggeredCalibration_Goal(json='calib run')
+INFO     root:camera_node_simulator.py:349 Start the execution
+INFO     root:camera_node_simulator.py:363 Calibration request: calib run
+INFO     root:camera_node_simulator.py:366 Executing goal...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 1.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 2.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 1.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 2.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 1.0}'
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 3.0
+INFO     root:test_dual_camera_triggered_calibration.py:62 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 1.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 3.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 3.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:62 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 3.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 4.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 5.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 4.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 4.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:62 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 4.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 5.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 5.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:62 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 5.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 6.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 6.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 6.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:62 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 6.0}
+DEBUG    root:mqtt_client_simulator.py:730 triggered calib request:{'camera_namespace': 'camera', 'camera_name': 'camera1', 'json': 'calib run'}
+DEBUG    root:mqtt_client_simulator.py:80 Send {"camera_namespace": "camera", "camera_name": "camera1", "json": "calib run"} to topic triggered_calibration_request
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 7.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 7.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 7.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 7.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 8.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 9.0
+INFO     root:camera_node_simulator.py:354 Received goal request realsense2_camera_msgs.action.TriggeredCalibration_Goal(json='calib run')
+INFO     root:camera_node_simulator.py:349 Start the execution
+INFO     root:camera_node_simulator.py:363 Calibration request: calib run
+INFO     root:camera_node_simulator.py:366 Executing goal...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 1.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 10.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 2.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 8.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 11.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 3.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 12.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 9.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera2", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 8.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera2', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 8.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 1.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 4.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 1.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 1.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 10.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 2.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 13.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 2.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 2.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 11.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 3.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 12.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 12.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 12.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 5.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 14.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 6.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 4.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 15.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 7.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 4.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 4.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 16.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 13.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 13.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 13.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 8.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 17.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 5.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 5.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 5.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 14.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 14.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 14.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 18.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 6.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 9.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 6.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 6.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 15.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 15.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 15.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 7.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 16.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 10.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 16.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 16.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 8.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 19.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 8.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 8.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 17.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 11.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 17.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 17.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 18.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 18.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 18.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 20.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 9.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 10.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 12.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 19.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 10.0}'
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 10.0}
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 19.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 19.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 11.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 11.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 11.0}
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 20.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 13.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 21.0
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 20.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 20.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 12.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 12.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 12.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 14.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 13.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 21.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 22.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 21.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 21.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 15.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 14.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 23.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 14.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 14.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 22.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 15.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 23.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 16.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 24.0
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 15.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 15.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 16.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 24.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 25.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 17.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 16.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 16.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 26.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 25.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 18.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 17.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 17.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 17.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 26.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 26.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 26.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 19.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 27.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 18.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 18.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 18.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 28.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 20.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 19.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 21.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 27.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 27.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 27.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 29.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 22.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 30.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 23.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 31.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 28.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 28.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 28.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 20.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 24.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 32.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 21.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 29.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 22.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 30.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 23.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 23.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 23.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 25.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 33.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 31.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 31.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 31.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 24.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 26.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 32.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 25.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 34.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 33.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 25.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 25.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 26.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 26.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 26.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 34.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 34.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 34.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 27.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 28.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 27.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 28.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 29.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 35.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 28.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 28.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 36.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 29.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 35.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 35.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 35.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 30.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 37.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 31.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 36.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 30.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 37.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 38.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 31.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 31.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 31.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 38.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 39.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 38.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 38.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 32.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 39.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 40.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 39.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 39.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 41.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 32.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 40.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 42.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 33.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 40.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 40.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 41.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 41.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 41.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 43.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 34.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 42.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 33.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 43.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 43.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 43.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 34.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 35.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 34.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 34.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 44.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 35.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 44.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 36.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 44.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 44.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 36.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 36.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 36.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 45.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 45.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 37.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 46.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 45.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 45.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 37.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 47.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 37.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 37.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 46.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 46.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 46.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 47.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 38.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 48.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 47.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 47.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 39.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 38.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 48.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 49.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 48.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 48.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 39.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 50.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 49.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 40.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 49.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 49.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 50.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 40.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 41.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 51.0
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 40.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 40.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 41.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 41.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 41.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 52.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 42.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 43.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 53.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 51.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 52.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 44.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 42.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 43.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 43.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 43.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 45.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 54.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 53.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 53.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 53.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 46.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 44.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 55.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 47.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 45.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 44.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 44.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 54.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 46.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 48.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 56.0
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 54.0}'
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 55.0} to topic triggered_calibration_response
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 54.0}
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 55.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 55.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 47.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 47.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 47.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 57.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 48.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 49.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 56.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 48.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 48.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 57.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 50.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 49.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 49.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 49.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 58.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 51.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 50.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 59.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 50.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 50.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 60.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 52.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 61.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 53.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 58.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 51.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 51.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 51.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 62.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 54.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 59.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 60.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 52.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 52.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 52.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 63.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 61.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 61.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 61.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 53.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 55.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 64.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 62.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 53.0}'
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 54.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 53.0}
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 54.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 54.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 63.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 65.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 63.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 63.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 56.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 55.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 55.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 55.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 64.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 64.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 64.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 57.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 66.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 65.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 56.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 56.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 56.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 58.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 59.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 67.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 60.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 68.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 57.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 66.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 58.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 58.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 58.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 59.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 67.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 61.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 69.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 60.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 60.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 60.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 68.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 68.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 68.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 62.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 70.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 63.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 71.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 61.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 61.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 61.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 69.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 62.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 70.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 63.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 63.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 63.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 71.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 71.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 71.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 64.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 64.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 72.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 64.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 64.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 65.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 72.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 72.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 72.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 73.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 65.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 65.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 65.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 66.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 74.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 73.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 66.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 74.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 67.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 74.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 74.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 75.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 67.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 67.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 67.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 68.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 75.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 75.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 75.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 76.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 69.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 77.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 68.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 76.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 70.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 69.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 77.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 77.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 77.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 70.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 78.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 70.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 70.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 71.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 78.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 71.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 79.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 71.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 71.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 80.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 79.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 72.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 81.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 73.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 80.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 72.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 72.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 72.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 81.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 81.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 81.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 82.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 73.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 73.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 73.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 83.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 74.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 82.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 82.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 82.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 83.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 84.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 83.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 83.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 74.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 74.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 74.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 75.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 84.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 75.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 85.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 75.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 75.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 76.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 85.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 85.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 85.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 77.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 86.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 76.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 76.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 76.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 78.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 77.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 87.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 77.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 77.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 79.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 86.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 88.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 80.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 89.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 86.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 86.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 78.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 90.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 81.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 91.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 87.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 79.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 82.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 88.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 79.0}'
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 79.0}
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 80.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 88.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 88.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 89.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 90.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 90.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 90.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 92.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 81.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 83.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 91.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 91.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 91.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 93.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 82.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 94.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 82.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 82.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 84.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 95.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 92.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 92.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 92.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 85.0
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 96.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 83.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 83.0}'
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 93.0} to topic triggered_calibration_response
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 83.0}
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 94.0} to topic triggered_calibration_response
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 93.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 93.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 84.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 84.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 84.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 86.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 95.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 97.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 85.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 95.0}'
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 95.0}
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 85.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 85.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 96.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 96.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 96.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 87.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 86.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 98.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 88.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 97.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 99.0
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 97.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 97.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 87.0} to topic triggered_calibration_response
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 89.0
+INFO     root:camera_node_simulator.py:401 Returning result: realsense2_camera_msgs.action.TriggeredCalibration_Result(success=True, error_msg='', calibration='calib run', health=0.0)
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 90.0
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 98.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 88.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 99.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 99.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 99.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 89.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 89.0}'
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 91.0
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 89.0}
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 90.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": false, "error_msg": "", "calibration": "{}", "health": "0", "progress": 90.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': False, 'error_msg': '', 'calibration': '{}', 'health': '0', 'progress': 90.0}
+DEBUG    root:mqtt_client_simulator.py:132 Waiting for message..
+DEBUG    root:mqtt_client_simulator.py:99 Received {"camera_namespace": "camera", "camera_name": "camera1", "success": true, "error_msg": "", "calibration": "calib run", "health": 0.0, "progress": 100.0} to topic triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:101 Unlocking...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 92.0
+INFO     root:mqtt_client_simulator.py:744 response received: triggered_calibration_response
+DEBUG    root:mqtt_client_simulator.py:748 b'{"camera_namespace": "camera", "camera_name": "camera1", "success": true, "error_msg": "", "calibration": "calib run", "health": 0.0, "progress": 100.0}'
+INFO     root:test_dual_camera_triggered_calibration.py:71 Response: {'camera_namespace': 'camera', 'camera_name': 'camera1', 'success': True, 'error_msg': '', 'calibration': 'calib run', 'health': 0.0, 'progress': 100.0}
+DEBUG    root:camera_node_simulator.py:96 Setting the stop event...
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 93.0
+INFO     root:camera_node_simulator.py:83 destroying the publisher
+DEBUG    root:camera_node_simulator.py:96 Setting the stop event...
+INFO     root:camera_node_simulator.py:83 destroying the publisher
+INFO     root:camera_node_simulator.py:385 Publishing feedback: 94.0
+INFO     root:test_dual_camera_triggered_calibration.py:87 Test completed
+PASSED
+
+=============================== warnings summary ===============================
+test/unittests/test_dual_camera_triggered_calibration.py::test_dual_camera_triggered_calibration
+  Warning: Callback API version 1 is deprecated, update to latest version
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 3.44s =========================
