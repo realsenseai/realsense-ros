@@ -65,6 +65,8 @@ def test_dual_camera_triggered_calibration():
 
         sds.send_triggered_calibration_request(namespace, 
             name1)
+        camera1_response = False
+        camera2_response = False
 
         while True:
             response = sds.receive_triggered_calibration_response()
@@ -72,7 +74,15 @@ def test_dual_camera_triggered_calibration():
             if response['progress'] == 100.0 and response['camera_name'] == 'camera2':
                 assert response['success'] == True, 'Triggered calibraton was not successful'
                 assert response['calibration'] == "calib run", 'Unexpected calibration value received'
-                break
+                camera2_response = True
+                if camera1_response:
+                    break
+            if response['progress'] == 100.0 and response['camera_name'] == 'camera1':
+                assert response['success'] == True, 'Triggered calibraton was not successful'
+                assert response['calibration'] == "calib run", 'Unexpected calibration value received'
+                camera1_response = True
+                if camera2_response:
+                    break
 
     #cleanup starts....
 
