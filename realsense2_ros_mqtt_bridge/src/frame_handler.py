@@ -13,6 +13,7 @@
 # limitations under the License.
 """FrameHandler for handling frame-related MQTT requests."""
 import json
+from functools import partial
 
 from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSHistoryPolicy
@@ -39,6 +40,7 @@ class FrameHandler:
         """
         self.mqtt_ros_node = mqtt_ros_node
         self.image = None
+        self.message_received = {}
 
         # Create a QoS profile for sensor data
         self.sensor_data_qos_profile = QoSProfile(
@@ -61,20 +63,6 @@ class FrameHandler:
         camera_name = mqtt_request['camera_name']
         stream_name = mqtt_request['stream_name']
         topic_name = f'{camera_namespace}/{camera_name}/{stream_name}'
-        if stream_name == 'depth' or\
-           stream_name == 'infra1' or\
-           stream_name == 'infra2':
-            topic_name += '/image_rect_raw'
-        elif stream_name == 'color':
-            topic_name += '/image_raw'
-        else:
-            self.mqtt_ros_node.ERROR('Unsupported stream')
-            return
-
-        self.mqtt_ros_node.create_subscription(Image,
-                                               topic_name,
-                                               self.image_callback,
-                                               self.sensor_data_qos_profile)
 
         mqtt_response = {
             'camera_namespace': camera_namespace,
@@ -85,25 +73,51 @@ class FrameHandler:
             'frame': ''
         }
 
-        if stream_name in ['color', 'depth', 'infra1', 'infra2']:
-            self.mqtt_ros_node.ROS_DEBUG('Frame sent successfully')
-            mqtt_response['frame'] = str(self.image)
-        else:
-            self.mqtt_ros_node.ROS_WARN('Failed to get frame')
+        if stream_name not in ['color', 'depth', 'infra1', 'infra2']:
+            error_msg = f'Unsupported stream type: {stream_name}'
+            self.mqtt_ros_node.ROS_WARN(error_msg)
             mqtt_response['success'] = False
-            mqtt_response['error_msg'] = 'unsupported type'
+            mqtt_response['error_msg'] = error_msg
 
-        self.mqtt_ros_node.mqtt_client.publish('get_frame_response',
-                                               json.dumps(mqtt_response),
-                                               qos=2)
-        self.mqtt_ros_node.ROS_DEBUG('get_frame_response message sent')
-        self.mqtt_ros_node.destroy_subscription(topic_name)
+            self.mqtt_ros_node.mqtt_client.publish('get_frame_response',
+                                                json.dumps(mqtt_response),
+                                                qos=1)
+            return
 
-    def image_callback(self, msg):
+        if stream_name == 'depth' or\
+           stream_name == 'infra1' or\
+           stream_name == 'infra2':
+            topic_name += '/image_rect_raw'
+        elif stream_name == 'color':
+            topic_name += '/image_raw'
+        else:
+            self.mqtt_ros_node.ERROR('Unsupported stream')
+            return
+
+        self.message_received[topic_name] = False
+        self.mqtt_ros_node.create_subscription(Image,
+                                               topic_name,
+                                               partial(self.image_callback,mqtt_response=mqtt_response,topic_name=topic_name),
+                                               self.sensor_data_qos_profile)
+
+
+    def image_callback(self, msg,mqtt_response,topic_name):
         """
         Image subscription callback.
 
         Args:
             msg (Image): The received image message.
         """
+        if self.message_received[topic_name] == True:
+            self.mqtt_ros_node.ROS_DEBUG(f'Ignoring the frame received for stream '+ mqtt_response['stream_name'])
+            return
+
+        self.message_received[topic_name] = True
+        self.mqtt_ros_node.destroy_subscription(topic_name)
         self.image = msg
+        self.mqtt_ros_node.ROS_DEBUG(f'Frame received successfully for stream '+ mqtt_response['stream_name'])
+        mqtt_response['frame'] = str(self.image)
+        self.mqtt_ros_node.mqtt_client.publish('get_frame_response',
+                                               json.dumps(mqtt_response),
+                                               qos=2)
+        self.mqtt_ros_node.ROS_DEBUG('get_frame_response message sent')

@@ -310,10 +310,12 @@ class MQTTClientSimulator:
     def receive_get_frame_response(self):
         msg = self.get_message()
         LOGGER.debug("received frame")
-        return msg
+        payload = json.loads(msg.payload)
+        LOGGER.debug(msg.payload)
+        return payload
 
 
-    def get_frame(self, camera_namespace, camera_name, stream_name):
+    def get_frame_msg(self, camera_namespace, camera_name, stream_name):
         """
         Send a request to get a frame.
 
