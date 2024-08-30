@@ -40,7 +40,7 @@ class FrameHandler:
         """
         self.mqtt_ros_node = mqtt_ros_node
         self.image = None
-        self.message_received = {}
+        self.topic_handle = {}
 
         # Create a QoS profile for sensor data
         self.sensor_data_qos_profile = QoSProfile(
@@ -91,11 +91,10 @@ class FrameHandler:
         elif stream_name == 'color':
             topic_name += '/image_raw'
         else:
-            self.mqtt_ros_node.ERROR('Unsupported stream')
+            self.mqtt_ros_node.ROS_ERROR('Unsupported stream')
             return
 
-        self.message_received[topic_name] = False
-        self.mqtt_ros_node.create_subscription(Image,
+        self.topic_handle[topic_name] = self.mqtt_ros_node.create_subscription(Image,
                                                topic_name,
                                                partial(self.image_callback,mqtt_response=mqtt_response,topic_name=topic_name),
                                                self.sensor_data_qos_profile)
@@ -108,14 +107,16 @@ class FrameHandler:
         Args:
             msg (Image): The received image message.
         """
-        if self.message_received[topic_name] == True:
-            self.mqtt_ros_node.ROS_DEBUG(f'Ignoring the frame received for stream '+ mqtt_response['stream_name'])
+        if self.topic_handle[topic_name] is None:
+            self.mqtt_ros_node.ROS_INFO(f'Ignoring the frame received for stream '+ mqtt_response['stream_name'])
             return
 
-        self.message_received[topic_name] = True
-        self.mqtt_ros_node.destroy_subscription(topic_name)
+        status = self.mqtt_ros_node.destroy_subscription(self.topic_handle[topic_name])
+        if status == False:
+            self.mqtt_ros_node.ROS_ERROR("Failed to destroy subscription")
+        self.topic_handle[topic_name] = None
         self.image = msg
-        self.mqtt_ros_node.ROS_DEBUG(f'Frame received successfully for stream '+ mqtt_response['stream_name'])
+        self.mqtt_ros_node.ROS_INFO(f'Frame received successfully for stream '+ mqtt_response['stream_name'])
         mqtt_response['frame'] = str(self.image)
         self.mqtt_ros_node.mqtt_client.publish('get_frame_response',
                                                json.dumps(mqtt_response),
