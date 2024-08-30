@@ -75,6 +75,11 @@ def test_frame_types():
         assert response['success'] != True, 'Expected a failure, but received frame'
         assert response['frame'] == "", 'Frame received for invalid stream'
 
+        LOGGER.info("Testing depth_frame...")
+        camera.start_publish_depth_frame()
+        response = sds.get_frame_msg(namespace, name, "depth")
+        assert response['success'] == True, 'Receiving depth frame was not successful'
+        assert response['frame'] != "", 'Invalid frame received'
     #cleanup starts....
 
     except Exception as e:
