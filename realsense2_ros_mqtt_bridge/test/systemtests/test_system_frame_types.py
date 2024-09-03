@@ -64,27 +64,34 @@ def test_system_frame_types(launch_descr_with_parameters):
     response = sds.get_enumerate_devices_response()
     assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
+    LOGGER.info("Testing safety_frame...")
+    sds.start_stop_safety_stream(namespace, name, True)
+    frame = sds.get_frame_msg(namespace, name, "safety")
+    LOGGER.debug(frame)
+
     LOGGER.info("Testing color_frame...")
     sds.start_stop_color_stream(namespace, name, True)
-    frame = sds.get_frame(namespace, name, "color")
+    frame = sds.get_frame_msg(namespace, name, "color")
     LOGGER.debug(frame)
     sds.start_stop_color_stream(namespace, name, False)
 
     LOGGER.info("Testing depth_frame...")
     sds.start_stop_depth_stream(namespace, name, True)
-    frame = sds.get_frame(namespace, name, "depth")
+    frame = sds.get_frame_msg(namespace, name, "depth")
     LOGGER.debug(frame)
     sds.start_stop_depth_stream(namespace, name, False)
 
     LOGGER.info("Testing infra1_frame...")
     sds.start_stop_infra1_stream(namespace, name, True)
-    frame = sds.get_frame(namespace, name, "infra1")
+    frame = sds.get_frame_msg(namespace, name, "infra1")
     LOGGER.debug(frame)
 
     LOGGER.info("Testing infra2_frame...")
     sds.start_stop_infra2_stream(namespace, name, True)
-    frame = sds.get_frame(namespace, name, "infra2")
+    frame = sds.get_frame_msg(namespace, name, "infra2")
     LOGGER.debug(frame)
+
+
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")
