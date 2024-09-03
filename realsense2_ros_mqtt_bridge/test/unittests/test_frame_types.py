@@ -48,24 +48,38 @@ def test_frame_types():
 
         LOGGER.info("Testing color_frame...")
         camera.start_publish_color_frame()
-        frame = sds.get_frame(namespace, name, "color")
-        LOGGER.debug(frame)
+        response = sds.get_frame_msg(namespace, name, "color")
+        assert response['success'] == True, 'Receiving color frame was not successful'
+        assert response['frame'] != "", 'Invalid frame received'
 
         LOGGER.info("Testing depth_frame...")
         camera.start_publish_depth_frame()
-        frame = sds.get_frame(namespace, name, "depth")
-        LOGGER.debug(frame)
+        response = sds.get_frame_msg(namespace, name, "depth")
+        assert response['success'] == True, 'Receiving depth frame was not successful'
+        assert response['frame'] != "", 'Invalid frame received'
 
         LOGGER.info("Testing infra1_frame...")
         camera.start_publish_infra1_frame()
-        frame = sds.get_frame(namespace, name, "infra1")
-        LOGGER.debug(frame)
+        response = sds.get_frame_msg(namespace, name, "infra1")
+        assert response['success'] == True, 'Receiving infra1 frame was not successful'
+        assert response['frame'] != "", 'Invalid frame received'
 
         LOGGER.info("Testing infra2_frame...")
         camera.start_publish_infra2_frame()
-        frame = sds.get_frame(namespace, name, "infra2")
-        LOGGER.debug(frame)
+        response = sds.get_frame_msg(namespace, name, "infra2")
+        assert response['success'] == True, 'Receiving infra2 frame was not successful'
+        assert response['frame'] != "", 'Invalid frame received'
 
+        LOGGER.info("Testing invalid stream...")
+        response = sds.get_frame_msg(namespace, name, "invalid")
+        assert response['success'] != True, 'Expected a failure, but received frame'
+        assert response['frame'] == "", 'Frame received for invalid stream'
+
+        LOGGER.info("Testing depth_frame...")
+        camera.start_publish_depth_frame()
+        response = sds.get_frame_msg(namespace, name, "depth")
+        assert response['success'] == True, 'Receiving depth frame was not successful'
+        assert response['frame'] != "", 'Invalid frame received'
     #cleanup starts....
 
     except Exception as e:
