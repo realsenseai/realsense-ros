@@ -14,11 +14,9 @@
 
 import sys
 import os
-
 import rclpy 
 
 import pytest 
-
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 
 from camera_n_mqtt_nodes import CameraNMqttNodes as RSCameraSimulator
@@ -41,7 +39,7 @@ test_params_d585s = {
     ]
     ,indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
-def test_system_frame_types(launch_descr_with_parameters):
+def test_system_safety_interface_config(launch_descr_with_parameters):
     #initialization starts....
     rclpy.init()
     params = launch_descr_with_parameters[1]
@@ -53,45 +51,50 @@ def test_system_frame_types(launch_descr_with_parameters):
     camera.start()
     if LOGGER.getEffectiveLevel() <= logging.DEBUG:
         os.system("ros2 node list")
-#initialization ends....
-    params = [
-        {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
-    ]
-    camera.add_parameters(params)
-    
+    #initialization ends....
+
     LOGGER.info("Testing enumerate_devices")
     sds.send_enumerate_devices_request(namespace, name)
     response = sds.get_enumerate_devices_response()
     assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-    LOGGER.info("Testing safety_frame...")
-    sds.start_stop_safety_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "safety")
-    LOGGER.debug(frame)
+    camera.create_safety_interface_config_service()
+    #just to ensure no streams are running
+    #sds.prepare_for_calibration(namespace, name)
+    sds.set_safety_mode(namespace, name, 2)
 
-    LOGGER.info("Testing color_frame...")
-    sds.start_stop_color_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "color")
-    LOGGER.debug(frame)
-    sds.start_stop_color_stream(namespace, name, False)
+    for index in range(0,3):
+        sds.send_get_safety_interface_config_request(namespace, 
+            name, 
+            index)
+        
+        response = sds.receive_get_safety_interface_config_response()
+        sc_data = response["safety_interface_config"]
+        import json
+        sc_data = json.loads(sc_data)
+        LOGGER.debug(f"safety interface config first read: {sc_data}")
+        if sc_data["safety_interface_config"]['smcu_arbitration_params']['l_0_total_threshold'] == 10000:
+            sc_data["safety_interface_config"]['smcu_arbitration_params']['l_0_total_threshold'] = 10
+        else:
+            sc_data["safety_interface_config"]['smcu_arbitration_params']['l_0_total_threshold'] = 10000
+        sc_data1 = json.dumps(sc_data)
 
-    LOGGER.info("Testing depth_frame...")
-    sds.start_stop_depth_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "depth")
-    LOGGER.debug(frame)
-    sds.start_stop_depth_stream(namespace, name, False)
+        LOGGER.debug(f"safety interface config written: {sc_data}")
 
-    LOGGER.info("Testing infra1_frame...")
-    sds.start_stop_infra1_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra1")
-    LOGGER.debug(frame)
+        #change sp
+        sds.send_set_safety_interface_config_request(namespace, 
+            name,
+            sc_data1)
 
-    LOGGER.info("Testing infra2_frame...")
-    sds.start_stop_infra2_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra2")
-    LOGGER.debug(frame)
+        response = sds.receive_set_safety_interface_config_response()
 
-
+        sds.send_get_safety_interface_config_request(namespace, 
+            name, 
+            index)
+        response = sds.receive_get_safety_interface_config_response()
+        sc_read = json.loads(response["safety_interface_config"])
+        LOGGER.debug(f"safety interface config readback: {sc_read}")
+        assert sc_read == sc_data, "Written safety interface config is not matching with the read one"
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")

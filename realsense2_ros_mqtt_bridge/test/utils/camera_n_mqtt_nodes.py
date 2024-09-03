@@ -70,6 +70,13 @@ class CameraNMqttNodes(Node):#, threading.Thread):
         return
     def start_publish_color_frame(self):
         return
+    def create_application_config_service(self):
+        return
+    def create_calib_config_service(self):
+        return
+    def create_safety_interface_config_service(self):
+        return
+
     #end of dummy functions 
 
 def get_camera_device_info(device_type, serial_no):

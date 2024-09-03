@@ -15,10 +15,10 @@
 import sys
 import os
 
+
 import rclpy 
 
 import pytest 
-
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 
 from camera_n_mqtt_nodes import CameraNMqttNodes as RSCameraSimulator
@@ -41,7 +41,7 @@ test_params_d585s = {
     ]
     ,indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
-def test_system_frame_types(launch_descr_with_parameters):
+def test_system_application_config(launch_descr_with_parameters):
     #initialization starts....
     rclpy.init()
     params = launch_descr_with_parameters[1]
@@ -54,44 +54,44 @@ def test_system_frame_types(launch_descr_with_parameters):
     if LOGGER.getEffectiveLevel() <= logging.DEBUG:
         os.system("ros2 node list")
 #initialization ends....
-    params = [
-        {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
-    ]
-    camera.add_parameters(params)
-    
+
     LOGGER.info("Testing enumerate_devices")
     sds.send_enumerate_devices_request(namespace, name)
     response = sds.get_enumerate_devices_response()
     assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-    LOGGER.info("Testing safety_frame...")
-    sds.start_stop_safety_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "safety")
-    LOGGER.debug(frame)
+    camera.create_application_config_service()
 
-    LOGGER.info("Testing color_frame...")
-    sds.start_stop_color_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "color")
-    LOGGER.debug(frame)
-    sds.start_stop_color_stream(namespace, name, False)
+    sds.set_safety_mode(namespace, name, 2)
 
-    LOGGER.info("Testing depth_frame...")
-    sds.start_stop_depth_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "depth")
-    LOGGER.debug(frame)
-    sds.start_stop_depth_stream(namespace, name, False)
+    sds.send_get_application_config_request(namespace, 
+        name)
+    
+    response = sds.receive_get_application_config_response()
 
-    LOGGER.info("Testing infra1_frame...")
-    sds.start_stop_infra1_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra1")
-    LOGGER.debug(frame)
+    Application_data = response['application_config']
+    import json
+    Application_data = json.loads(Application_data)
+    if Application_data['application_config']['developer_mode']['hkr'] == 1:
+        Application_data['application_config']['developer_mode']['hkr'] = 0
+    else:
+        Application_data['application_config']['developer_mode']['hkr'] = 1
+    Application_data1 = json.dumps(Application_data)
 
-    LOGGER.info("Testing infra2_frame...")
-    sds.start_stop_infra2_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra2")
-    LOGGER.debug(frame)
+    sds.send_set_application_config_request(namespace, 
+        name,
+        Application_data1)
 
-
+    response = sds.receive_set_application_config_response()
+    
+    sds.send_get_application_config_request(namespace, 
+        name)
+    
+    response = sds.receive_get_application_config_response()
+    ac_read = json.loads(response["application_config"])
+    LOGGER.debug("Application data written: ",Application_data)
+    LOGGER.debug("Application data readback:",ac_read)
+    assert ac_read == Application_data, "Written Application config is not matching with the read one"
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")

@@ -18,7 +18,6 @@ import os
 import rclpy 
 
 import pytest 
-
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+"/../utils"))
 
 from camera_n_mqtt_nodes import CameraNMqttNodes as RSCameraSimulator
@@ -41,7 +40,7 @@ test_params_d585s = {
     ]
     ,indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
-def test_system_frame_types(launch_descr_with_parameters):
+def test_system_calib_config(launch_descr_with_parameters):
     #initialization starts....
     rclpy.init()
     params = launch_descr_with_parameters[1]
@@ -53,45 +52,41 @@ def test_system_frame_types(launch_descr_with_parameters):
     camera.start()
     if LOGGER.getEffectiveLevel() <= logging.DEBUG:
         os.system("ros2 node list")
-#initialization ends....
-    params = [
-        {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
-    ]
-    camera.add_parameters(params)
-    
+    #initialization ends....
     LOGGER.info("Testing enumerate_devices")
     sds.send_enumerate_devices_request(namespace, name)
     response = sds.get_enumerate_devices_response()
     assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
 
-    LOGGER.info("Testing safety_frame...")
-    sds.start_stop_safety_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "safety")
-    LOGGER.debug(frame)
+    sds.set_safety_mode(namespace, name, 2)
 
-    LOGGER.info("Testing color_frame...")
-    sds.start_stop_color_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "color")
-    LOGGER.debug(frame)
-    sds.start_stop_color_stream(namespace, name, False)
+    sds.send_get_calib_config_request(namespace, 
+        name)
+    
+    response = sds.receive_get_calib_config_response()
+    print("Response:", response)
+    import json
+    calib_config = json.loads(response['calib_config'])
+    if calib_config['calibration_config']['roi_0']['vertex_0'][1] == 35:
+        calib_config['calibration_config']['roi_0']['vertex_0'][1] = 36
+    else:
+        calib_config['calibration_config']['roi_0']['vertex_0'][1] = 35
+    calib_config1 = json.dumps(calib_config)
 
-    LOGGER.info("Testing depth_frame...")
-    sds.start_stop_depth_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "depth")
-    LOGGER.debug(frame)
-    sds.start_stop_depth_stream(namespace, name, False)
+    sds.send_set_calib_config_request(namespace, 
+        name,
+        calib_config1)
 
-    LOGGER.info("Testing infra1_frame...")
-    sds.start_stop_infra1_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra1")
-    LOGGER.debug(frame)
-
-    LOGGER.info("Testing infra2_frame...")
-    sds.start_stop_infra2_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra2")
-    LOGGER.debug(frame)
-
-
+    response = sds.receive_set_calib_config_response()
+    
+    sds.send_get_calib_config_request(namespace, 
+        name)
+    
+    response = sds.receive_get_calib_config_response()
+    cc_read = json.loads(response['calib_config'])
+    LOGGER.debug("calib config data written: ",calib_config)
+    LOGGER.debug("calib config data readback:",cc_read)
+    assert cc_read == calib_config, "Written calib config is not matching with the read one"
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")
