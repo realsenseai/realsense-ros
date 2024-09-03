@@ -858,3 +858,6 @@ class MQTTClientSimulator:
         
     def start_stop_infra2_stream(self, camera_namespace, camera_name, start_stream=True):
         self.start_stop_stream(camera_namespace, camera_name, 'enable_infra2', start_stream)
+
+    def start_stop_safety_stream(self, camera_namespace, camera_name, start_stream=True):
+        self.start_stop_stream(camera_namespace, camera_name, 'enable_safety', start_stream)

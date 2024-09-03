@@ -68,7 +68,7 @@ class FrameHandler:
         elif stream_name == 'color':
             topic_name += '/image_raw'
         else:
-            self.mqtt_ros_node.ERROR('Unsupported stream')
+            self.mqtt_ros_node.ROS_ERROR('Unsupported stream')
             return
 
         self.mqtt_ros_node.create_subscription(Image,
