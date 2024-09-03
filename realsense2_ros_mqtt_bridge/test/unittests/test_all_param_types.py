@@ -47,7 +47,8 @@ def test_all_param_types():
         params = [
             {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int", "alternate_value":2},
             {"param_name":'accel_info_qos ', "default_value":"accel_info_qos", "param_type":"string", "alternate_value":'hello'},
-            {"param_name":'align_depth.enable','default_value':True,'param_type': 'boolean', "alternate_value":False}
+            {"param_name":'align_depth.enable','default_value':True,'param_type': 'bool', "alternate_value":'False'},
+            {"param_name":'align_depth.disable','default_value':False,'param_type': 'bool', "alternate_value":'True'}
         ]
 
         camera.add_parameters(params)
@@ -70,13 +71,14 @@ def test_all_param_types():
                     param['param_type'])
             response = sds.receive_set_param_response()
 
-            response = sds.get_param(namespace,
+            response = sds.get_param_msg(namespace,
                 name,
                 param['param_name'])
             assert response["parameter_value"] == str(param['alternate_value']), "Get or Set param failed, didn't get the written value for param " + param['param_name']
     #cleanup starts....
 
     except Exception as e:
+        raise
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         LOGGER.error("Test failed")
