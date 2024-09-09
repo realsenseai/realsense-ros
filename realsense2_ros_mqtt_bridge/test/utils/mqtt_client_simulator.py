@@ -517,7 +517,7 @@ class MQTTClientSimulator:
             sp (str): The safety preset.
             index (int): The index of the safety config.
         """
-        self.send_get_safety_interface_config_request(camera_namespace, camera_name, index=2)
+        self.send_get_safety_interface_config_request(camera_namespace, camera_name, index)
         return self.receive_get_safety_interface_config_response()
 
 

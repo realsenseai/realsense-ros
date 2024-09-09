@@ -65,8 +65,9 @@ def test_system_calib_config(launch_descr_with_parameters):
     
     response = sds.receive_get_calib_config_response()
     print("Response:", response)
+    original_data = response['calib_config']
     import json
-    calib_config = json.loads(response['calib_config'])
+    calib_config = json.loads(original_data)
     if calib_config['calibration_config']['roi_0']['vertex_0'][1] == 35:
         calib_config['calibration_config']['roi_0']['vertex_0'][1] = 36
     else:
@@ -87,6 +88,11 @@ def test_system_calib_config(launch_descr_with_parameters):
     LOGGER.debug("calib config data written: ",calib_config)
     LOGGER.debug("calib config data readback:",cc_read)
     assert cc_read == calib_config, "Written calib config is not matching with the read one"
+    sds.send_set_calib_config_request(namespace, 
+        name,
+        original_data)
+
+    response = sds.receive_set_calib_config_response()
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")

@@ -69,9 +69,9 @@ def test_system_application_config(launch_descr_with_parameters):
     
     response = sds.receive_get_application_config_response()
 
-    Application_data = response['application_config']
+    original_data = response['application_config']
     import json
-    Application_data = json.loads(Application_data)
+    Application_data = json.loads(original_data)
     if Application_data['application_config']['developer_mode']['hkr'] == 1:
         Application_data['application_config']['developer_mode']['hkr'] = 0
     else:
@@ -92,6 +92,12 @@ def test_system_application_config(launch_descr_with_parameters):
     LOGGER.debug("Application data written: ",Application_data)
     LOGGER.debug("Application data readback:",ac_read)
     assert ac_read == Application_data, "Written Application config is not matching with the read one"
+    
+    sds.send_set_application_config_request(namespace, 
+        name,
+        original_data)
+
+    response = sds.receive_set_application_config_response()
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")

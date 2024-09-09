@@ -60,19 +60,19 @@ def test_system_safety_interface_config(launch_descr_with_parameters):
 
     camera.create_safety_interface_config_service()
     #just to ensure no streams are running
-    #sds.prepare_for_calibration(namespace, name)
     sds.set_safety_mode(namespace, name, 2)
 
-    for index in range(0,3):
+    #safety interface config read works only for RAM and FLASH.
+    for index in [1,2]:
         sds.send_get_safety_interface_config_request(namespace, 
             name, 
             index)
         
         response = sds.receive_get_safety_interface_config_response()
-        sc_data = response["safety_interface_config"]
+        original_data = response["safety_interface_config"]
         import json
-        sc_data = json.loads(sc_data)
-        LOGGER.debug(f"safety interface config first read: {sc_data}")
+        sc_data = json.loads(original_data)
+        LOGGER.info(f"safety interface config {index} first read: {sc_data}")
         if sc_data["safety_interface_config"]['smcu_arbitration_params']['l_0_total_threshold'] == 10000:
             sc_data["safety_interface_config"]['smcu_arbitration_params']['l_0_total_threshold'] = 10
         else:
@@ -93,8 +93,12 @@ def test_system_safety_interface_config(launch_descr_with_parameters):
             index)
         response = sds.receive_get_safety_interface_config_response()
         sc_read = json.loads(response["safety_interface_config"])
-        LOGGER.debug(f"safety interface config readback: {sc_read}")
+        LOGGER.info(f"safety interface config {index} second read: {sc_read}")
         assert sc_read == sc_data, "Written safety interface config is not matching with the read one"
+        sds.send_set_safety_interface_config_request(namespace, 
+            name,
+            original_data)
+        response = sds.receive_set_safety_interface_config_response()
     #cleanup starts....
     camera.stop()
     LOGGER.info("Test completed")

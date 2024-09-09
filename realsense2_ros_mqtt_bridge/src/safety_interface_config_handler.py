@@ -40,7 +40,7 @@ class SafetyInterfaceConfigHandler(ServiceHandler):
         if not ros_client_safety_interface_config_read:
             return
 
-        ros_request = SafetyInterfaceConfigRead.Request()
+        ros_request = SafetyInterfaceConfigRead.Request(calib_location=mqtt_request['calib_location'])
 
         future = ros_client_safety_interface_config_read.call_async(ros_request)
         self.wait_for_future(future)
