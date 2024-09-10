@@ -79,5 +79,6 @@ def test_system_device_info(launch_descr_with_parameters):
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
     finally:
         camera.stop()
+        rclpy.shutdown()
     LOGGER.info("Test completed")
     #cleanup ends....

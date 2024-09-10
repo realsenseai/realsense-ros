@@ -95,5 +95,6 @@ def test_system_calib_config(launch_descr_with_parameters):
     response = sds.receive_set_calib_config_response()
     #cleanup starts....
     camera.stop()
+    rclpy.shutdown()
     LOGGER.info("Test completed")
     #cleanup ends....

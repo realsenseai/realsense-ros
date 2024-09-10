@@ -43,56 +43,59 @@ test_params_d585s = {
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
 def test_system_frame_types(launch_descr_with_parameters):
     #initialization starts....
-    rclpy.init()
-    params = launch_descr_with_parameters[1]
-    namespace = 'camera'
-    name = params['camera_name']
-    camera = RSCameraSimulator(namespace, name)
-    sds = MQTTClientSimulator("localhost", 1883)
-    sds.start_client()
-    camera.start()
-    if LOGGER.getEffectiveLevel() <= logging.DEBUG:
-        os.system("ros2 node list")
-#initialization ends....
-    params = [
-        {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
-    ]
-    camera.add_parameters(params)
-    
-    LOGGER.info("Testing enumerate_devices")
-    sds.send_enumerate_devices_request(namespace, name)
-    response = sds.get_enumerate_devices_response()
-    assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
+    try:
+        rclpy.init()
+        params = launch_descr_with_parameters[1]
+        namespace = 'camera'
+        name = params['camera_name']
+        camera = RSCameraSimulator(namespace, name)
+        sds = MQTTClientSimulator("localhost", 1883)
+        sds.start_client()
+        camera.start()
+        if LOGGER.getEffectiveLevel() <= logging.DEBUG:
+            os.system("ros2 node list")
+    #initialization ends....
+        params = [
+            {"param_name":'safety_camera.safety_mode', "default_value":0, "param_type":"int"},
+        ]
+        camera.add_parameters(params)
+        
+        LOGGER.info("Testing enumerate_devices")
+        sds.send_enumerate_devices_request(namespace, name)
+        response = sds.get_enumerate_devices_response()
+        assert int(response["available_nodes_count"]) > 0, "Enumerate device failed, couldn't find the device"
+        '''safety stream suport is not required
+        LOGGER.info("Testing safety_frame...")
+        sds.start_stop_safety_stream(namespace, name, True)
+        frame = sds.get_frame_msg(namespace, name, "safety")
+        LOGGER.debug(frame)
+        '''
+        LOGGER.info("Testing color_frame...")
+        sds.start_stop_color_stream(namespace, name, True)
+        frame = sds.get_frame_msg(namespace, name, "color")
+        LOGGER.debug(frame)
+        sds.start_stop_color_stream(namespace, name, False)
 
-    LOGGER.info("Testing safety_frame...")
-    sds.start_stop_safety_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "safety")
-    LOGGER.debug(frame)
+        LOGGER.info("Testing depth_frame...")
+        sds.start_stop_depth_stream(namespace, name, True)
+        frame = sds.get_frame_msg(namespace, name, "depth")
+        LOGGER.debug(frame)
+        sds.start_stop_depth_stream(namespace, name, False)
 
-    LOGGER.info("Testing color_frame...")
-    sds.start_stop_color_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "color")
-    LOGGER.debug(frame)
-    sds.start_stop_color_stream(namespace, name, False)
+        LOGGER.info("Testing infra1_frame...")
+        sds.start_stop_infra1_stream(namespace, name, True)
+        frame = sds.get_frame_msg(namespace, name, "infra1")
+        LOGGER.debug(frame)
 
-    LOGGER.info("Testing depth_frame...")
-    sds.start_stop_depth_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "depth")
-    LOGGER.debug(frame)
-    sds.start_stop_depth_stream(namespace, name, False)
-
-    LOGGER.info("Testing infra1_frame...")
-    sds.start_stop_infra1_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra1")
-    LOGGER.debug(frame)
-
-    LOGGER.info("Testing infra2_frame...")
-    sds.start_stop_infra2_stream(namespace, name, True)
-    frame = sds.get_frame_msg(namespace, name, "infra2")
-    LOGGER.debug(frame)
-
-
-    #cleanup starts....
-    camera.stop()
-    LOGGER.info("Test completed")
-    #cleanup ends....
+        LOGGER.info("Testing infra2_frame...")
+        sds.start_stop_infra2_stream(namespace, name, True)
+        frame = sds.get_frame_msg(namespace, name, "infra2")
+        LOGGER.debug(frame)
+    except:
+        raise
+    finally:
+        #cleanup starts....
+        camera.stop()
+        rclpy.shutdown()
+        LOGGER.info("Test completed")
+        #cleanup ends....

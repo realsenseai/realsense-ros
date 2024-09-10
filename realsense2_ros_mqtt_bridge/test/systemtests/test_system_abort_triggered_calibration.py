@@ -86,5 +86,6 @@ def test_system_abort_triggered_calibration(launch_descr_with_parameters):
         LOGGER.error(exc_type, fname, exc_tb.tb_lineno)
     finally:
         camera.stop()
-    LOGGER.info("Test completed")
+        rclpy.shutdown()
+        LOGGER.info("Test completed")
     #cleanup ends....
