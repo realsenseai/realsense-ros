@@ -93,7 +93,18 @@ class FrameHandler:
         else:
             self.mqtt_ros_node.ROS_ERROR('Unsupported stream')
             return
+        
+        if topic_name in self.topic_handle and self.topic_handle[topic_name] is not None:
+            error_msg = f'One get_frame request is already in progress for {stream_name}, rejecting'
+            self.mqtt_ros_node.ROS_ERROR(error_msg)
+            mqtt_response['success'] = False
+            mqtt_response['error_msg'] = error_msg
 
+            self.mqtt_ros_node.mqtt_client.publish('get_frame_response',
+                                                json.dumps(mqtt_response),
+                                                qos=1)
+            return            
+    
         self.topic_handle[topic_name] = self.mqtt_ros_node.create_subscription(Image,
                                                topic_name,
                                                partial(self.image_callback,mqtt_response=mqtt_response,topic_name=topic_name),
