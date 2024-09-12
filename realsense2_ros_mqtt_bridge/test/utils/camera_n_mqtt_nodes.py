@@ -58,10 +58,26 @@ class CameraNMqttNodes(Node):#, threading.Thread):
         if self.dummy == True:
             self.wait_for_node("realsense_ros_mqtt_bridge_node")
             return
+    
+        
+
+    #start of dummy functions
     def stop(self):
         return
     def create_device_info_service(self):
         return
+    def add_parameters(self,params):
+        return
+    def start_publish_color_frame(self):
+        return
+    def create_application_config_service(self):
+        return
+    def create_calib_config_service(self):
+        return
+    def create_safety_interface_config_service(self):
+        return
+
+    #end of dummy functions 
 
 def get_camera_device_info(device_type, serial_no):
     short_data = os.popen("rs-enumerate-devices -S").read().splitlines()
@@ -185,6 +201,10 @@ def get_rs_node_description(params):
     comment out the '#prefix' line, if you like gdb and want to debug the code, you may have to do more
     if you have more than one rs node.
     '''
+    loglevel = "info"
+    if LOGGER.getEffectiveLevel() <= logging.DEBUG:
+        loglevel = "debug"
+    print("loglevel", loglevel)
     return launch_ros.actions.Node(
         package='realsense2_camera',
         namespace=params["camera_namespace"],
@@ -193,7 +213,7 @@ def get_rs_node_description(params):
         executable='realsense2_camera_node',
         parameters=[tmp_yaml.name],
         output='screen',
-        arguments=['--ros-args', '--log-level', "info"],
+        arguments=['--ros-args', '--log-level', loglevel],
         emulate_tty=True,
     )
 
@@ -207,11 +227,15 @@ def launch_descr_with_parameters(request):
     if  'camera_name' not in changed_params:
         params['camera_name'] = 'camera_with_params'
     device_type = LaunchConfiguration('device_type', default=params['device_type'])
+    loglevel = "info"
+    if LOGGER.getEffectiveLevel() <= logging.DEBUG:
+        loglevel = "debug"
     ld = LaunchDescription([
             launch_ros.actions.Node(
                 package='realsense2_ros_mqtt_bridge',
                 executable='realsense2_ros_mqtt_bridge',
                 name='realsense2_ros_mqtt_bridge',
+                arguments=['--ros-args', '--log-level', loglevel],
                 output='screen',
                 respawn=True,
                 respawn_delay=1,

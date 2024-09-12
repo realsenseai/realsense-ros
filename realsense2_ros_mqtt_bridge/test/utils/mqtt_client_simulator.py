@@ -164,7 +164,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "enumerate_devices_response", "Unexpected topic: Enumerate device expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "Enumerate device failed" + payload["err_msg"]
+        assert payload["success"] == True, "Enumerate device failed" + payload["error_msg"]
         return payload
     
     def enumerate_devices(self, camera_namespace_prefix, camera_name_prefix):
@@ -214,7 +214,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_parameter_response", "Unexpected topic: set_param expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "set_param failed" + payload["err_msg"]
+        assert payload["success"] == True, "set_param failed" + payload["error_msg"]
         return payload
 
     def set_param(self, camera_namespace, camera_name,
@@ -241,7 +241,7 @@ class MQTTClientSimulator:
     def set_bool_param(self, camera_namespace, camera_name,
                   parameter_name, parameter_value):
         return self.set_param(camera_namespace, camera_name,
-                  parameter_name, str(parameter_value), parameter_type="boolean")
+                  parameter_name, str(parameter_value), parameter_type="bool")
     
     def send_get_param_request(self, camera_namespace, camera_name, parameter_name):
         """
@@ -272,10 +272,10 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_parameter_response", "Unexpected topic: get_param expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "get_param failed" + payload["err_msg"]
+        assert payload["success"] == True, "get_param failed" + payload["error_msg"]
         return payload
 
-    def get_param(self, camera_namespace, camera_name, parameter_name):
+    def get_param_msg(self, camera_namespace, camera_name, parameter_name):
         """
         Send a request to get a parameter.
 
@@ -286,6 +286,27 @@ class MQTTClientSimulator:
         """
         self.send_get_param_request(camera_namespace, camera_name, parameter_name)
         return self.receive_get_param_response()
+
+    def get_param(self, camera_namespace, camera_name, parameter_name):
+        """
+        Send a request to get a parameter.
+
+        Args:
+            camera_namespace (str): The namespace of the camera.
+            camera_name (str): The name of the camera.
+            parameter_name (str): The name of the parameter to get.
+        """
+        msg = self.get_param_msg(camera_namespace, camera_name, parameter_name)
+        return msg['parameter_value']
+
+    def get_bool_param(self, camera_namespace, camera_name,
+                  parameter_name):
+        param = self.get_param(camera_namespace, camera_name, parameter_name)
+        if param.lower() == 'true':
+            return True
+        if param.lower() == 'false':
+            return True
+        assert False, "Invalid boolean parameter:" + param
 
 
     def send_get_frame_request(self, camera_namespace, camera_name, stream_name):
@@ -310,8 +331,10 @@ class MQTTClientSimulator:
     def receive_get_frame_response(self):
         msg = self.get_message()
         LOGGER.debug("received frame")
+        assert msg.topic == "get_frame_response", "Unexpected topic: get_frame_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        LOGGER.debug(msg.payload)
+        LOGGER.info(payload)
+        assert payload["success"] == True, "get_frame_response failed. message:" + payload["error_msg"]
         return payload
 
 
@@ -325,7 +348,7 @@ class MQTTClientSimulator:
             stream_name (str): The name of the stream.
         """
         self.send_get_frame_request(camera_namespace, camera_name, stream_name)
-        return self.receive_get_frame_response()
+        return  self.receive_get_frame_response()
     
 
     def send_set_safety_preset_request(self, camera_namespace, camera_name, sp, index):
@@ -357,7 +380,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_safety_preset_response", "Unexpected topic: set_safety_preset_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "set_safety_preset_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "set_safety_preset_response failed" + payload["error_msg"]
         return payload
 
 
@@ -388,7 +411,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_safety_preset_response", "Unexpected topic: get_safety_preset_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "get_safety_preset_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "get_safety_preset_response failed" + payload["error_msg"]
         return payload
 
     def get_safety_preset(self, camera_namespace, camera_name, index):
@@ -435,7 +458,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_safety_interface_config_response", "Unexpected topic: set_safety_interface_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "set_safety_interface_config_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "set_safety_interface_config_response failed" + payload["error_msg"]
         return payload
 
     def set_safety_interface_config(self, camera_namespace, camera_name, sp):
@@ -479,7 +502,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_safety_interface_config_response", "Unexpected topic: get_safety_interface_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "get_safety_interface_config_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "get_safety_interface_config_response failed" + payload["error_msg"]
         return payload
 
 
@@ -494,7 +517,7 @@ class MQTTClientSimulator:
             sp (str): The safety preset.
             index (int): The index of the safety config.
         """
-        self.send_get_safety_interface_config_request(camera_namespace, camera_name, index=2)
+        self.send_get_safety_interface_config_request(camera_namespace, camera_name, index)
         return self.receive_get_safety_interface_config_response()
 
 
@@ -523,7 +546,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_calib_config_response", "Unexpected topic: get_calib_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "get_calib_config_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "get_calib_config_response failed" + payload["error_msg"]
         return payload
 
     def get_calib_config(self, camera_namespace, camera_name):
@@ -565,7 +588,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_calib_config_response", "Unexpected topic: set_calib_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "set_calib_config_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "set_calib_config_response failed" + payload["error_msg"]
         return payload
 
     def set_calib_config(self, camera_namespace, camera_name, calib_config):
@@ -606,7 +629,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "get_application_config_response", "Unexpected topic: get_application_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "get_application_config_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "get_application_config_response failed:" + payload["error_msg"]
         return payload
 
     def get_application_config(self, camera_namespace, camera_name):
@@ -650,7 +673,7 @@ class MQTTClientSimulator:
         msg = self.get_message()
         assert msg.topic == "set_application_config_response", "Unexpected topic: set_application_config_response expected, received " + msg.topic
         payload = json.loads(msg.payload)
-        assert payload["success"] == True, "set_application_config_response failed" + payload["err_msg"]
+        assert payload["success"] == True, "set_application_config_response failed:" + payload["error_msg"]
         return payload
 
     def set_application_config(self, camera_namespace, camera_name, application_config):
@@ -695,8 +718,8 @@ class MQTTClientSimulator:
         payload = json.loads(msg.payload)
         '''
         LOGGER.warning("payload[success] is not a string in get_device_info_response")
-        #assert payload["success"] == True, "get_device_info_response failed" + payload["err_msg"]
-        #assert payload["success"] == "true", "get_device_info_response failed" + payload["err_msg"]
+        #assert payload["success"] == True, "get_device_info_response failed" + payload["error_msg"]
+        #assert payload["success"] == "true", "get_device_info_response failed" + payload["error_msg"]
         '''
         return payload
 
@@ -770,52 +793,78 @@ class MQTTClientSimulator:
         self.locked = True
         self.publish(j, 'triggered_calibration_request')
 
-    def prepare_for_calibration(self, camera_namespace, camera_name):
-        self.set_integer_param(camera_namespace, camera_name, 'safety_camera.safety_mode',2)
+    def set_safety_mode(self, camera_namespace, camera_name, mode):
+        self.set_integer_param(camera_namespace, camera_name, 'safety_camera.safety_mode',mode)
         time.sleep(0.5)
-        LOGGER.info("Param safety_camera.safety_mode: %s", str(self.get_param(camera_namespace, camera_name, 'safety_camera.safety_mode')))
+        LOGGER.info("Param safety_camera.safety_mode: %s", str(self.get_param_msg(camera_namespace, camera_name, 'safety_camera.safety_mode')))
+
+    def prepare_for_calibration(self, camera_namespace, camera_name):
+        self.set_safety_mode(camera_namespace, camera_name, 2)
         # switch to visual preset #1
         self.set_integer_param(camera_namespace, camera_name, 'depth_module.visual_preset',1)
         time.sleep(0.5)
-        LOGGER.info("Param depth_module.visual_preset: %s", self.get_param(camera_namespace, camera_name, 'depth_module.visual_preset'))
+        LOGGER.info("Param depth_module.visual_preset: %s", self.get_param_msg(camera_namespace, camera_name, 'depth_module.visual_preset'))
 
         # enable emitter
         self.set_bool_param(camera_namespace, camera_name, 'depth_module.emitter_enabled',True)
         time.sleep(0.5)
-        LOGGER.info("Param depth_module.emitter_enabled: %s", self.get_param(camera_namespace, camera_name, 'depth_module.emitter_enabled'))
+        LOGGER.info("Param depth_module.emitter_enabled: %s", self.get_param_msg(camera_namespace, camera_name, 'depth_module.emitter_enabled'))
 
         # enable auto exposuretc_done   CAMERA_NAME,
         self.set_bool_param(camera_namespace, camera_name,  'depth_module.enable_auto_exposure',True)
         time.sleep(0.5)
-        LOGGER.info("Param depth_module.enable_auto_exposure: %s", self.get_param(camera_namespace, camera_name, 'depth_module.enable_auto_exposure'))
+        LOGGER.info("Param depth_module.enable_auto_exposure: %s", self.get_param_msg(camera_namespace, camera_name, 'depth_module.enable_auto_exposure'))
 
         # turn off depth streaming
         self.set_bool_param(camera_namespace, camera_name, 'enable_depth',False)
         time.sleep(0.5)
-        LOGGER.info("Param enable_depth: %s", self.get_param(camera_namespace, camera_name, 'enable_depth'))
+        LOGGER.info("Param enable_depth: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_depth'))
         
         # turn off infra1 streaming
         self.set_bool_param(camera_namespace, camera_name, 'enable_infra1',False)
         time.sleep(0.5)
-        LOGGER.info("Param enable_infra1: %s", self.get_param(camera_namespace, camera_name, 'enable_infra1'))
+        LOGGER.info("Param enable_infra1: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_infra1'))
         # turn off infra2 streaming
         self.set_bool_param(camera_namespace, camera_name, 'enable_infra2',False)
         time.sleep(0.5)
-        LOGGER.info("Param enable_infra2: %s", self.get_param(camera_namespace, camera_name, 'enable_infra2'))
+        LOGGER.info("Param enable_infra2: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_infra2'))
         # turn off safety streaming
         self.set_bool_param(camera_namespace, camera_name, 'enable_safety',False)
         time.sleep(0.5)
-        LOGGER.info("Param enable_safety: %s", self.get_param(camera_namespace, camera_name, 'enable_safety'))
+        LOGGER.info("Param enable_safety: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_safety'))
         # turn off occupancy streaming
         self.set_bool_param(camera_namespace, camera_name, 'enable_occupancy',False)
         time.sleep(0.5)
-        LOGGER.info("Param enable_occupancy: %s", self.get_param(camera_namespace, camera_name, 'enable_occupancy'))
+        LOGGER.info("Param enable_occupancy: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_occupancy'))
 
         self.set_bool_param(camera_namespace, camera_name, 'enable_color',False)
         time.sleep(0.5)
-        LOGGER.info("Param enable_color: %s", self.get_param(camera_namespace, camera_name, 'enable_color'))
+        LOGGER.info("Param enable_color: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_color'))
 
         # turn off lpcl streaming
         self.set_bool_param(camera_namespace, camera_name, 'enable_labeled_point_cloud',False)
+        time.sleep(1.5)
+        LOGGER.info("Param enable_labeled_point_cloud: %s", self.get_param_msg(camera_namespace, camera_name, 'enable_labeled_point_cloud'))
+
+    def start_stop_stream(self, camera_namespace, camera_name, stream_name, start_stream=True):
+        self.set_integer_param(camera_namespace, camera_name, 'safety_camera.safety_mode',0)
         time.sleep(0.5)
-        LOGGER.info("Param enable_labeled_point_cloud: %s", self.get_param(camera_namespace, camera_name, 'enable_labeled_point_cloud'))
+        self.set_bool_param(camera_namespace, camera_name, stream_name,'true' if start_stream else 'false')
+        time.sleep(0.5)
+        is_stream_enabled = self.get_param(camera_namespace, camera_name, stream_name) 
+        assert is_stream_enabled != start_stream, f"Param {stream_name} is not set: expected: {start_stream} received: {is_stream_enabled}"
+
+    def start_stop_color_stream(self, camera_namespace, camera_name, start_stream=True):
+        self.start_stop_stream(camera_namespace, camera_name, 'enable_color', start_stream)
+
+    def start_stop_depth_stream(self, camera_namespace, camera_name, start_stream=True):
+        self.start_stop_stream(camera_namespace, camera_name, 'enable_depth', start_stream)
+
+    def start_stop_infra1_stream(self, camera_namespace, camera_name, start_stream=True):
+        self.start_stop_stream(camera_namespace, camera_name, 'enable_infra1', start_stream)
+        
+    def start_stop_infra2_stream(self, camera_namespace, camera_name, start_stream=True):
+        self.start_stop_stream(camera_namespace, camera_name, 'enable_infra2', start_stream)
+
+    def start_stop_safety_stream(self, camera_namespace, camera_name, start_stream=True):
+        self.start_stop_stream(camera_namespace, camera_name, 'enable_safety', start_stream)
