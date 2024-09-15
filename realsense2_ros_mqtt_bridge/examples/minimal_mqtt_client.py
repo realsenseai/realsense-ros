@@ -280,7 +280,7 @@ class DemoMQTTClient:
         while self.locked:
             pass
 
-    def get_safety_interface_config(self, camera_namespace, camera_name):
+    def get_safety_interface_config(self, camera_namespace, camera_name, index=2):
         """
         Send a request to get a safety inteface config.
 
@@ -291,6 +291,7 @@ class DemoMQTTClient:
         request_dict = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
+            'calib_location': index
         }
         j = json.dumps(request_dict)
         self.locked = True
@@ -407,6 +408,7 @@ class DemoMQTTClient:
         request_dict = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
+            'json': 'calib run'
         }
         j = json.dumps(request_dict)
         self.publish(j, 'triggered_calibration_request')

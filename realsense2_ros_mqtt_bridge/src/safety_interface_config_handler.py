@@ -31,7 +31,6 @@ class SafetyInterfaceConfigHandler(ServiceHandler):
         """docstring."""
         self.mqtt_ros_node.ROS_DEBUG('get_safety_interface_config_request \
             message received')
-
         camera_namespace = mqtt_request['camera_namespace']
         camera_name = mqtt_request['camera_name']
         service_name = f'/{camera_namespace}/{camera_name}/safety_interface_config_read'
