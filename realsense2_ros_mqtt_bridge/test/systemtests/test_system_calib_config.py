@@ -14,7 +14,7 @@
 
 import sys
 import os
-
+import numpy as np
 import rclpy 
 
 import pytest 
@@ -67,6 +67,7 @@ def test_system_calib_config(launch_descr_with_parameters):
     print("Response:", response)
     original_data = response['calib_config']
     import json
+    original_data = original_data.replace("null",str(np.finfo(np.float32).max))
     calib_config = json.loads(original_data)
     if calib_config['calibration_config']['roi_0']['vertex_0'][1] == 35:
         calib_config['calibration_config']['roi_0']['vertex_0'][1] = 36
