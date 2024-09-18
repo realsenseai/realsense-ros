@@ -201,48 +201,117 @@ class MQTTBridgeNode(Node):
         self.ROS_INFO(f'Received new MQTT request on topic:'
                       f'{msg.topic} msg:{decoded_msg}')
         mqtt_request = json.loads(decoded_msg)
-
+        err_msg = ''
+        response_topic = ''
         if msg.topic == 'enumerate_devices_request':
-            self.device_handler.handle_enumerate_devices_request(mqtt_request)
-        elif msg.topic == 'get_device_info_request':
-            self.device_handler.handle_get_device_info_request(mqtt_request)
-        elif msg.topic == 'get_param_request':
-            self.parameter_handler.handle_get_param_request(mqtt_request)
-        elif msg.topic == 'set_param_request':
-            self.parameter_handler.handle_set_param_request(mqtt_request)
-        elif msg.topic == 'get_frame_request':
-            self.frame_handler.handle_get_frame_request(mqtt_request)
-        elif msg.topic == 'get_safety_preset_request':
-            self.safety_preset_handler.handle_get_safety_preset_request(
-                mqtt_request)
-        elif msg.topic == 'set_safety_preset_request':
-            self.safety_preset_handler.handle_set_safety_preset_request(
-                mqtt_request)
-        elif msg.topic == 'get_safety_interface_config_request':
-            self.safety_interface_config_handler.handle_get_safety_interface_config_request(
-                mqtt_request)
-        elif msg.topic == 'set_safety_interface_config_request':
-            self.safety_interface_config_handler.handle_set_safety_interface_config_request(
-                mqtt_request)
-        elif msg.topic == 'get_calib_config_request':
-            self.calib_config_handler.handle_get_calib_config_request(
-                mqtt_request)
-        elif msg.topic == 'set_calib_config_request':
-            self.calib_config_handler.handle_set_calib_config_request(
-                mqtt_request)
-        elif msg.topic == 'get_application_config_request':
-            self.application_config_handler.handle_get_application_config_request(
-                mqtt_request)
-        elif msg.topic == 'set_application_config_request':
-            self.application_config_handler.handle_set_application_config_request(
-                mqtt_request)
-        elif msg.topic == 'triggered_calibration_request':
-            self.triggered_calibration_handler.handle_triggered_calibration_request(
-                mqtt_request)
+            if 'camera_namespace_prefix' not in mqtt_request:
+                err_msg = "camera_namespace_prefix not found in the mqtt request"
+            elif 'camera_name_prefix' not in mqtt_request:
+                err_msg = "camera_name_prefix not found in the mqtt request"
         else:
-            self.ROS_ERROR('Unsupported MQTT Message')
-        self.ROS_INFO('MQTT request handling done')
-        self.ROS_INFO('Waiting for new incoming MQTT requets')
+            if 'camera_namespace' not in mqtt_request:
+                err_msg = "camera_namespace not found in the mqtt request"
+            elif 'camera_name' not in mqtt_request:
+                err_msg = "camera_name not found in the mqtt request"
+            if msg.topic == 'get_param_request':
+                response_topic = 'get_parameter_response'
+            if msg.topic == 'set_param_request':
+                response_topic = 'set_parameter_response'
+
+        if err_msg == '':
+            if msg.topic == 'enumerate_devices_request':
+                self.device_handler.handle_enumerate_devices_request(mqtt_request)
+            elif msg.topic == 'get_device_info_request':
+                self.device_handler.handle_get_device_info_request(mqtt_request)
+            elif msg.topic == 'get_param_request':
+                if 'parameter_name' not in mqtt_request:
+                    err_msg = "parameter_name not found in the mqtt request"
+                    response_topic = 'get_parameter_response'
+                else:
+                    self.parameter_handler.handle_get_param_request(mqtt_request)
+            elif msg.topic == 'set_param_request':
+                response_topic = 'set_parameter_response'
+                if 'parameter_name' not in mqtt_request:
+                    err_msg = "parameter_name not found in the mqtt request"
+                elif 'parameter_value' not in mqtt_request:
+                    err_msg = "parameter_value not found in the mqtt request"
+                elif 'parameter_type' not in mqtt_request:
+                    err_msg = "parameter_type not found in the mqtt request"
+                else:
+                    self.parameter_handler.handle_set_param_request(mqtt_request)
+            elif msg.topic == 'get_frame_request':
+                if 'stream_name' not in mqtt_request:
+                    err_msg = "stream_name not found in the mqtt request"
+                else:
+                    self.frame_handler.handle_get_frame_request(mqtt_request)
+            elif msg.topic == 'get_safety_preset_request':
+                if 'index' not in mqtt_request:
+                    err_msg = "index not found in the mqtt request"
+                else:
+                    self.safety_preset_handler.handle_get_safety_preset_request(
+                        mqtt_request)
+            elif msg.topic == 'set_safety_preset_request':
+                if 'index' not in mqtt_request:
+                    err_msg = "index not found in the mqtt request"
+                elif 'preset' not in mqtt_request:
+                    err_msg = "preset not found in the mqtt request"
+                else:
+                    self.safety_preset_handler.handle_set_safety_preset_request(
+                        mqtt_request)
+            elif msg.topic == 'get_safety_interface_config_request':
+                if 'calib_location' not in mqtt_request:
+                    mqtt_request['calib_location'] = 2
+                    self.ROS_WARN('calib_location  was not found in MQTT request, using the default value 2')
+                self.safety_interface_config_handler.handle_get_safety_interface_config_request(
+                    mqtt_request)
+            elif msg.topic == 'set_safety_interface_config_request':
+                if 'safety_interface_config' not in mqtt_request:
+                    err_msg = "safety_interface_config not found in the mqtt request"
+                else:
+                    self.safety_interface_config_handler.handle_set_safety_interface_config_request(
+                        mqtt_request)
+            elif msg.topic == 'get_calib_config_request':
+                self.calib_config_handler.handle_get_calib_config_request(
+                    mqtt_request)
+            elif msg.topic == 'set_calib_config_request':
+                if 'calib_config' not in mqtt_request:
+                    err_msg = "calib_config not found in the mqtt request"
+                else:
+                    self.calib_config_handler.handle_set_calib_config_request(
+                        mqtt_request)
+            elif msg.topic == 'get_application_config_request':
+                self.application_config_handler.handle_get_application_config_request(
+                    mqtt_request)
+            elif msg.topic == 'set_application_config_request':
+                if 'application_config' not in mqtt_request:
+                    err_msg = "application_config not found in the mqtt request"
+                else:
+                    self.application_config_handler.handle_set_application_config_request(
+                        mqtt_request)
+            elif msg.topic == 'triggered_calibration_request':
+                #default is 'calib run'
+                if 'json' not in mqtt_request:
+                    mqtt_request['json'] = 'calib run'
+                self.triggered_calibration_handler.handle_triggered_calibration_request(
+                    mqtt_request)
+            else:
+                err_msg = 'Unsupported MQTT Message'
+
+        if err_msg == '':
+            self.ROS_INFO('MQTT request handling done')
+            self.ROS_INFO('Waiting for new incoming MQTT requets')
+        else:
+            mqtt_response = mqtt_request
+            mqtt_response['success'] = False
+            mqtt_response['error_msg'] = err_msg
+            if response_topic == '':
+                response_topic = msg.topic.replace('request', 'response')
+            self.mqtt_client.publish(response_topic,
+                    json.dumps(mqtt_response),
+                    qos=1)
+            self.ROS_ERROR(err_msg + f' Response in {response_topic}:{mqtt_response}')
+
+            
 
     def wait_for_service(self, client, service_name, timeout=5.0):
         """

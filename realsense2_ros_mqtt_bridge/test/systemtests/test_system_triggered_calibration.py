@@ -68,7 +68,8 @@ def test_system_triggered_calibration(launch_descr_with_parameters):
             if response['success'] == True or response['error_msg'] != '':
                 if response['success'] == True:
                     LOGGER.info('Triggered calibraton was successful')
-                    assert response['calibration'] == "{}", "The calibration data received is empty"
+                    assert (response['calibration'] != "{}"), "The calibration data received is empty"
+                    assert type(response['calibration']) != list, "The calibration data received is not a list"
                     LOGGER.info('Triggered calibraton data:' + response['calibration'])
                 elif response['progress'] == 100.0 and 'Calibration completed but algorithm failed' in response['error_msg']:
                     #since it's an issue with the camera field of view, treating it as a success with warning. 
