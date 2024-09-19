@@ -686,12 +686,8 @@ Each of the above filters have it's own parameters, following the naming convent
     <summary>Click to see the full response of the call example</summary>
 
     ```
-    realsense2_camera_msgs.srv.SafetyPresetRead_Response(
-    success=True,
-    error_message='',
-    preset=
-    '
-    {
+    realsense2_camera_msgs.srv.SafetyPresetRead_Response(success=True, error_message='', safety_preset=
+    '{
       "safety_preset":
       {
           "platform_config": 
@@ -706,7 +702,8 @@ Each of the above filters have it's own parameters, following the naming convent
                   ],
                   "translation": [0.0, 0.0, 0.27]
               },
-              "robot_height": 1.0
+              "robot_height": 1.0,
+              "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           },
           "safety_zones": 
           {
@@ -719,7 +716,8 @@ Each of the above filters have it's own parameters, following the naming convent
                       "p2": {"x": 0.8, "y": -0.1},
                       "p3": {"x": 0.5, "y": -0.1}
                   },
-                  "safety_trigger_confidence": 1
+                  "safety_trigger_confidence": 3,
+                  "reserved": [0, 0, 0, 0, 0, 0, 0]
               },
               "warning_zone":
               {
@@ -730,93 +728,94 @@ Each of the above filters have it's own parameters, following the naming convent
                       "p2": {"x": 1.2, "y": -0.1},
                       "p3": {"x": 0.8, "y": -0.1}
                   },
-                  "safety_trigger_confidence": 1
+                  "safety_trigger_confidence": 3,
+                  "reserved": [0, 0, 0, 0, 0, 0, 0]
               }
           },
           "masking_zones": 
           {
               "0":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0,   "j": 0},
-                      "p1": {"i": 0,   "j": 320},
-                      "p2": {"i": 200, "j": 320},
-                      "p3": {"i": 200, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "1":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "2":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "3":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "4":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "5":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "6":
               {
-                  "attributes": 1,
-                  "minimal_range": 0,
+                  "attributes": 0,
+                  "minimal_range": 0.5,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
                   }
               },
               "7":
@@ -825,32 +824,34 @@ Each of the above filters have it's own parameters, following the naming convent
                   "minimal_range": 0,
                   "region_of_interests":
                   {
-                      "p0": {"i": 0, "j": 0},
-                      "p1": {"i": 0, "j": 0},
-                      "p2": {"i": 0, "j": 0},
-                      "p3": {"i": 0, "j": 0}
+                      "vertex_0": [500, 3300],
+                      "vertex_1": [800, 3300],
+                      "vertex_2": [800, 3100],
+                      "vertex_3": [500, 3100]
                   }
               }
           },
+          "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           "environment": 
           {
-              "safety_trigger_duration" : 1,
-              "zero_safety_monitoring" : 0,
+              "safety_trigger_duration": 1.0,
+              "zero_safety_monitoring": 0,
               "hara_history_continuation": 0,
-              "angular_velocity" : 0,
-              "payload_weight" : 0,
-              "surface_inclination" : 15,
-              "surface_height" : 0.05,
-              "diagnostic_zone_fill_rate_threshold" : 255,
-              "floor_fill_threshold" : 255,
-              "depth_fill_threshold" : 255,
-              "diagnostic_zone_height_median_threshold" : 255,
-              "vision_hara_persistency" : 1,
-              "crypto_signature" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              "reserved1": [0, 0],
+              "angular_velocity": 0.0,
+              "payload_weight": 0.0,
+              "surface_inclination": 15.0,
+              "surface_height": 0.05,
+              "diagnostic_zone_fill_rate_threshold": 255,
+              "floor_fill_threshold": 255,
+              "depth_fill_threshold": 255,
+              "diagnostic_zone_height_median_threshold": 255,
+              "vision_hara_persistency": 1,
+              "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "reserved2": [0, 0, 0]
           }
       }
-    }'
-    )
+    }')
     ```
     </details>
 
@@ -860,12 +861,11 @@ Each of the above filters have it's own parameters, following the naming convent
   - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetWrite` for the full request/response fields.
   - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping.
     <details>
-    <summary>Click to see full call example</summary>
+    <summary>Click to see full call example, writing new Safety Preset to index 63</summary>
 
     `
-    ros2 service call /camera/camera/safety_preset_write realsense2_camera_msgs/srv/SafetyPresetWrite "{preset: ' {\"safety_preset\": {\"platform_config\": {\"transformation_link\": {\"rotation\": [[0.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [0.0, -1.0, 0.0]], \"translation\": [0.0, 0.0, 0.28]}, \"robot_height\": 1.0}, \"safety_zones\": {\"danger_zone\": {\"zone_polygon\": {\"p0\": {\"x\": 0.5, \"y\": 0.1}, \"p1\": {\"x\": 0.8, \"y\": 0.1}, \"p2\": {\"x\": 0.8, \"y\": -0.1}, \"p3\": {\"x\": 0.5, \"y\": -0.1}}, \"safety_trigger_confidence\": 1}, \"warning_zone\": {\"zone_polygon\": {\"p0\": {\"x\": 0.8, \"y\": 0.1}, \"p1\": {\"x\": 1.2, \"y\": 0.1}, \"p2\": {\"x\": 1.2, \"y\": -0.1}, \"p3\": {\"x\": 0.8, \"y\": -0.1}}, \"safety_trigger_confidence\": 1}}, \"masking_zones\": {\"0\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 320}, \"p2\": {\"i\": 200, \"j\": 320}, \"p3\": {\"i\": 200, \"j\": 0}}}, \"1\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"2\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"3\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"4\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"5\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"6\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}, \"7\": {\"attributes\": 1, \"minimal_range\": 0, \"region_of_interests\": {\"p0\": {\"i\": 0, \"j\": 0}, \"p1\": {\"i\": 0, \"j\": 0}, \"p2\": {\"i\": 0, \"j\": 0}, \"p3\": {\"i\": 0, \"j\": 0}}}}, \"environment\": {\"safety_trigger_duration\": 1, \"zero_safety_monitoring\": 0, \"hara_history_continuation\": 0, \"angular_velocity\": 0, \"payload_weight\": 0, \"surface_inclination\": 15, \"surface_height\": 0.05, \"diagnostic_zone_fill_rate_threshold\": 255, \"floor_fill_threshold\": 255, \"depth_fill_threshold\": 255, \"diagnostic_zone_height_median_threshold\": 255, \"vision_hara_persistency\": 1, \"crypto_signature\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}}}', index: 63}"
+    ros2 service call /camera/camera/safety_preset_write realsense2_camera_msgs/srv/SafetyPresetWrite "{safety_preset: ' {\"safety_preset\":{\"platform_config\":{\"transformation_link\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27]},\"robot_height\":1.0,\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},\"safety_zones\":{\"danger_zone\":{\"zone_polygon\":{\"p0\":{\"x\":0.5,\"y\":0.1},\"p1\":{\"x\":0.8,\"y\":0.1},\"p2\":{\"x\":0.8,\"y\":-0.1},\"p3\":{\"x\":0.5,\"y\":-0.1}},\"safety_trigger_confidence\":3,\"reserved\":[0,0,0,0,0,0,0]},\"warning_zone\":{\"zone_polygon\":{\"p0\":{\"x\":0.8,\"y\":0.1},\"p1\":{\"x\":1.2,\"y\":0.1},\"p2\":{\"x\":1.2,\"y\":-0.1},\"p3\":{\"x\":0.8,\"y\":-0.1}},\"safety_trigger_confidence\":3,\"reserved\":[0,0,0,0,0,0,0]}},\"masking_zones\":{\"0\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"1\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"2\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"3\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"4\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"5\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"6\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"7\":{\"attributes\":1,\"minimal_range\":0,\"region_of_interests\":{\"vertex_0\":[500,3300],\"vertex_1\":[800,3300],\"vertex_2\":[800,3100],\"vertex_3\":[500,3100]}}},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"environment\":{\"safety_trigger_duration\":1.0,\"zero_safety_monitoring\":0,\"hara_history_continuation\":0,\"reserved1\":[0,0],\"angular_velocity\":0.0,\"payload_weight\":0.0,\"surface_inclination\":15.0,\"surface_height\":0.05,\"diagnostic_zone_fill_rate_threshold\":255,\"floor_fill_threshold\":255,\"depth_fill_threshold\":255,\"diagnostic_zone_height_median_threshold\":255,\"vision_hara_persistency\":1,\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"reserved2\":[1,1,1]}}} ', index: 63}"
     `
-
     </details>
 
   - [JSON safety preset example](realsense2_camera/examples/d500_tables/safety_preset_example.json)
@@ -879,132 +879,132 @@ Each of the above filters have it's own parameters, following the naming convent
     <summary>Click to see the full response of the call example</summary>
 
     ```
-    response:
-    realsense2_camera_msgs.srv.SafetyInterfaceConfigRead_Response(success=True, error_message='', safety_interface_config= '{
+    realsense2_camera_msgs.srv.SafetyInterfaceConfigRead_Response(success=True, error_message='', safety_interface_config='
+    {
       "safety_interface_config":
-        {
-            "m12_safety_pins_configuration": 
-            {
-                "power":
-                {
-                    "direction": 0,
-                    "functionality": 1
-                },
-                "ossd1_b":
-                {
-                    "direction": 1,
-                    "functionality": 3
-                },
-                "ossd1_a":
-                {
-                    "direction": 1,
-                    "functionality": 2
-                },
-                "gpio_0":
-                {
-                    "direction": 0,
-                    "functionality": 16
-                },
-                "gpio_1":
-                {
-                    "direction": 0,
-                    "functionality": 17
-                },
-                "gpio_2":
-                {
-                    "direction": 0,
-                    "functionality": 18
-                },
-                "gpio_3":
-                {
-                    "direction": 0,
-                    "functionality": 19
-                },
-                "preset3_a":
-                {
-                    "direction": 0,
-                    "functionality": 12
-                },
-                "preset3_b":
-                {
-                    "direction": 0,
-                    "functionality": 13
-                },
-                "preset4_a":
-                {
-                    "direction": 0,
-                    "functionality": 14
-                },
-                "preset1_b":
-                {
-                    "direction": 0,
-                    "functionality": 9
-                },
-                "preset1_a":
-                {
-                    "direction": 0,
-                    "functionality": 8
-                },
-                "preset2_b":
-                {
-                    "direction": 0,
-                    "functionality": 11
-                },
-                "gpio_4":
-                {
-                    "direction": 1,
-                    "functionality": 21
-                },
-                "preset2_a":
-                {
-                    "direction": 0,
-                    "functionality": 10
-                },
-                "preset4_b":
-                {
-                    "direction": 0,
-                    "functionality": 15
-                },
-                "ground":
-                {
-                    "direction": 0,
-                    "functionality": 0
-                }
-            },
-            "gpio_stabilization_interval" : 150,
-            "camera_position":
-            {
-                "rotation":
-                [
-                    [ 0.0,  0.0,  1.0],
-                    [-1.0,  0.0,  0.0],
-                    [ 0.0, -1.0,  0.0]
-                ],
-                "translation": [0.0, 0.0, 0.27]
-            },
-            "occupancy_grid_params":
-            {
-                "grid_cell_seed" : 100,
-                "close_range_quorum" : 150,
-                "mid_range_quorum" : 100,
-                "long_range_quorum" : 50
-            },
-            "smcu_arbitration_params":
-            {
-                "l_0_total_threshold": 0,
-                "l_0_sustained_rate_threshold": 20,
-                "l_1_total_threshold": 0,
-                "l_1_sustained_rate_threshold": 20,
-                "l_2_total_threshold": 0,
-                "hkr_stl_timeout": 40,
-                "mcu_stl_timeout": 40,
-                "sustained_aicv_frame_drops": 0,
-                "ossd_self_test_pulse_width": 23
-            },
-            "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        }
-    }')
+      {
+          "m12_safety_pins_configuration":
+          {
+              "power":
+              {
+                  "direction": "In",
+                  "functionality": "p24VDC"
+              },
+              "ossd1_b":
+              {
+                  "direction": "Out",
+                  "functionality": "pOSSD1_B"
+              },
+              "ossd1_a":
+              {
+                  "direction": "Out",
+                  "functionality": "pOSSD1_A"
+              },
+              "preset3_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect3_A"
+              },
+              "preset3_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect3_B"
+              },
+              "preset4_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect4_A"
+              },
+              "preset1_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect1_B"
+              },
+              "preset1_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect1_A"
+              },
+              "gpio_0":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect5_A"
+              },
+              "gpio_1":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect5_B"
+              },
+              "gpio_3":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect6_B"
+              },
+              "gpio_2":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect6_A"
+              },
+              "preset2_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect2_B"
+              },
+              "gpio_4":
+              {
+                  "direction": "Out",
+                  "functionality": "pDeviceReady"
+              },
+              "preset2_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect2_A"
+              },
+              "preset4_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect4_B"
+              },
+              "ground":
+              {
+                  "direction": "In",
+                  "functionality": "pGND"
+              }
+          },
+          "gpio_stabilization_interval" : 150,
+          "camera_position":
+          {
+              "rotation":
+              [
+                  [ 0.0,  0.0,  1.0],
+                  [-1.0,  0.0,  0.0],
+                  [ 0.0, -1.0,  0.0]
+              ],
+              "translation": [0.0, 0.0, 0.27]
+          },
+          "occupancy_grid_params":
+          {
+              "grid_cell_seed" : 20,
+              "close_range_quorum" : 12 ,
+              "mid_range_quorum" : 6,
+              "long_range_quorum" : 4
+          },
+          "smcu_arbitration_params":
+          {
+              "l_0_total_threshold": 100,
+              "l_0_sustained_rate_threshold": 20,
+              "l_1_total_threshold": 100,
+              "l_1_sustained_rate_threshold": 20,
+              "l_2_total_threshold": 10,
+              "hkr_stl_timeout": 15,
+              "mcu_stl_timeout": 10,
+              "sustained_aicv_frame_drops": 95,
+              "ossd_self_test_pulse_width": 23
+          },
+          "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      }
+    }
+    ')
     ```
     </details>
 
@@ -1018,7 +1018,7 @@ Each of the above filters have it's own parameters, following the naming convent
     <summary>Click to see full call example</summary>
 
     `
-    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27000001072883606]},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"gpio_stabilization_interval\":150,\"m12_safety_pins_configuration\":{\"gpio_0\":{\"direction\":0,\"functionality\":16},\"gpio_1\":{\"direction\":0,\"functionality\":17},\"gpio_2\":{\"direction\":1,\"functionality\":4},\"gpio_3\":{\"direction\":1,\"functionality\":5},\"gpio_4\":{\"direction\":1,\"functionality\":21},\"ground\":{\"direction\":0,\"functionality\":0},\"ossd1_a\":{\"direction\":1,\"functionality\":2},\"ossd1_b\":{\"direction\":1,\"functionality\":3},\"power\":{\"direction\":0,\"functionality\":1},\"preset1_a\":{\"direction\":0,\"functionality\":8},\"preset1_b\":{\"direction\":0,\"functionality\":9},\"preset2_a\":{\"direction\":0,\"functionality\":10},\"preset2_b\":{\"direction\":0,\"functionality\":11},\"preset3_a\":{\"direction\":0,\"functionality\":12},\"preset3_b\":{\"direction\":0,\"functionality\":13},\"preset4_a\":{\"direction\":0,\"functionality\":14},\"preset4_b\":{\"direction\":0,\"functionality\":15}},\"occupancy_grid_params\":{\"close_range_quorum\":82,\"grid_cell_seed\":55,\"long_range_quorum\":53,\"mid_range_quorum\":143},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"smcu_arbitration_params\":{\"hkr_stl_timeout\":40,\"l_0_sustained_rate_threshold\":20,\"l_0_total_threshold\":0,\"l_1_sustained_rate_threshold\":20,\"l_1_total_threshold\":0,\"l_2_total_threshold\":0,\"mcu_stl_timeout\":40,\"ossd_self_test_pulse_width\":1,\"sustained_aicv_frame_drops\":50}}}'}"
+    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"m12_safety_pins_configuration\":{\"power\":{\"direction\":\"In\",\"functionality\":\"p24VDC\"},\"ossd1_b\":{\"direction\":\"Out\",\"functionality\":\"pOSSD1_B\"},\"ossd1_a\":{\"direction\":\"Out\",\"functionality\":\"pOSSD1_A\"},\"preset3_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect3_A\"},\"preset3_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect3_B\"},\"preset4_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect4_A\"},\"preset1_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect1_B\"},\"preset1_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect1_A\"},\"gpio_0\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect5_A\"},\"gpio_1\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect5_B\"},\"gpio_3\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect6_B\"},\"gpio_2\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect6_A\"},\"preset2_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect2_B\"},\"gpio_4\":{\"direction\":\"Out\",\"functionality\":\"pDeviceReady\"},\"preset2_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect2_A\"},\"preset4_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect4_B\"},\"ground\":{\"direction\":\"In\",\"functionality\":\"pGND\"}},\"gpio_stabilization_interval\":150,\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27]},\"occupancy_grid_params\":{\"grid_cell_seed\":20,\"close_range_quorum\":12,\"mid_range_quorum\":6,\"long_range_quorum\":4},\"smcu_arbitration_params\":{\"l_0_total_threshold\":100,\"l_0_sustained_rate_threshold\":20,\"l_1_total_threshold\":100,\"l_1_sustained_rate_threshold\":20,\"l_2_total_threshold\":10,\"hkr_stl_timeout\":15,\"mcu_stl_timeout\":10,\"sustained_aicv_frame_drops\":95,\"ossd_self_test_pulse_width\":23},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}'}"
     `
     </details>
 

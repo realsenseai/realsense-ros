@@ -292,7 +292,7 @@
     "camera_name": "c_333622320169",
     "success": True,
     "error_msg": "",
-    "preset": "{safety preset as json}"
+    "safety_preset": "{safety preset as json}"
   }
   ```
 ## Set Safety Preset
@@ -301,7 +301,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "preset": "{safety preset as json}"
+    "safety_preset": "{safety preset as json}"
     "index": "1"
   }
   ```

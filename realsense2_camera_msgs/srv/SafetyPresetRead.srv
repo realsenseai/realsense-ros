@@ -2,4 +2,4 @@ uint8 index
 ---
 bool success
 string error_message
-string preset
+string safety_preset
