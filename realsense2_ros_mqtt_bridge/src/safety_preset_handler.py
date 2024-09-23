@@ -52,7 +52,7 @@ class SafetyPresetHandler(ServiceHandler):
         mqtt_response = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
-            'preset': ros_response.preset,
+            'preset': ros_response.safety_preset,
             'success': ros_response.success,
             'error_msg': ros_response.error_message
         }
@@ -79,7 +79,7 @@ class SafetyPresetHandler(ServiceHandler):
 
         ros_request = SafetyPresetWrite.Request()
         ros_request.index = int(index)
-        ros_request.preset = preset
+        ros_request.safety_preset = preset
 
         future = ros_client_safety_preset_write.call_async(ros_request)
         self.wait_for_future(future)
