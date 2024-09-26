@@ -178,7 +178,7 @@ namespace realsense2_camera
         void publishExtrinsicsTopic(const stream_index_pair& sip, const rs2_extrinsics& ex);
         void calcAndAppendTransformMsgs(const rs2::stream_profile& profile, const rs2::stream_profile& base_profile);
 
-        void handleReset(const std_srvs::srv::Empty::Request::SharedPtr req,
+        void handleHWReset(const std_srvs::srv::Empty::Request::SharedPtr req,
                                 const std_srvs::srv::Empty::Response::SharedPtr res);
 
         void getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
