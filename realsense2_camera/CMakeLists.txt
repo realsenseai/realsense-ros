@@ -110,6 +110,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -245,6 +246,7 @@ set(dependencies
   rclcpp
   rclcpp_components
   realsense2_camera_msgs
+  std_srvs
   std_msgs
   sensor_msgs
   nav_msgs
