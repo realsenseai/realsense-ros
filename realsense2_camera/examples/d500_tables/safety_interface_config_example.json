@@ -1,92 +1,92 @@
 {
     "safety_interface_config":
     {
-        "m12_safety_pins_configuration": 
+        "m12_safety_pins_configuration":
         {
             "power":
             {
-                "direction": 0,
-                "functionality": 1
+                "direction": "In",
+                "functionality": "p24VDC"
             },
             "ossd1_b":
             {
-                "direction": 1,
-                "functionality": 3
+                "direction": "Out",
+                "functionality": "pOSSD1_B"
             },
             "ossd1_a":
             {
-                "direction": 1,
-                "functionality": 2
-            },
-            "gpio_0":
-            {
-                "direction": 0,
-                "functionality": 16
-            },
-            "gpio_1":
-            {
-                "direction": 0,
-                "functionality": 17
-            },
-            "gpio_2":
-            {
-                "direction": 0,
-                "functionality": 18
-            },
-            "gpio_3":
-            {
-                "direction": 0,
-                "functionality": 19
+                "direction": "Out",
+                "functionality": "pOSSD1_A"
             },
             "preset3_a":
             {
-                "direction": 0,
-                "functionality": 12
+                "direction": "In",
+                "functionality": "pPresetSelect3_A"
             },
             "preset3_b":
             {
-                "direction": 0,
-                "functionality": 13
+                "direction": "In",
+                "functionality": "pPresetSelect3_B"
             },
             "preset4_a":
             {
-                "direction": 0,
-                "functionality": 14
+                "direction": "In",
+                "functionality": "pPresetSelect4_A"
             },
             "preset1_b":
             {
-                "direction": 0,
-                "functionality": 9
+                "direction": "In",
+                "functionality": "pPresetSelect1_B"
             },
             "preset1_a":
             {
-                "direction": 0,
-                "functionality": 8
+                "direction": "In",
+                "functionality": "pPresetSelect1_A"
+            },
+            "gpio_0":
+            {
+                "direction": "In",
+                "functionality": "pPresetSelect5_A"
+            },
+            "gpio_1":
+            {
+                "direction": "In",
+                "functionality": "pPresetSelect5_B"
+            },
+            "gpio_3":
+            {
+                "direction": "In",
+                "functionality": "pPresetSelect6_B"
+            },
+            "gpio_2":
+            {
+                "direction": "In",
+                "functionality": "pPresetSelect6_A"
             },
             "preset2_b":
             {
-                "direction": 0,
-                "functionality": 11
+                "direction": "In",
+                "functionality": "pPresetSelect2_B"
             },
             "gpio_4":
             {
-                "direction": 1,
-                "functionality": 21
+                "direction": "Out",
+                "functionality": "pDeviceReady"
             },
             "preset2_a":
             {
-                "direction": 0,
-                "functionality": 10
+                "direction": "In",
+                "functionality": "pPresetSelect2_A"
             },
             "preset4_b":
             {
-                "direction": 0,
-                "functionality": 15
+                "direction": "In",
+                "functionality": "pPresetSelect4_B"
             },
             "ground":
             {
-                "direction": 0,
-                "functionality": 0
+                "direction": "In",
+                "functionality": "pGND"
             }
         },
         "gpio_stabilization_interval" : 150,
@@ -102,24 +102,23 @@
         },
         "occupancy_grid_params":
         {
-            "grid_cell_seed" : 100,
-            "close_range_quorum" : 150,
-            "mid_range_quorum" : 100,
-            "long_range_quorum" : 50
+            "grid_cell_seed" : 20,
+            "close_range_quorum" : 12 ,
+            "mid_range_quorum" : 6,
+            "long_range_quorum" : 4
         },
         "smcu_arbitration_params":
         {
-            "l_0_total_threshold": 0,
+            "l_0_total_threshold": 100,
             "l_0_sustained_rate_threshold": 20,
-            "l_1_total_threshold": 0,
+            "l_1_total_threshold": 100,
             "l_1_sustained_rate_threshold": 20,
-            "l_2_total_threshold": 0,
-            "hkr_stl_timeout": 40,
-            "mcu_stl_timeout": 40,
-            "sustained_aicv_frame_drops": 0,
+            "l_2_total_threshold": 10,
+            "hkr_stl_timeout": 15,
+            "mcu_stl_timeout": 10,
+            "sustained_aicv_frame_drops": 95,
             "ossd_self_test_pulse_width": 23
         },
-        "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
 }

@@ -71,8 +71,7 @@ void BaseRealSenseNode::SafetyPresetReadService(const realsense2_camera_msgs::sr
     realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res){
     try
     {
-        rs2_safety_preset sp = _safety_sensor->as<rs2::safety_sensor>().get_safety_preset(req->index);
-        res->preset= std::string(_safety_sensor->as<rs2::safety_sensor>().safety_preset_to_json_string(sp));
+        res->safety_preset = _safety_sensor->as<rs2::safety_sensor>().get_safety_preset(req->index);
         res->success = true;
     }
     catch (const std::exception &e)
@@ -86,8 +85,7 @@ void BaseRealSenseNode::SafetyPresetWriteService(const realsense2_camera_msgs::s
     realsense2_camera_msgs::srv::SafetyPresetWrite::Response::SharedPtr res){
     try
     {
-        rs2_safety_preset sp = _safety_sensor->as<rs2::safety_sensor>().json_string_to_safety_preset(req->preset);
-        _safety_sensor->as<rs2::safety_sensor>().set_safety_preset(req->index, sp);
+        _safety_sensor->as<rs2::safety_sensor>().set_safety_preset(req->index, req->safety_preset);
         res->success = true;
     }
     catch (const std::exception &e)
@@ -102,8 +100,7 @@ void BaseRealSenseNode::SafetyInterfaceConfigReadService(const realsense2_camera
     try
     {
         rs2_calib_location location = static_cast<rs2_calib_location>(req->calib_location);
-        rs2_safety_interface_config sic = _safety_sensor->as<rs2::safety_sensor>().get_safety_interface_config(location);
-        res->safety_interface_config= std::string(_safety_sensor->as<rs2::safety_sensor>().safety_interface_config_to_json_string(sic));
+        res->safety_interface_config= _safety_sensor->as<rs2::safety_sensor>().get_safety_interface_config(location);
         res->success = true;
     }
     catch (const std::exception &e)
@@ -117,8 +114,7 @@ void BaseRealSenseNode::SafetyInterfaceConfigWriteService(const realsense2_camer
     realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Response::SharedPtr res){
     try
     {
-        rs2_safety_interface_config sic = _safety_sensor->as<rs2::safety_sensor>().json_string_to_safety_interface_config(req->safety_interface_config);
-        _safety_sensor->as<rs2::safety_sensor>().set_safety_interface_config(sic);
+        _safety_sensor->as<rs2::safety_sensor>().set_safety_interface_config(req->safety_interface_config);
         res->success = true;
     }
     catch (const std::exception &e)
