@@ -120,6 +120,7 @@ class DemoMQTTClient:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('get_transformation_response')
         self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
         self.mqtt_client.subscribe('set_parameter_response')
@@ -154,6 +155,24 @@ class DemoMQTTClient:
         }
         j = json.dumps(request_dict)
         self.publish(j, 'enumerate_devices_request')
+
+    def get_transformation(self, source, destination):
+        """
+        Send a request to find the ROS2 transformation from source frame to destination frame
+
+        Args:
+            source: source frame id.
+            destination: destination frame id
+        """
+        request_dict = {
+            'source': source,
+            'destination': destination
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_transformation_request')
+        while self.locked:
+            pass
 
     def get_device_info(self, camera_namespace, camera_name):
         """
@@ -437,6 +456,9 @@ if __name__ == '__main__':
     # get device info
     demo_mqtt_client.get_device_info(CAMERA_NAMESPACE,
                                      CAMERA_NAME)
+    
+    # get ROS2 transformation from 'c_353322320702_link' to 'c_353322320702_color_frame'
+    demo_mqtt_client.get_transformation('c_353322320702_link', 'c_353322320702_color_frame')
 
     # switch to service mode
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,
