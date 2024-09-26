@@ -593,7 +593,7 @@ void BaseRealSenseNode::handleHWReset(const std_srvs::srv::Empty::Request::Share
 {
     (void)req;
     (void)res;
-    ROS_INFO_STREAM(__FILE__ << ":" << __LINE__ << ":" << "Reset requested");
+    ROS_INFO_STREAM("Reset requested through service call");
     if (_dev)
     {
         try
