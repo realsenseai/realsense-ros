@@ -27,7 +27,7 @@ from .safety_interface_config_handler import SafetyInterfaceConfigHandler
 from .calib_config_handler import CalibConfigHandler
 from .application_config_handler import ApplicationConfigHandler
 from .triggered_calibration_handler import TriggeredCalibrationHandler
-
+from .transformation_handler import TransformationHandler
 
 class MQTTBridgeNode(Node):
     """
@@ -100,6 +100,7 @@ class MQTTBridgeNode(Node):
         self.mqtt_requests_topics = [
             'enumerate_devices_request',
             'get_device_info_request',
+            'get_transformation_request',
             'get_param_request',
             'set_param_request',
             'get_frame_request',
@@ -122,6 +123,7 @@ class MQTTBridgeNode(Node):
         which arrive on the 'enumerate_devices_request' topic
         """
         self.device_handler = DeviceHandler(self)
+        self.transformation_handler = TransformationHandler(self)
         self.parameter_handler = ParameterHandler(self)
         self.frame_handler = FrameHandler(self)
         self.safety_preset_handler = SafetyPresetHandler(self)
@@ -208,6 +210,11 @@ class MQTTBridgeNode(Node):
                 err_msg = "camera_namespace_prefix not found in the mqtt request"
             elif 'camera_name_prefix' not in mqtt_request:
                 err_msg = "camera_name_prefix not found in the mqtt request"
+        elif msg.topic == 'get_transformation_request':
+            if 'source' not in mqtt_request:
+                err_msg = "source not found in the mqtt request"
+            elif 'destination' not in mqtt_request:
+                err_msg = "destination not found in the mqtt request"
         else:
             if 'camera_namespace' not in mqtt_request:
                 err_msg = "camera_namespace not found in the mqtt request"
@@ -221,6 +228,8 @@ class MQTTBridgeNode(Node):
         if err_msg == '':
             if msg.topic == 'enumerate_devices_request':
                 self.device_handler.handle_enumerate_devices_request(mqtt_request)
+            elif msg.topic == 'get_transformation_request':
+                self.transformation_handler.handle_get_transformation_request(mqtt_request)
             elif msg.topic == 'get_device_info_request':
                 self.device_handler.handle_get_device_info_request(mqtt_request)
             elif msg.topic == 'get_param_request':

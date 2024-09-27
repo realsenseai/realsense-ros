@@ -18,6 +18,7 @@
 - [Client Usage](#client-usage)
   - [Enumerate Devices](#enumerate-devices)
   - [Get Device Info](#get-device-info)
+  - [Get Transformation](#get-transformation)
   - [Get Parameter](#get-parameter)
   - [Set Parameter](#set-parameter)
   - [Get Frame](#get-frame)
@@ -150,6 +151,31 @@
   }
   ```
 
+## Get Transformation
+* mqtt request message example
+  ```
+  {
+    "source": "c_353322320702_link",
+    "destination": "c_353322320702_color_frame",
+  }
+  ```
+* request topic
+  ```
+  get_transformation_request
+  ```
+* response topic
+  ```
+  get_transformation_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "rotation": {"x": -0.0022762807482196233, "y": -0.0011598517160371544, "z": -0.0011766824618274568, "w": 0.9999960443463445},
+    "translation": {"x": -4.12423032685183e-05, "y": -0.04789295792579651, "z": 0.0005400447407737374},
+    "success": true,
+    "error_msg": ""
+  }
+  ```
 
 ## Get Parameter
 ***See [available parameters and their types](#supported-parameters-for-setget)***
@@ -266,7 +292,7 @@
     "camera_name": "c_333622320169",
     "success": True,
     "error_msg": "",
-    "preset": "{safety preset as json}"
+    "safety_preset": "{safety preset as json}"
   }
   ```
 ## Set Safety Preset
@@ -275,7 +301,7 @@
   {
     "camera_namespace": "robot1",
     "camera_name": "c_333622320169",
-    "preset": "{safety preset as json}"
+    "safety_preset": "{safety preset as json}"
     "index": "1"
   }
   ```
