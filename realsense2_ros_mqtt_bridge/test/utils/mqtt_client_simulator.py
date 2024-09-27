@@ -105,6 +105,7 @@ class MQTTClientSimulator:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('get_transformation_response')
         self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
         self.mqtt_client.subscribe('set_parameter_response')
@@ -179,7 +180,7 @@ class MQTTClientSimulator:
         self.send_enumerate_devices_request(camera_namespace_prefix, camera_name_prefix)
         return self.get_enumerate_devices_response()
 
-    def send_get_transformation_request(self, source, destination):
+    def send_get_transformation_request(self, camera_namespace, camera_name, source, destination):
         """
         Send a request to find the ROS2 transformation from source frame to destination frame
 
@@ -188,6 +189,8 @@ class MQTTClientSimulator:
             destination: destination frame id
         """
         request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
             'source': source,
             'destination': destination
         }
@@ -208,7 +211,7 @@ class MQTTClientSimulator:
         assert payload["success"] == True, "get_transformation failed:" + payload["error_msg"]
         return payload
 
-    def get_transformation(self, source, destination):
+    def get_transformation(self, camera_namespace, camera_name, source, destination):
         """
         Send a request to find the ROS2 transformation from source frame to destination frame
 
@@ -216,7 +219,7 @@ class MQTTClientSimulator:
             source: source frame id.
             destination: destination frame id
         """
-        self.send_get_transformation_request(source, destination)
+        self.send_get_transformation_request(camera_namespace, camera_name,source, destination)
         return self.receive_get_transformation_response()
 
     def send_set_param_request(self, camera_namespace, camera_name,

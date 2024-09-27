@@ -65,7 +65,7 @@ def test_system_tf(launch_descr_with_parameters):
         name+'_color_frame':name+'_color_optical_frame',
     }
     for source, destination in links.items():
-        sds.get_transformation(source, destination)
+        sds.get_transformation(namespace, name, source, destination)
     #cleanup starts....
     camera.stop()
     rclpy.shutdown()
