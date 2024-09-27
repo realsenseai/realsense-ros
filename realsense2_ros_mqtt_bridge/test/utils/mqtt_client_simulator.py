@@ -179,7 +179,45 @@ class MQTTClientSimulator:
         self.send_enumerate_devices_request(camera_namespace_prefix, camera_name_prefix)
         return self.get_enumerate_devices_response()
 
+    def send_get_transformation_request(self, source, destination):
+        """
+        Send a request to find the ROS2 transformation from source frame to destination frame
 
+        Args:
+            source: source frame id.
+            destination: destination frame id
+        """
+        request_dict = {
+            'source': source,
+            'destination': destination
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'get_transformation_request')
+
+    def receive_get_transformation_response(self):
+        """
+        Get response to the get_transformation_request.
+
+        Args:
+            None
+        """
+        msg = self.get_message()
+        assert msg.topic == "get_transformation_response", "Unexpected topic: get_transformation_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        assert payload["success"] == True, "get_transformation failed:" + payload["error_msg"]
+        return payload
+
+    def get_transformation(self, source, destination):
+        """
+        Send a request to find the ROS2 transformation from source frame to destination frame
+
+        Args:
+            source: source frame id.
+            destination: destination frame id
+        """
+        self.send_get_transformation_request(source, destination)
+        return self.receive_get_transformation_response()
 
     def send_set_param_request(self, camera_namespace, camera_name,
                   parameter_name, parameter_value, parameter_type):
