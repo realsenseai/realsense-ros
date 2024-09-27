@@ -65,7 +65,18 @@ def test_system_tf(launch_descr_with_parameters):
         name+'_color_frame':name+'_color_optical_frame',
     }
     for source, destination in links.items():
-        sds.get_transformation(namespace, name, source, destination)
+        val = sds.get_transformation(namespace, name, source, destination)
+        assert 'rotation' in val, "rotation values not found"
+        assert 'x' in val['rotation'], "x in rotation values not found"
+        assert 'y' in val['rotation'], "y in rotation values not found"
+        assert 'z' in val['rotation'], "z in rotation values not found"
+        assert 'w' in val['rotation'], "w in rotation values not found"
+
+        assert 'translation' in val, "translation values not found"
+        assert 'x' in val['translation'], "x in translation values not found"
+        assert 'y' in val['translation'], "y in translation values not found"
+        assert 'z' in val['translation'], "z in translation values not found"
+
     #cleanup starts....
     camera.stop()
     rclpy.shutdown()
