@@ -210,11 +210,6 @@ class MQTTBridgeNode(Node):
                 err_msg = "camera_namespace_prefix not found in the mqtt request"
             elif 'camera_name_prefix' not in mqtt_request:
                 err_msg = "camera_name_prefix not found in the mqtt request"
-        elif msg.topic == 'get_transformation_request':
-            if 'source' not in mqtt_request:
-                err_msg = "source not found in the mqtt request"
-            elif 'destination' not in mqtt_request:
-                err_msg = "destination not found in the mqtt request"
         else:
             if 'camera_namespace' not in mqtt_request:
                 err_msg = "camera_namespace not found in the mqtt request"
@@ -229,7 +224,12 @@ class MQTTBridgeNode(Node):
             if msg.topic == 'enumerate_devices_request':
                 self.device_handler.handle_enumerate_devices_request(mqtt_request)
             elif msg.topic == 'get_transformation_request':
-                self.transformation_handler.handle_get_transformation_request(mqtt_request)
+                if 'source' not in mqtt_request:
+                    err_msg = "source not found in the mqtt request"
+                elif 'destination' not in mqtt_request:
+                    err_msg = "destination not found in the mqtt request"
+                else:
+                    self.transformation_handler.handle_get_transformation_request(mqtt_request)
             elif msg.topic == 'get_device_info_request':
                 self.device_handler.handle_get_device_info_request(mqtt_request)
             elif msg.topic == 'get_param_request':
