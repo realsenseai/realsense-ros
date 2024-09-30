@@ -46,6 +46,7 @@ import math
 from rcl_interfaces.msg import Parameter
 from rcl_interfaces.msg import ParameterValue
 from rcl_interfaces.srv import SetParameters, GetParameters, ListParameters
+from std_srvs.srv import Empty
 '''
 humble doesn't have the SetParametersResult and SetParameters_Response imported using 
 __init__.py. The below two lines can be used for iron and hopefully succeeding ROS2 versions
@@ -789,18 +790,29 @@ class RsTestBaseClass():
         else:
             self.node.reset_data(topic)
 
-   
-
     def create_service_client_ifs(self, camera_name):
         self.set_param_if = self.node.create_client(SetParameters, camera_name + '/set_parameters')
         self.get_param_if = self.node.create_client(GetParameters, camera_name + '/get_parameters')
         self.get_device_info = self.node.create_client(DeviceInfo, camera_name + '/device_info')
+        self.reset_if = self.node.create_client(Empty, camera_name + '/hw_reset')
         while not self.get_param_if.wait_for_service(timeout_sec=1.0):
             print('service not available, waiting again...') 
         while not self.set_param_if.wait_for_service(timeout_sec=1.0):
             print('service not available, waiting again...') 
         while not self.get_device_info.wait_for_service(timeout_sec=1.0):
             print('service not available, waiting again...')
+        while not self.reset_if.wait_for_service(timeout_sec=1.0):
+            print('hw_reset service not available, waiting again...')
+
+    def reset_device(self):
+        req = Empty.Request()
+        future = self.reset_if.call_async(req)
+        while rclpy.ok():
+            rclpy.spin_once(self.node)
+            if future.done():
+                return True
+        return False
+
     
     def send_param(self, req):
         future = self.set_param_if.call_async(req)

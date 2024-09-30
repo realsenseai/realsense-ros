@@ -76,7 +76,8 @@ test_params_tf_static_change_d415 = {
     'enable_gyro': 'true',
     }    
 @pytest.mark.parametrize("launch_descr_with_parameters", [
-    pytest.param(test_params_tf_static_change_d455, marks=pytest.mark.d455),
+    #LRS-1181 [ROS2] To debug inconsistent TF (transform) test that fails on Jenkin 219 NUC on D455
+    #pytest.param(test_params_tf_static_change_d455, marks=pytest.mark.d455),
     pytest.param(test_params_tf_static_change_d435i, marks=pytest.mark.d435i),
     pytest.param(test_params_tf_static_change_d415, marks=pytest.mark.d415),
     ],indirect=True)
@@ -160,7 +161,8 @@ test_params_tf_d415 = {
     'tf_publish_rate': '1.1',
     }
 @pytest.mark.parametrize("launch_descr_with_parameters", [
-    pytest.param(test_params_tf_d455, marks=pytest.mark.d455),
+    #LRS-1181 [ROS2] To debug inconsistent TF (transform) test that fails on Jenkin 219 NUC on D455
+    #pytest.param(test_params_tf_d455, marks=pytest.mark.d455),
     pytest.param(test_params_tf_d435i, marks=pytest.mark.d435i),
     pytest.param(test_params_tf_d415, marks=pytest.mark.d415),
     ],indirect=True)

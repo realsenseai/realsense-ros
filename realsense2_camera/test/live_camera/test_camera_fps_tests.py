@@ -63,6 +63,7 @@ The test was implemented to check the fps of Depth and Color frames. The RosTopi
 modified to make it work, see py_rs_utils for more details.
 To check the fps, a value 'expected_fps_in_hz' has to be added to the corresponding theme
 '''
+@pytest.mark.skipif (os.getenv('RS_ROS_REGRESSION', "not found") == "not found",reason="Regression is not enabled, define RS_ROS_REGRESSION")
 @pytest.mark.parametrize("launch_descr_with_parameters", [    
     pytest.param(test_params_test_fps_d455, marks=pytest.mark.d455),
     pytest.param(test_params_test_fps_d415, marks=pytest.mark.d415),
