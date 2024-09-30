@@ -790,7 +790,6 @@ class RsTestBaseClass():
         else:
             self.node.reset_data(topic)
 
-   
     def create_service_client_ifs(self, camera_name):
         self.set_param_if = self.node.create_client(SetParameters, camera_name + '/set_parameters')
         self.get_param_if = self.node.create_client(GetParameters, camera_name + '/get_parameters')
@@ -814,7 +813,7 @@ class RsTestBaseClass():
                 return True
         return False
 
-
+    
     def send_param(self, req):
         future = self.set_param_if.call_async(req)
         while rclpy.ok():

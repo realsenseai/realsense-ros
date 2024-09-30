@@ -325,7 +325,7 @@ def test_system_negative_json_strings(launch_descr_with_parameters):
         #'camera_namespace': namespace,
         'camera_name': name,
         'index': 1,
-        'preset': preset_response['preset']
+        'safety_preset': preset_response['safety_preset']
     }
 
     j = json.dumps(request_dict)
@@ -342,7 +342,7 @@ def test_system_negative_json_strings(launch_descr_with_parameters):
         'camera_namespace': namespace,
         #'camera_name': name,
         'index': 1,
-        'preset': preset_response['preset']
+        'safety_preset': preset_response['safety_preset']
     }
 
     j = json.dumps(request_dict)
@@ -358,7 +358,7 @@ def test_system_negative_json_strings(launch_descr_with_parameters):
         'camera_namespace': namespace,
         'camera_name': name,
         #'index': 1,
-        'preset': preset_response['preset']
+        'safety_preset': preset_response['safety_preset']
     }
 
     j = json.dumps(request_dict)
@@ -374,7 +374,7 @@ def test_system_negative_json_strings(launch_descr_with_parameters):
         'camera_namespace': namespace,
         'camera_name': name,
         'index': 1,
-        #'preset': preset_response['preset']
+        #'safety_preset': preset_response['safety_preset']
     }
 
     j = json.dumps(request_dict)

@@ -51,6 +51,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CalibConfigWrite.srv"
   "srv/ApplicationConfigRead.srv"
   "srv/ApplicationConfigWrite.srv"
+  "srv/HardwareMonitorCommandSend.srv"
   "action/TriggeredCalibration.action"
   DEPENDENCIES builtin_interfaces std_msgs sensor_msgs
   ADD_LINTER_TESTS

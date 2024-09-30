@@ -75,7 +75,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
             print("Starting camera test...")
             self.init_test("RsTest"+params['camera_name'])
             self.wait_for_node(params['camera_name'])
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
 
             if params['initial_reset'] == 'true':
                 self.spin_for_time(wait_time=10)

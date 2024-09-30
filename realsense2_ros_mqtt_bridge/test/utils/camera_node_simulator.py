@@ -224,16 +224,16 @@ class RSCameraSimulator(Node, threading.Thread):
         response.success = True
         response.error_message = ''
         if self.safety_preset[request.index] == None:
-            response.preset =  str(request.index)
+            response.safety_preset =  str(request.index)
         else:
-            response.preset =  self.safety_preset[request.index]
+            response.safety_preset =  self.safety_preset[request.index]
         return response
 
     def safety_preset_write_cb(self, request, response):
-        LOGGER.info(f'Safety preset write for index {request.index} with data {request.preset}')
+        LOGGER.info(f'Safety preset write for index {request.index} with data {request.safety_preset}')
         response.success = True
         response.error_message = ''
-        self.safety_preset[request.index] = request.preset
+        self.safety_preset[request.index] = request.safety_preset
         return response
 
     def create_safety_interface_config_service(self):

@@ -46,7 +46,6 @@ class TransformationHandler:
         try:
             # get transform from 'base_link' to 'child_link'
             transform_stamped = self.mqtt_ros_node.tf_buffer.lookup_transform(source, destination, Time())
-            
             translation_dict = {
                 "x": transform_stamped.transform.translation.x,
                 "y": transform_stamped.transform.translation.y,
