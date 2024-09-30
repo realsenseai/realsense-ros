@@ -214,7 +214,7 @@ class MQTTBridgeNode(Node):
                 err_msg = "camera_namespace_prefix not found in the mqtt request"
             elif 'camera_name_prefix' not in mqtt_request:
                 err_msg = "camera_name_prefix not found in the mqtt request"
-        else:
+        elif msg.topic != 'get_transformation_request':
             if 'camera_namespace' not in mqtt_request:
                 err_msg = "camera_namespace not found in the mqtt request"
             elif 'camera_name' not in mqtt_request:
@@ -271,7 +271,7 @@ class MQTTBridgeNode(Node):
             elif msg.topic == 'set_safety_preset_request':
                 if 'index' not in mqtt_request:
                     err_msg = "index not found in the mqtt request"
-                elif 'preset' not in mqtt_request:
+                elif 'safety_preset' not in mqtt_request:
                     err_msg = "preset not found in the mqtt request"
                 else:
                     self.safety_preset_handler.handle_set_safety_preset_request(
