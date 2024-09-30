@@ -299,6 +299,7 @@ User can set the camera name and camera namespace, to distinguish between camera
   /robot1/D455_1/imu
   
   > ros2 service list
+  /robot1/D455_1/hw_reset
   /robot1/D455_1/device_info
   ```
 
@@ -321,6 +322,7 @@ User can set the camera name and camera namespace, to distinguish between camera
 /camera/camera/imu
 
 > ros2 service list
+/camera/camera/hw_reset
 /camera/camera/device_info
 ```
 
