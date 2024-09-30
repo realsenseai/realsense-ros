@@ -406,7 +406,7 @@ class MQTTClientSimulator:
         request_dict = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
-            'preset': sp,
+            'safety_preset': sp,
             'index':index,
         }
         j = json.dumps(request_dict)
