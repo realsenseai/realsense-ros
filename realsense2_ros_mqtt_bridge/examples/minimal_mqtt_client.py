@@ -15,6 +15,7 @@
 import json
 import random
 import time
+import numpy as np
 
 from paho.mqtt import client as paho_mqtt_client
 
@@ -121,6 +122,7 @@ class DemoMQTTClient:
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
         self.mqtt_client.subscribe('get_transformation_response')
+        self.mqtt_client.subscribe('send_hwm_command_response')
         self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
         self.mqtt_client.subscribe('set_parameter_response')
@@ -171,6 +173,28 @@ class DemoMQTTClient:
         j = json.dumps(request_dict)
         self.locked = True
         self.publish(j, 'get_transformation_request')
+        while self.locked:
+            pass
+
+    def send_hwm_command(self, camera_namespace, camera_name, opcode,
+                         param1 = 0, param2 = 0, param3 = 0, param4 = 0,
+                         data = []):
+        """
+        Send a hwm command request
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'opcode' : opcode,
+            'param1' : param1, 
+            'param2' : param2,
+            'param3' : param3,
+            'param4' : param4,
+            'data': np.array(data).tolist()
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'send_hwm_command_request')
         while self.locked:
             pass
 
@@ -459,6 +483,12 @@ if __name__ == '__main__':
     
     # get ROS2 transformation from 'c_353322320702_link' to 'c_353322320702_color_frame'
     demo_mqtt_client.get_transformation('c_353322320702_link', 'c_353322320702_color_frame')
+
+
+    # send raw HWM command like GVD
+    demo_mqtt_client.send_hwm_command(camera_namespace= CAMERA_NAMESPACE,
+                                      camera_name = CAMERA_NAME,
+                                      opcode = 0x10)
 
     # switch to service mode
     demo_mqtt_client.set_param(CAMERA_NAMESPACE,

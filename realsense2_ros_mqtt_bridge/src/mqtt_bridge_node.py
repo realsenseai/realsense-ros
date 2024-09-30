@@ -26,6 +26,7 @@ from .safety_preset_handler import SafetyPresetHandler
 from .safety_interface_config_handler import SafetyInterfaceConfigHandler
 from .calib_config_handler import CalibConfigHandler
 from .application_config_handler import ApplicationConfigHandler
+from .hwm_command_handler import HWMCommandHandler
 from .triggered_calibration_handler import TriggeredCalibrationHandler
 from .transformation_handler import TransformationHandler
 
@@ -99,6 +100,7 @@ class MQTTBridgeNode(Node):
         """Define the topics our MQTTBridgeNode needs to listen to."""
         self.mqtt_requests_topics = [
             'enumerate_devices_request',
+            'send_hwm_command_request',
             'get_device_info_request',
             'get_transformation_request',
             'get_param_request',
@@ -112,6 +114,7 @@ class MQTTBridgeNode(Node):
             'set_calib_config_request',
             'get_application_config_request',
             'set_application_config_request',
+            'hwm_command_send_request',
             'triggered_calibration_request'
         ]
 
@@ -130,6 +133,7 @@ class MQTTBridgeNode(Node):
         self.safety_interface_config_handler = SafetyInterfaceConfigHandler(self)
         self.calib_config_handler = CalibConfigHandler(self)
         self.application_config_handler = ApplicationConfigHandler(self)
+        self.hwm_command_handler = HWMCommandHandler(self)
         self.triggered_calibration_handler = TriggeredCalibrationHandler(self)
 
     def ROS_INFO(self, msg):  # pylint: disable=invalid-name
@@ -230,6 +234,11 @@ class MQTTBridgeNode(Node):
                     err_msg = "destination not found in the mqtt request"
                 else:
                     self.transformation_handler.handle_get_transformation_request(mqtt_request)
+            elif msg.topic == 'send_hwm_command_request':
+                if 'opcode' not in mqtt_request:
+                    err_msg = "opcode not found in the mqtt request"
+                else:
+                    self.hwm_command_handler.handle_hwm_command_send_request(mqtt_request)
             elif msg.topic == 'get_device_info_request':
                 self.device_handler.handle_get_device_info_request(mqtt_request)
             elif msg.topic == 'get_param_request':

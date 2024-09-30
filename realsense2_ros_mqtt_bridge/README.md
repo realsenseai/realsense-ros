@@ -19,6 +19,7 @@
   - [Enumerate Devices](#enumerate-devices)
   - [Get Device Info](#get-device-info)
   - [Get Transformation](#get-transformation)
+  - [Send HWM Command](#send-hwm-command)
   - [Get Parameter](#get-parameter)
   - [Set Parameter](#set-parameter)
   - [Get Frame](#get-frame)
@@ -173,6 +174,39 @@
     "rotation": {"x": -0.0022762807482196233, "y": -0.0011598517160371544, "z": -0.0011766824618274568, "w": 0.9999960443463445},
     "translation": {"x": -4.12423032685183e-05, "y": -0.04789295792579651, "z": 0.0005400447407737374},
     "success": true,
+    "error_msg": ""
+  }
+  ```
+
+## Send HWM Command
+* mqtt request message example (read of safety interface config table)
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_353322320702",
+    "opcode": 167,     # opcode of GET_HKR_CONFIG_TABLE 0xA7 
+    "param1": 1,       # read from flash (1)
+    "param2": 49372,   # table id (safety interface config) 0xC0DC
+    "param3": 1,       # 0 dynamic, 1 gold
+    "param4": 0,       # unused (ChunkId)
+    "data": []
+  }
+  ```
+* request topic
+  ```
+  send_hwm_command_request
+  ```
+* response topic
+  ```
+  send_hwm_command_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_353322320702",
+    "success": true,
+    "result": [167, 0, 0, 0, 0, 5, 220, 192, 148, 0, 0, 0, 0, 0, 0, 0, 250, 239, 161, 49, 0, 1, 1, 3, 1, 2, 0, 12, 0, 13, 0, 14, 0, 9, 0, 8, 0, 16, 0, 17, 0, 19, 0, 18, 0, 11, 1, 20, 0, 10, 0, 15, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 113, 61, 138, 62, 20, 0, 12, 6, 4, 100, 0, 20, 100, 0, 20, 10, 15, 10, 95, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "error_msg": ""
   }
   ```
