@@ -320,8 +320,8 @@ if(BUILD_TESTING)
           $<INSTALL_INTERFACE:include>
        )
        ament_target_dependencies(${_test_name}
-        std_srvs
-        std_msgs
+          std_srvs
+          std_msgs
        )
        #target_link_libraries(${_test_name} name_of_local_library)
     endforeach()

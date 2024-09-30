@@ -44,10 +44,10 @@ jobs:
       run: |
         mkdir -p ${{github.workspace}}/ros2/src
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       with:
         path: 'ros2/src/realsense-ros'
-    
+
     - name: Check Copyright & Line-Endings
       shell: bash
       run: |
@@ -59,12 +59,12 @@ jobs:
     # so, seperating steps with if conditions
     - name: build ROS2 for foxy
       if: ${{ matrix.ros_distro == 'foxy' }}
-      uses: ros-tooling/setup-ros@v0.6
+      uses: ros-tooling/setup-ros@236ab287884fd5a314fc030e91b2017abb46719e #v0.6
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
     - name: build ROS2 for humble/iron/rolling/jazzy
       if: ${{ matrix.ros_distro != 'foxy' }}
-      uses: ros-tooling/setup-ros@v0.7
+      uses: ros-tooling/setup-ros@a6ce30ecca1e5dcc10ae5e6a44fe2169115bf852 #v0.7
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
 
@@ -155,7 +155,7 @@ jobs:
         sudo apt install -y ros-${{matrix.ros_distro}}-sensor-msgs-py
         source ../.venv/bin/activate
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
-    
+
     # don't run integration tests for foxy since some testing dependecies packages like 
     # tf_ros_py are not avaialble
     # TODO: check when we can run integration tests on rolling

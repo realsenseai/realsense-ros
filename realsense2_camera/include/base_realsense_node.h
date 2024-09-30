@@ -37,6 +37,7 @@
 #include "realsense2_camera_msgs/srv/calib_config_write.hpp"
 #include "realsense2_camera_msgs/srv/application_config_read.hpp"
 #include "realsense2_camera_msgs/srv/application_config_write.hpp"
+#include "realsense2_camera_msgs/srv/hardware_monitor_command_send.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "realsense2_camera_msgs/action/triggered_calibration.hpp"
 #include <librealsense2/hpp/rs_processing.hpp>
@@ -180,7 +181,6 @@ namespace realsense2_camera
 
         void handleHWReset(const std_srvs::srv::Empty::Request::SharedPtr req,
                                 const std_srvs::srv::Empty::Response::SharedPtr res);
-
         void getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res);
         void CalibConfigReadService(const realsense2_camera_msgs::srv::CalibConfigRead::Request::SharedPtr req,
@@ -211,6 +211,7 @@ namespace realsense2_camera
         rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite>::SharedPtr _safety_interface_config_write_srv;
         rclcpp::Service<realsense2_camera_msgs::srv::ApplicationConfigRead>::SharedPtr _application_config_read_srv;
         rclcpp::Service<realsense2_camera_msgs::srv::ApplicationConfigWrite>::SharedPtr _application_config_write_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::HardwareMonitorCommandSend>::SharedPtr _hardware_monitor_command_send_srv;
 
         void SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res);
@@ -224,8 +225,8 @@ namespace realsense2_camera
                                  realsense2_camera_msgs::srv::ApplicationConfigRead::Response::SharedPtr res);
         void ApplicationConfigWriteService(const realsense2_camera_msgs::srv::ApplicationConfigWrite::Request::SharedPtr req,
                                  realsense2_camera_msgs::srv::ApplicationConfigWrite::Response::SharedPtr res);
-
-
+        void HardwareMonitorCommandSendService(const realsense2_camera_msgs::srv::HardwareMonitorCommandSend::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::HardwareMonitorCommandSend::Response::SharedPtr res);
 
     private:
         class CimuData

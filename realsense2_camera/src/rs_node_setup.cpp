@@ -546,7 +546,6 @@ void BaseRealSenseNode::publishServices()
                         std_srvs::srv::Empty::Response::SharedPtr res)
                         {handleHWReset(req, res);});
 
-
     _device_info_srv = _node.create_service<realsense2_camera_msgs::srv::DeviceInfo>(
             "~/device_info",
             [&](const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,

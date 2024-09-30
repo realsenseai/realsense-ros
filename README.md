@@ -1059,6 +1059,19 @@ Each of the above filters have it's own parameters, following the naming convent
   - [JSON application config example](realsense2_camera/examples/d500_tables/application_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.ApplicationonfigWrite_Response(success=True, error_message='')`
 
+### hardware_monitor_command_send:
+  - Send hardware monitor command
+  - Type `ros2 interface show realsense2_camera/srv/HardwareMonitorCommandSend` for the full request/response fields
+  - Call example: `ros2 service call /camera/camera/hardware_monitor_command_send realsense2_camera_msgs/srv/HardwareMonitorCommandSend "{cmd: {opcode: 0x10, param1: 0, param2: 0, param3: 0, param4: 0, data: [] } }"`
+  - A shorter version of the call example (default values for the unsetted params is 0): `ros2 service call /camera/camera/hardware_monitor_command_send realsense2_camera_msgs/srv/HardwareMonitorCommandSend "{cmd: {opcode: 0x10} }"`
+
+  <details>
+  <summary>Click to see full response example</summary>
+
+  `realsense2_camera_msgs.srv.HardwareMonitorCommandSend_Response(success=True, result=[16, 0, 0, 0, 2, 0, 82, 2, 68, 135, 67, 22, 0, 0, 0, 0, 134, 128, 107, 11, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51, 54, 34, 50, 1, 105, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 56, 0, 122, 73, 27, 1, 0, 226, 153, 24, 238, 79, 152, 64, 1, 4, 0, 0, 4, 0, 0, 0, 11, 121, 197, 29, 0, 0, 0, 0, 0, 0, 0, 1, 0, 64, 0, 148, 11, 7, 0, 0, 0, 64, 128, 141, 5, 0, 0, 0, 0, 32, 32, 80, 88, 82, 79, 83, 45, 72, 82, 32, 75, 101, 114, 110, 0, 57, 53, 55, 56, 54, 101, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 7, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 53, 34, 24, 1, 135, 0, 0, 0, 0, 0, 0, 0, 0, 78, 50, 56, 50, 55, 53, 45, 49, 48, 48, 0, 0, 48, 51, 71, 6, 239, 190, 173, 222, 239, 190, 173, 222, 228, 55, 0, 64, 228, 55, 0, 64, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51, 52, 50, 51, 50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 0, 0, 1, 51, 52, 50, 51, 50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 41, 8, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 1, 4, 41, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 1, 4, 41, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 100, 0, 196, 9, 0, 0, 0, 0, 0, 0, 0, 0, 66, 77, 73, 48, 56, 56, 0, 0, 30, 15, 0, 0, 240, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 71, 198, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 3, 0, 3, 0, 3, 0, 3, 0, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 255, 255, 4, 1, 2, 0, 3, 0, 3, 0, 239, 190, 239, 190, 239, 190, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], error_message='')`
+
+  </details>
+
 <hr>
 
 ## Available actions
