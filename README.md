@@ -645,7 +645,11 @@ Each of the above filters have it's own parameters, following the naming convent
 <hr>
 
 ## Available services
-  
+
+### hw_reset:
+  - reset the device. The call stops all the streams too.
+  - Call example: `ros2 service call /camera/camera/hw_reset std_srvs/srv/Empty`
+
 ### device_info:
   - retrieve information about the device - serial_number, firmware_version etc.
   - Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list.
