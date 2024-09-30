@@ -48,20 +48,20 @@ class HWMCommandHandler(ServiceHandler):
 
         service_name = f'/{camera_namespace}/{camera_name}/hardware_monitor_command_send'
 
-        ros_client_get_device_info = self.create_ros_client(HardwareMonitorCommandSend, service_name)
-        if not ros_client_get_device_info:
+        ros_client_hwm_command_send = self.create_ros_client(HardwareMonitorCommandSend, service_name)
+        if not ros_client_hwm_command_send:
             return
 
         ros_request = HardwareMonitorCommandSend.Request()
         # ros_request
         ros_request.opcode = mqtt_request['opcode']
-        ros_request.param1 = mqtt_request['param1']
-        ros_request.param2 = mqtt_request['param2']
-        ros_request.param3 = mqtt_request['param3']
-        ros_request.param4 = mqtt_request['param4']
-        ros_request.data = np.array(mqtt_request['data']).tolist()
+        ros_request.param1 = mqtt_request.get('param1', 0)
+        ros_request.param2 = mqtt_request.get('param2', 0)
+        ros_request.param3 = mqtt_request.get('param3', 0)
+        ros_request.param4 = mqtt_request.get('param4', 0)
+        ros_request.data = np.array(mqtt_request.get('data', [])).tolist()
 
-        future = ros_client_get_device_info.call_async(ros_request)
+        future = ros_client_hwm_command_send.call_async(ros_request)
         self.wait_for_future(future)
         ros_response = future.result()
 
@@ -77,4 +77,4 @@ class HWMCommandHandler(ServiceHandler):
                                                json.dumps(mqtt_response),
                                                qos=2)
         self.mqtt_ros_node.ROS_DEBUG('hwm_command_send_response message sent')
-        ros_client_get_device_info.destroy()
+        ros_client_hwm_command_send.destroy()

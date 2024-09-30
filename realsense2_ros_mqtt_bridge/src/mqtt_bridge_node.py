@@ -235,7 +235,10 @@ class MQTTBridgeNode(Node):
                 else:
                     self.transformation_handler.handle_get_transformation_request(mqtt_request)
             elif msg.topic == 'send_hwm_command_request':
-                self.hwm_command_handler.handle_hwm_command_send_request(mqtt_request)
+                if 'opcode' not in mqtt_request:
+                    err_msg = "opcode not found in the mqtt request"
+                else:
+                    self.hwm_command_handler.handle_hwm_command_send_request(mqtt_request)
             elif msg.topic == 'get_device_info_request':
                 self.device_handler.handle_get_device_info_request(mqtt_request)
             elif msg.topic == 'get_param_request':

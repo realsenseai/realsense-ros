@@ -182,8 +182,6 @@ class DemoMQTTClient:
         """
         Send a hwm command request
         """
-        # Sample byte data to send
-        byte_data = b'\x01\x02\x03\x04\x05'  # This is a byte array
         request_dict = {
             'camera_namespace': camera_namespace,
             'camera_name': camera_name,
