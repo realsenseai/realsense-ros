@@ -215,7 +215,6 @@ class MQTTClientSimulator:
         payload = json.loads(msg.payload)
         assert payload["success"] == True, "send_hwm_command_response failed:" + payload["error_msg"]
         return payload
-
     def send_hwm_command(self, camera_namespace, camera_name, opcode, param1=None, param2=None, param3=None, param4=None, data=None):
         """
         Send a request to find the ROS2 transformation from source frame to destination frame

@@ -59,8 +59,12 @@ def test_system_hmc_commands(launch_descr_with_parameters):
     links = [
         {"opcode":0x76, "datasize_expected":8}, #GETRGBAEROI
         {"opcode":0x2A, "param1": 0, "datasize_expected":20}, #GTEMP
-        {"opcode":0x2A, "param1": 1, "datasize_expected":2}, #GTEMP
+        {"opcode":0x2A, "param1": 1, "datasize_expected":20}, #GTEMP
+        {"opcode":0x2A, "param1": 2, "datasize_expected":20}, #GTEMP
         {"opcode":0xAC, "datasize_expected":240}, #HEALTH Status
+        {"opcode":0x76,"datasize_expected":8},#GETRGBAEROI
+        {"opcode":0x75, "param1": 0x1c4, "param2": 0x2a0, "param3": 0x36d, "param4": 0x0ad},#SETRGBAEROI
+        {"opcode":0x76,"datasize_expected":8},#GETRGBAEROI
     ]
     for cmd in links:
         param1 = cmd.get("param1", None)
@@ -68,8 +72,8 @@ def test_system_hmc_commands(launch_descr_with_parameters):
         param3 = cmd.get("param3", None)
         param4 = cmd.get("param4", None)
         data = cmd.get("data", None)
-        val = sds.send_hwm_command(namespace,name, cmd['opcode'], param1, param2, param3, param4, data)
-        LOGGER.debug(val)
+        val = sds.send_hwm_command(namespace,name, cmd['opcode'], param1=param1, param2=param2, param3=param3, param4=param4, data=data)
+        LOGGER.info(f"Data received {val['result']}")
         size = cmd.get("datasize_expected", 0)
         if size:
             in_data = val['result'][4:]
