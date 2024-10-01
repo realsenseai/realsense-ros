@@ -84,6 +84,20 @@ def test_system_hmc_commands(launch_descr_with_parameters):
         header = int.from_bytes(val['result'][0:3], byteorder='little', signed=False)
         assert header == cmd['opcode'], f"Didn't get the opcode back, got {header} instead of {cmd['opcode']}"
 
+    val = sds.send_hwm_command(namespace,name, 0xBC, param1=0)
+
+    LOGGER.debug(val)
+    data = val['result'][4:]
+    data[3] =1 
+    val = sds.send_hwm_command(namespace,name, 0xBC, param1=1,data=data)
+    val = sds.send_hwm_command(namespace,name, 0xBC, param1=0)
+    data = val['result'][4:]
+    data[3] =1 
+    LOGGER.debug(val)
+    assert data[3] ==1, "Error: couldn't read back the written data"
+
+
+    
     #cleanup starts....
     camera.stop()
     rclpy.shutdown()
