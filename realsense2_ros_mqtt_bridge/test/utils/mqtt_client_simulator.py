@@ -105,6 +105,7 @@ class MQTTClientSimulator:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('send_hwm_command_response')
         self.mqtt_client.subscribe('get_transformation_response')
         self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
@@ -179,6 +180,53 @@ class MQTTClientSimulator:
         """
         self.send_enumerate_devices_request(camera_namespace_prefix, camera_name_prefix)
         return self.get_enumerate_devices_response()
+
+    def send_hwm_command_request(self, camera_namespace, camera_name, opcode, param1=None, param2=None, param3=None, param4=None, data=None):
+        """
+        Send a request to find the ROS2 transformation from source frame to destination frame
+
+        Args:
+            source: source frame id.
+            destination: destination frame id
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+            'opcode': opcode,
+        }
+        if param1 is not None:request_dict['param1'] = param1
+        if param2 is not None:request_dict['param2'] = param2
+        if param3 is not None:request_dict['param3'] = param3
+        if param4 is not None:request_dict['param4'] = param4
+        if data is not None:request_dict['data'] = data
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'send_hwm_command_request')
+
+    def receive_hwm_command_response(self):
+        """
+        Get response to the get_transformation_request.
+
+        Args:
+            None
+        """
+        msg = self.get_message()
+        assert msg.topic == "send_hwm_command_response", "Unexpected topic: send_hwm_command_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        assert payload["success"] == True, "send_hwm_command_response failed:" + payload["error_msg"]
+        return payload
+
+    def send_hwm_command(self, camera_namespace, camera_name, opcode, param1=None, param2=None, param3=None, param4=None, data=None):
+        """
+        Send a request to find the ROS2 transformation from source frame to destination frame
+
+        Args:
+            source: source frame id.
+            destination: destination frame id
+        """
+        self.send_hwm_command_request(camera_namespace, camera_name, opcode, param1, param2, param3, param4, data)
+        return self.receive_hwm_command_response()
+
 
     def send_get_transformation_request(self, camera_namespace, camera_name, source, destination):
         """
