@@ -397,6 +397,12 @@ class MQTTClientSimulator:
             return True
         assert False, "Invalid boolean parameter:" + param
 
+    def get_integer_param(self, camera_namespace, camera_name,
+                  parameter_name):
+        param = self.get_param(camera_namespace, camera_name,
+                  parameter_name)
+        return int(param)
+
 
     def send_get_frame_request(self, camera_namespace, camera_name, stream_name):
         """

@@ -85,7 +85,6 @@ def test_system_hmc_commands(launch_descr_with_parameters):
         assert header == cmd['opcode'], f"Didn't get the opcode back, got {header} instead of {cmd['opcode']}"
 
     val = sds.send_hwm_command(namespace,name, 0xBC, param1=0)
-
     LOGGER.debug(val)
     data = val['result'][4:]
     data[3] =1 
@@ -97,6 +96,20 @@ def test_system_hmc_commands(launch_descr_with_parameters):
     LOGGER.debug(val)
     assert data[3] ==1, "Error: couldn't read back the written data"
     
+    val = sds.send_hwm_command(namespace,name,0x76)#GETRGBAEROI
+    val = sds.send_hwm_command(namespace,name,0x75, param1=0x1c2, param2= 0x2a0, param3 = 0x36d, param4 = 0x0ad)#SETRGBAEROI
+    val = sds.send_hwm_command(namespace,name,0x76)#GETRGBAEROI
+    param1l = val['result'][4:6]
+    param1 = int.from_bytes(param1l, byteorder='little', signed=False)
+    assert param1 == 0x1c2, "Error: written data is not matching with the read one"
+    ''' #taking too much of time and inconsistent
+    val = sds.send_hwm_command(namespace,name,32, param1=1) #SoC reset
+    import time
+    time.sleep(15)
+    mode = sds.get_integer_param(namespace, name, 'safety_camera.safety_mode')
+    print("Mode:", mode)
+    time.sleep(2)
+    '''
     #cleanup starts....
     camera.stop()
     rclpy.shutdown()
