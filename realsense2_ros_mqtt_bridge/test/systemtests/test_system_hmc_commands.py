@@ -89,14 +89,13 @@ def test_system_hmc_commands(launch_descr_with_parameters):
     LOGGER.debug(val)
     data = val['result'][4:]
     data[3] =1 
+    sds.set_safety_mode(namespace, name, 2)
     val = sds.send_hwm_command(namespace,name, 0xBC, param1=1,data=data)
     val = sds.send_hwm_command(namespace,name, 0xBC, param1=0)
     data = val['result'][4:]
     data[3] =1 
     LOGGER.debug(val)
     assert data[3] ==1, "Error: couldn't read back the written data"
-
-
     
     #cleanup starts....
     camera.stop()
