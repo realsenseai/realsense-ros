@@ -26,6 +26,7 @@ from .safety_preset_handler import SafetyPresetHandler
 from .safety_interface_config_handler import SafetyInterfaceConfigHandler
 from .calib_config_handler import CalibConfigHandler
 from .application_config_handler import ApplicationConfigHandler
+from .hw_reset_handler import HwResetHandler
 from .hwm_command_handler import HWMCommandHandler
 from .triggered_calibration_handler import TriggeredCalibrationHandler
 from .transformation_handler import TransformationHandler
@@ -100,6 +101,7 @@ class MQTTBridgeNode(Node):
         """Define the topics our MQTTBridgeNode needs to listen to."""
         self.mqtt_requests_topics = [
             'enumerate_devices_request',
+            'send_hw_reset_request',
             'send_hwm_command_request',
             'get_device_info_request',
             'get_transformation_request',
@@ -133,6 +135,7 @@ class MQTTBridgeNode(Node):
         self.safety_interface_config_handler = SafetyInterfaceConfigHandler(self)
         self.calib_config_handler = CalibConfigHandler(self)
         self.application_config_handler = ApplicationConfigHandler(self)
+        self.hw_reset_handler = HwResetHandler(self)
         self.hwm_command_handler = HWMCommandHandler(self)
         self.triggered_calibration_handler = TriggeredCalibrationHandler(self)
 
@@ -234,6 +237,8 @@ class MQTTBridgeNode(Node):
                     err_msg = "destination not found in the mqtt request"
                 else:
                     self.transformation_handler.handle_get_transformation_request(mqtt_request)
+            elif msg.topic == 'send_hw_reset_request':
+                self.hw_reset_handler.handle_hw_reset_send_request(mqtt_request)
             elif msg.topic == 'send_hwm_command_request':
                 if 'opcode' not in mqtt_request:
                     err_msg = "opcode not found in the mqtt request"
