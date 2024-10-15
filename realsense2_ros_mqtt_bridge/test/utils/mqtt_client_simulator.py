@@ -105,6 +105,7 @@ class MQTTClientSimulator:
         """Start the MQTT client."""
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
+        self.mqtt_client.subscribe('send_hw_reset_response')
         self.mqtt_client.subscribe('send_hwm_command_response')
         self.mqtt_client.subscribe('get_transformation_response')
         self.mqtt_client.subscribe('get_device_info_response')
@@ -181,13 +182,56 @@ class MQTTClientSimulator:
         self.send_enumerate_devices_request(camera_namespace_prefix, camera_name_prefix)
         return self.get_enumerate_devices_response()
 
-    def send_hwm_command_request(self, camera_namespace, camera_name, opcode, param1=None, param2=None, param3=None, param4=None, data=None):
+    def send_hw_reset_request(self, camera_namespace, camera_name):
         """
-        Send a request to find the ROS2 transformation from source frame to destination frame
+        Send a request to reset the device
 
         Args:
-            source: source frame id.
-            destination: destination frame id
+            camera_namespace
+            camera_name
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'send_hw_reset_request')
+
+    def receive_hw_reset_response(self):
+        """
+        Get response to the hw_reset_request.
+
+        Args:
+            None
+        """
+        msg = self.get_message()
+        assert msg.topic == "send_hw_reset_response", "Unexpected topic: send_hw_reset_response expected, received " + msg.topic
+        payload = json.loads(msg.payload)
+        assert payload["success"] == True, "send_hw_reset_response failed:" + payload["error_msg"]
+        return payload
+
+    def send_hw_reset(self, camera_namespace, camera_name):
+        """
+        Send a request to reset the device and get the response
+
+        Args:
+            camera_namespace
+            camera_name
+        """
+        self.send_hw_reset_request(camera_namespace, camera_name)
+        return self.receive_hw_reset_response()
+
+
+
+    def send_hwm_command_request(self, camera_namespace, camera_name, opcode, param1=None, param2=None, param3=None, param4=None, data=None):
+        """
+        Send a request to send the hwm command
+
+        Args:
+            opcode: hwm command
+            param1, param2, param3, param4: parameters for hwm command
+            data for hwm command
         """
         request_dict = {
             'camera_namespace': camera_namespace,
@@ -205,7 +249,7 @@ class MQTTClientSimulator:
 
     def receive_hwm_command_response(self):
         """
-        Get response to the get_transformation_request.
+        Get response to the send_hwm_command_request.
 
         Args:
             None
@@ -217,11 +261,11 @@ class MQTTClientSimulator:
         return payload
     def send_hwm_command(self, camera_namespace, camera_name, opcode, param1=None, param2=None, param3=None, param4=None, data=None):
         """
-        Send a request to find the ROS2 transformation from source frame to destination frame
-
+        Send the Hwm command and get the response
         Args:
-            source: source frame id.
-            destination: destination frame id
+            opcode: hwm command
+            param1, param2, param3, param4: parameters for hwm command
+            data for hwm command
         """
         self.send_hwm_command_request(camera_namespace, camera_name, opcode, param1, param2, param3, param4, data)
         return self.receive_hwm_command_response()
@@ -322,6 +366,12 @@ class MQTTClientSimulator:
                   parameter_name, parameter_value, parameter_type)
         return self.receive_set_param_response()
 
+    def set_string_param(self, camera_namespace, camera_name,
+                  parameter_name, parameter_value):
+        return self.set_param(camera_namespace, camera_name,
+                  parameter_name, str(parameter_value), parameter_type="string")
+
+
     def set_integer_param(self, camera_namespace, camera_name,
                   parameter_name, parameter_value):
         return self.set_param(camera_namespace, camera_name,
@@ -402,6 +452,12 @@ class MQTTClientSimulator:
         param = self.get_param(camera_namespace, camera_name,
                   parameter_name)
         return int(param)
+
+    def get_string_param(self, camera_namespace, camera_name,
+                  parameter_name):
+        param = self.get_param(camera_namespace, camera_name,
+                  parameter_name)
+        return str(param)
 
 
     def send_get_frame_request(self, camera_namespace, camera_name, stream_name):

@@ -17,6 +17,7 @@
 - [Parameters](#parameters)
 - [Client Usage](#client-usage)
   - [Enumerate Devices](#enumerate-devices)
+  - [Reset the device](#reset-the-device)
   - [Get Device Info](#get-device-info)
   - [Get Transformation](#get-transformation)
   - [Send HWM Command](#send-hwm-command)
@@ -120,6 +121,31 @@
           {camera_namespace: robot1, camera_name: c_333622320169}
         ]"
     }
+  ```
+## Reset the Device
+* mqtt request message example
+  ```
+  {
+    "camera_namespace": "robot1",
+    "camera_name": "c_333622320169",
+  }
+  ```
+* request topic
+  ```
+  send_hw_reset_request
+  ```
+* response topic
+  ```
+  send_hw_reset_response
+  ```
+* mqtt response message example: 
+  ```
+  {
+    "camera_namespace": "camera",
+    "camera_name": "camera",
+    "success": true, 
+    "error_msg": ""
+  }
   ```
 ## Get Device Info
 * mqtt request message example
