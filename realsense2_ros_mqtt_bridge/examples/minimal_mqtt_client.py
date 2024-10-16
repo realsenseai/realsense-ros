@@ -122,6 +122,7 @@ class DemoMQTTClient:
         self.mqtt_client.loop_start()
         self.mqtt_client.subscribe('enumerate_devices_response')
         self.mqtt_client.subscribe('get_transformation_response')
+        self.mqtt_client.subscribe('send_hw_reset_response')
         self.mqtt_client.subscribe('send_hwm_command_response')
         self.mqtt_client.subscribe('get_device_info_response')
         self.mqtt_client.subscribe('get_parameter_response')
@@ -173,6 +174,24 @@ class DemoMQTTClient:
         j = json.dumps(request_dict)
         self.locked = True
         self.publish(j, 'get_transformation_request')
+        while self.locked:
+            pass
+
+    def send_hw_reset_request(self, camera_namespace, camera_name):
+        """
+        Send a request to reset the device
+
+        Args:
+            camera_namespace
+            camera_name
+        """
+        request_dict = {
+            'camera_namespace': camera_namespace,
+            'camera_name': camera_name,
+        }
+        j = json.dumps(request_dict)
+        self.locked = True
+        self.publish(j, 'send_hw_reset_request')
         while self.locked:
             pass
 
@@ -477,6 +496,13 @@ if __name__ == '__main__':
     CAMERA_NAMESPACE = 'robot1'
     CAMERA_NAME = 'c_353322320702'
 
+    # reset the device
+    demo_mqtt_client.send_hw_reset_request(CAMERA_NAMESPACE,
+                                     CAMERA_NAME)
+    #needs time to reset
+    import time
+    time.sleep(8)
+
     # get device info
     demo_mqtt_client.get_device_info(CAMERA_NAMESPACE,
                                      CAMERA_NAME)
@@ -665,5 +691,5 @@ if __name__ == '__main__':
           time.sleep(2)
 
     ###################################################################
-
     demo_mqtt_client.stop_client()
+    print(f'MQTT example completed, stopping the client and exiting')
