@@ -50,13 +50,7 @@
     mkdir -p ~/ros2_ws/src
     cd ~/ros2_ws/src/
     ```
-  
-  - Clone latest realsense-ros-mqtt-bridge (master branch) from [here](https://github.com/IntelRealSense/realsense-ros-mqtt-bridge.git) into '~/ros2_ws/src/'
-      ```bashrc
-      git clone https://github.com/IntelRealSense/realsense-ros-mqtt-bridge.git -b master
-      cd ~/ros2_ws
-      ```
-  
+    
   - Build
     ```bash
     colcon build
