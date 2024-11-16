@@ -243,11 +243,11 @@
   ```
 * request topic
   ```
-  enumrete_devices_request
+  get_param_request
   ```
 * response topic
   ```
-  enumerate_devices_response
+  get_param_response
   ```
 * mqtt response message example: 
   ```
