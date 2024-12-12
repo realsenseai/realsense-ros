@@ -14,4 +14,9 @@ or
 ros2 launch realsense2_camera rs_launch.py rosbag_filename:="/full/path/to/rosbag/file"
 ```
 
+Additionally, the 'rosbag_loop' cmd line argument enables the looped playback of the rosbag file:
+```
+ros2 launch realsense2_camera rs_launch_from_rosbag.py rosbag_filename:="/full/path/to/rosbag/file" rosbag_loop:="true"
+```
+
 Check-out [sample-recordings](https://github.com/IntelRealSense/librealsense/blob/master/doc/sample-data.md) for a few recorded samples.

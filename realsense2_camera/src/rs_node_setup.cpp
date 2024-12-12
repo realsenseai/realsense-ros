@@ -336,8 +336,14 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                 rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(qos), qos));
             // Publish Intrinsics:
             info_topic_name << "~/" << stream_name << "/imu_info";
+
+            // IMU Info will have latched QoS, and it will publish its data only once during the ROS Node lifetime.
+            // intra-process do not support latched QoS, so we need to disable intra-process for this topic
+            rclcpp::PublisherOptionsWithAllocator<std::allocator<void>> options;
+            options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
             _imu_info_publishers[sip] = _node.create_publisher<IMUInfo>(info_topic_name.str(),
-                                        rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(info_qos), info_qos));
+                                                                        rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_latched), rmw_qos_profile_latched),
+                                                                        std::move(options));
             IMUInfo info_msg = getImuInfo(profile);
             _imu_info_publishers[sip]->publish(info_msg);
         }
