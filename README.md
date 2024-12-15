@@ -120,7 +120,7 @@
     - For example, for Humble distro: ```sudo apt install ros-humble-librealsense2*```
 
 - #### Option 3: Build from source
-  - Download the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.55.1)
+  - Download the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
   - Follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
 </details>
@@ -639,6 +639,8 @@ The following post processing filters are available:
     - ```temporal_filter``` - filter the depth image temporally.
     - ```hole_filling_filter``` - apply hole-filling filter.
     - ```decimation_filter``` - reduces depth scene complexity.
+    - ```rotation_filter``` - rotates depth and ir frames.
+    
 
 Each of the above filters have it's own parameters, following the naming convention of `<filter_name>.<parameter_name>` including a `<filter_name>.enable` parameter to enable/disable it. 
 

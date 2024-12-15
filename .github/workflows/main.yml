@@ -144,6 +144,7 @@ jobs:
         # numpy-quaternion needs numpy<2.0.0. Chose 1.26.4 as it is the lowest working version for ubuntu 24.04.
         pip3 install --force-reinstall numpy==1.26.4
         pip3 install numpy-quaternion tqdm pyyaml
+        pip3 install typing_extensions
 
     - name: Run Tests
       run: |
