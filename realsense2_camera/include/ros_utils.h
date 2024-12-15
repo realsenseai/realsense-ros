@@ -36,6 +36,7 @@ namespace realsense2_camera
     const stream_index_pair SAFETY{RS2_STREAM_SAFETY, 0};
     const stream_index_pair LABELED_POINT_CLOUD{RS2_STREAM_LABELED_POINT_CLOUD, 0};
     const stream_index_pair OCCUPANCY{RS2_STREAM_OCCUPANCY, 0};
+    const stream_index_pair MOTION{RS2_STREAM_MOTION, 0};
 
     bool isValidCharInName(char c);
 

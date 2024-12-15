@@ -38,6 +38,7 @@ local_parameters = [{'name': 'camera_name',         'default': 'camera', 'descri
                     {'name': 'enable_gyro',         'default': 'true', 'description': "'enable gyro stream'"},
                     {'name': 'enable_accel',        'default': 'true', 'description': "'enable accel stream'"},
                     {'name': 'rosbag_filename',     'default': [ThisLaunchFileDir(), "/rosbag/D435i_Depth_and_IMU_Stands_still.bag"], 'description': 'A realsense bagfile to run from as a device'},
+                    {'name': 'rosbag_loop',         'default': 'false', 'description': 'enable realsense bagfile loop playback'},
                    ]
 
 def set_configurable_parameters(local_params):
@@ -48,7 +49,7 @@ def generate_launch_description():
     params = rs_launch.configurable_parameters
     return LaunchDescription(
         rs_launch.declare_configurable_parameters(local_parameters) +
-        rs_launch.declare_configurable_parameters(params) + 
+        rs_launch.declare_configurable_parameters(params) +
         [
         OpaqueFunction(function=rs_launch.launch_setup,
                 kwargs = {'params' : set_configurable_parameters(params)}

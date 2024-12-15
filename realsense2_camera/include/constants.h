@@ -68,6 +68,7 @@ namespace realsense2_camera
     const uint16_t RS457_PID        = 0xABCD; // D457
     const uint16_t RS_D585_PID      = 0x0B6A; // D585, D for depth
     const uint16_t RS_D585S_PID     = 0x0B6B; // D585S, S for safety
+    const uint16_t RS555_PID        = 0x0B56; // D555
 
     const bool ALLOW_NO_TEXTURE_POINTS = false;
     const bool ORDERED_PC     = false;

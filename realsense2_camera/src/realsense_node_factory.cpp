@@ -38,7 +38,7 @@ RealSenseNodeFactory::RealSenseNodeFactory(const rclcpp::NodeOptions & node_opti
 }
 
 RealSenseNodeFactory::RealSenseNodeFactory(const std::string & node_name, const std::string & ns,
-                                           const rclcpp::NodeOptions & node_options) : 
+                                           const rclcpp::NodeOptions & node_options) :
     Node(node_name, ns, node_options),
     _logger(this->get_logger())
 {
@@ -107,24 +107,31 @@ void RealSenseNodeFactory::getDevice(rs2::device_list list)
                 std::vector<std::string> results;
                 ROS_INFO_STREAM("Device with name " << name << " was found.");
                 std::string port_id = parseUsbPort(pn);
-                if (port_id.empty())
+
+                std::string pid_str(dev.get_info(RS2_CAMERA_INFO_PRODUCT_ID));
+                if(pid_str != "DDS")
                 {
-                    std::stringstream msg;
-                    msg << "Error extracting usb port from device with physical ID: " << pn << std::endl << "Please report on github issue at https://github.com/IntelRealSense/realsense-ros";
-                    if (_usb_port_id.empty())
+                    if (port_id.empty())
                     {
-                        ROS_WARN_STREAM(msg.str());
+                        std::stringstream msg;
+                        msg << "Error extracting usb port from device with physical ID: " << pn << std::endl
+                            << "Please report on github issue at https://github.com/IntelRealSense/realsense-ros";
+                        if (_usb_port_id.empty())
+                        {
+                            ROS_WARN_STREAM(msg.str());
+                        }
+                        else
+                        {
+                            ROS_ERROR_STREAM(msg.str());
+                            ROS_ERROR_STREAM("Please use serial number instead of usb port.");
+                        }
                     }
                     else
                     {
-                        ROS_ERROR_STREAM(msg.str());
-                        ROS_ERROR_STREAM("Please use serial number instead of usb port.");
+                        ROS_INFO_STREAM("Device with port number " << port_id << " was found.");
                     }
                 }
-                else
-                {
-                    ROS_INFO_STREAM("Device with port number " << port_id << " was found.");                    
-                }
+
                 bool found_device_type(true);
                 if (!_device_type.empty())
                 {
@@ -193,7 +200,7 @@ void RealSenseNodeFactory::getDevice(rs2::device_list list)
             ROS_INFO("Resetting device...");
             _device.hardware_reset();
             _device = rs2::device();
-            
+
         }
         catch(const std::exception& ex)
         {
@@ -287,7 +294,39 @@ void RealSenseNodeFactory::init()
             }
             if (_device)
             {
+                bool rosbag_loop(declare_parameter("rosbag_loop", rclcpp::ParameterValue(false)).get<rclcpp::PARAMETER_BOOL>());
                 startDevice();
+
+                if (rosbag_loop)
+                {
+                    auto playback = _device.as<rs2::playback>(); // Object to check the playback status periodically.
+                    bool is_playing = true; // Flag to indicate if the playback is active
+
+                    while (rclcpp::ok())
+                    {
+                        // Check the current status only if the playback is not active
+                        auto status = playback.current_status();
+                        if (!is_playing && status == RS2_PLAYBACK_STATUS_STOPPED)
+                        {
+                            RCLCPP_INFO(this->get_logger(), "Bag file playback has completed and it is going to be replayed.");
+                            startDevice(); // Re-start bag file execution
+                            is_playing = true; // Set the flag to true as playback has been restarted
+                        }
+                        else if (status != RS2_PLAYBACK_STATUS_STOPPED)
+                        {
+                            // If the playback status is not stopped, it means the playback is active
+                            is_playing = true;
+                        }
+                        else
+                        {
+                            // If the playback status is stopped, set the flag to false
+                            is_playing = false;
+                        }
+
+                        // Add a small delay to prevent busy-waiting
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+                }
             }
         }
         else
@@ -352,8 +391,20 @@ void RealSenseNodeFactory::init()
 void RealSenseNodeFactory::startDevice()
 {
     if (_realSenseNode) _realSenseNode.reset();
+    std::string device_name(_device.get_info(RS2_CAMERA_INFO_NAME));
     std::string pid_str(_device.get_info(RS2_CAMERA_INFO_PRODUCT_ID));
-    uint16_t pid = std::stoi(pid_str, 0, 16);
+    uint16_t pid;
+
+    if (device_name == "Intel RealSense D555")
+    {
+        // currently the PID of DDS devices is hardcoded as "DDS"
+        // need to be fixed in librealsense
+        pid = RS555_PID;
+    }
+    else
+    {
+        pid = std::stoi(pid_str, 0, 16);
+    }
     try
     {
         switch(pid)
@@ -374,6 +425,7 @@ void RealSenseNodeFactory::startDevice()
         case RS435i_RGB_PID:
         case RS455_PID:
         case RS457_PID:
+        case RS555_PID:
         case RS_USB2_PID:
         case RS_D585_PID:
         case RS_D585S_PID:
@@ -392,7 +444,7 @@ void RealSenseNodeFactory::startDevice()
         std::cerr << "Failed to start device: " << e.what() << '\n';
         _device.hardware_reset();
         _device = rs2::device();
-    }    
+    }
 }
 
 void RealSenseNodeFactory::tryGetLogSeverity(rs2_log_severity& severity) const
