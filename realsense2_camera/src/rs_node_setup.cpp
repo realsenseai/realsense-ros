@@ -159,7 +159,7 @@ void BaseRealSenseNode::setAvailableSensors()
             sensor.is<rs2::color_sensor>())
         {
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
-            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+                        rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
         }
         else if (sensor.is<rs2::motion_sensor>())
         {
@@ -498,12 +498,48 @@ void BaseRealSenseNode::publishServices()
 {
     // adding "~/" to the service name will add node namespace and node name to the service
     // see "Private Namespace Substitution Character" section on https://design.ros2.org/articles/topic_and_service_names.html
+
+    _reset_srv = _node.create_service<std_srvs::srv::Empty>(
+        "~/hw_reset",
+        [&](const std_srvs::srv::Empty::Request::SharedPtr req,
+                    std_srvs::srv::Empty::Response::SharedPtr res)
+                    {handleHWReset(req, res);});
+
     _device_info_srv = _node.create_service<realsense2_camera_msgs::srv::DeviceInfo>(
             "~/device_info",
             [&](const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr req,
                         realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res)
                         {getDeviceInfo(req, res);});
 }
+
+
+
+void BaseRealSenseNode::handleHWReset(const std_srvs::srv::Empty::Request::SharedPtr req,
+                                const std_srvs::srv::Empty::Response::SharedPtr res)
+{
+    (void)req;
+    (void)res;
+    ROS_INFO_STREAM("Reset requested through service call");
+    if (_dev)
+    {
+        try
+        {
+            for(auto&& sensor : _available_ros_sensors)
+            {
+                std::string module_name(rs2_to_ros(sensor->get_info(RS2_CAMERA_INFO_NAME)));
+                ROS_INFO_STREAM("Stopping Sensor: " << module_name);
+                sensor->stop();
+            }
+            ROS_INFO("Resetting device...");
+            _dev.hardware_reset();
+        }
+        catch(const std::exception& ex)
+        {
+            ROS_WARN_STREAM("An exception has been thrown: " << __FILE__ << ":" << __LINE__ << ":" << ex.what());
+        }
+    }
+}
+
 
 void BaseRealSenseNode::getDeviceInfo(const realsense2_camera_msgs::srv::DeviceInfo::Request::SharedPtr,
                                             realsense2_camera_msgs::srv::DeviceInfo::Response::SharedPtr res)

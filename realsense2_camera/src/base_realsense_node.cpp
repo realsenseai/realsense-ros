@@ -901,6 +901,7 @@ bool BaseRealSenseNode::fillROSImageMsgAndReturnStatus(
     const rclcpp::Time& t,
     sensor_msgs::msg::Image* img_msg_ptr)
 {
+    std::string stream_name(STREAM_NAME(stream));
     if (cv_matrix_image.empty())
     {
         ROS_ERROR_STREAM("cv::Mat is empty. Ignoring this frame.");
@@ -914,8 +915,6 @@ bool BaseRealSenseNode::fillROSImageMsgAndReturnStatus(
     }
     // Convert the CV::Mat into a ROS image message (1 copy is done here)
     cv_bridge::CvImage(std_msgs::msg::Header(), _rs_format_to_ros_format[stream_format], cv_matrix_image).toImageMsg(*img_msg_ptr);
-
-    // Convert OpenCV Mat to ROS Image
     img_msg_ptr->header.frame_id = OPTICAL_FRAME_ID(stream);
     img_msg_ptr->header.stamp = t;
     img_msg_ptr->height = height;

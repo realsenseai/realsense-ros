@@ -18,6 +18,7 @@
 #include <sensor_msgs/msg/image.hpp>
 
 #include <image_transport/image_transport.hpp>
+#include "shared_mem.h"
 
 namespace realsense2_camera {
 class image_publisher
@@ -54,6 +55,8 @@ public:
 
 private:
     std::shared_ptr< image_transport::Publisher > image_publisher_impl;
+    std::unique_ptr<SharedMem> img_shared_mem;
+    std::unique_ptr<SharedMem> rw_shared_mem;
 };
 
 }  // namespace realsense2_camera
