@@ -76,7 +76,8 @@ for camera in $(jq -r '.cameras | keys[]' "$json_file"); do
     fi
     # Do not have to worry about auto-exposure because it on by default
     ros2s="source /opt/ros/humble/setup.bash; source ~/ros2_ws/install/setup.bash"
-    launch_command="$ros2s; ros2 launch realsense2_camera rs_launch.py serial_no:=_$serial camera_name:=$camera rgb_camera.color_profile:=${width}x${height}x30 align_depth.enable:=true hole_filling_filter.enable:=true"
+    launch_command="$ros2s; ros2 launch realsense2_camera rs_launch.py serial_no:=_$serial camera_name:=$camera rgb_camera.color_profile:=${width}x${height}x30 depth_module.depth_profile:=${width}x${height}x30 depth_module.color_profile:=${width}x${height}x30 align_depth.enable:=true hole_filling_filter.enable:=true"
+    echo "$launch_command"
     # spatial_filter.enable:=true
     #  initial_rest:=true"
     # colorizer.enable:=true 
