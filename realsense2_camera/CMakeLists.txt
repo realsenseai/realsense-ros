@@ -120,6 +120,7 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(fastrtps)
 
 find_package(realsense2 2.56.0)
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
