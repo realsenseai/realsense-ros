@@ -72,7 +72,7 @@
           - ros2 launch realsense2_camera rs_launch.py depth_width:=640 depth_height:=480 depth_fps:=30.0 infra1_width:=640 infra1_height:=480 infra1_fps:=30.0
         - **ROS2-master (New)**:
           - ros2 launch realsense2_camera rs_launch.py depth_module.profile:=640x480x30
-    - Removed paramets **\<stream>_frame_id**, **\<stream>_optical_frame_id**. frame_ids are now defined by camera_name
+    - Removed parameters **\<stream>_frame_id**, **\<stream>_optical_frame_id**. frame_ids are now defined by camera_name
     - **"filters"** is removed. All filters (or post-processing blocks) are enabled/disabled using **"\<filter>.enable"**
     - **"align_depth"** is now a regular processing block and as such the parameter for enabling it is replaced with **"align_depth.enable"**
     - **"allow_no_texture_points"**, **"ordered_pc"** are now belong to the pointcloud filter and as such are replaced by **"pointcloud.allow_no_texture_points"**, **"pointcloud.ordered_pc"**
@@ -203,7 +203,7 @@
   </summary>
   
 - Download ROS Wrapper for Intel&reg; RealSense&trade; cameras source code from [ROS Wrapper for Intel&reg; RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
-- Download the corrosponding supported Intel&reg; RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose fronm the link above
+- Download the corresponding supported Intel&reg; RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose from the link above
 - Place the librealsense folder inside the realsense-ros folder, to make the librealsense package set beside realsense2_camera, realsense2_camera_msgs and realsense2_description packages
 </details>
   
@@ -319,7 +319,7 @@ User can set the camera name and camera namespace, to distinguish between camera
     
   ```ros2 launch realsense2_camera rs_launch.py camera_namespace:=robot1 camera_name:=D455_1```
     
-  - With ros2 run (using remapping mechanisim [Reference](https://docs.ros.org/en/humble/How-To-Guides/Node-arguments.html)):
+  - With ros2 run (using remapping mechanism [Reference](https://docs.ros.org/en/humble/How-To-Guides/Node-arguments.html)):
     
   ```ros2 run realsense2_camera realsense2_camera_node --ros-args -r __node:=D455_1 -r __ns:=/robot1```
 
@@ -356,7 +356,7 @@ User can set the camera name and camera namespace, to distinguish between camera
   /robot1/D455_1/set_parameters_atomically
   ```
 
-### Default behavior if non of these parameters are given:
+### Default behavior if none of these parameters are given:
   - camera_namespace:=camera
   - camera_name:=camera
 
@@ -444,7 +444,7 @@ User can set the camera name and camera namespace, to distinguish between camera
     - If **publish_tf:=false**, then no TFs will be published, even if **tf_publish_rate** is >0.0 Hz
     - If **publish_tf:=true** and **tf_publish_rate** set to >0.0 Hz, then dynamic TFs will be published at the specified rate
 - **unite_imu_method**:
-  - For the D400 cameras with built in IMU components, below 2 unrelated streams (each with it's own frequency) will be created:
+  - For the D400 cameras with built in IMU components, below 2 unrelated streams (each with its own frequency) will be created:
     - *gyro* - which shows angular velocity 
     - *accel* - which shows linear acceleration. 
   - Both streams will publish data to its corresponding topics:
@@ -503,7 +503,14 @@ User can set the camera name and camera namespace, to distinguish between camera
   - On occasions the device was not closed properly and due to firmware issues needs to reset. 
   - If set to true, the device will reset prior to usage.
   - For example: `initial_reset:=true`
-- **base_frame_id**: defines the frame_id all static transformations refers to.
+- **base_frame_id**: 
+  - Suffix for constructing the camera's root frame that all static transformations refer to. 
+  - Defaults to "link".
+  - For example: camera_link is composed of [camera_name]_[base_frame_id]
+- **tf_prefix**:
+  - Prefix to be prepended to all frame IDs published by this node (e.g., camera link, optical frames, etc.)
+  - Default value is empty string (no prefix)
+  - For example: `tf_prefix:=robot1/` will result in frames like `robot1/camera_link`, `robot1/camera_color_optical_frame`, etc.
 - **clip_distance**:
   - Remove from the depth image all values above a given value (meters). Disable by giving negative value (default)
   - For example: `clip_distance:=1.5`
@@ -553,10 +560,10 @@ The `/diagnostics` topic includes information regarding the device temperatures 
 ## Extrinsics from sensor A to sensor B:
 
 - Extrinsic from sensor A to sensor B means the position and orientation of sensor A relative to sensor B.
-- Imagine that B is the origin (0,0,0), then the Extrensics(A->B) describes where is sensor A relative to sensor B.
+- Imagine that B is the origin (0,0,0), then the Extrinsics(A->B) describes where is sensor A relative to sensor B.
 - For example, depth_to_color, in D435i:
-  - If we look from behind of the D435i, extrinsic from depth to color, means, where is the depth in relative to the color.
-  - If we just look at the X coordinates, in the optical coordiantes (again, from behind) and assume that COLOR(RGB) sensor is (0,0,0), we can say that DEPTH sensor is on the right of RGB by 0.0148m (1.48cm).
+  - If we look from behind of the D435i, extrinsic from depth to color, means, where is the depth relative to the color.
+  - If we just look at the X coordinates, in the optical coordinates (again, from behind) and assume that COLOR(RGB) sensor is (0,0,0), we can say that DEPTH sensor is on the right of RGB by 0.0148m (1.48cm).
 
 ![d435i](https://user-images.githubusercontent.com/99127997/230220297-e392f0fc-63bf-4bab-8001-af1ddf0ed00e.png)
 
@@ -631,9 +638,9 @@ Enabling stream adds matching topics. For instance, enabling the gyro and accel 
 
 RGBD new topic, publishing [RGB + Depth] in the same message (see RGBD.msg for reference). For now, works only with depth aligned to color images, as color and depth images are synchronized by frame time tag.
 
-These boolean paramters should be true to enable rgbd messages:
+These boolean parameters should be true to enable rgbd messages:
 
-- `enable_rgbd`: new paramter, to enable/disable rgbd topic, changeable during runtime
+- `enable_rgbd`: enable/disable rgbd topic, changeable during runtime
 - `align_depth.enable`: align depth images to rgb images
 - `enable_sync`: let librealsense sync between frames, and get the frameset with color and depth images combined
 - `enable_color` + `enable_depth`: enable both color and depth sensors
