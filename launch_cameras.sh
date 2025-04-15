@@ -34,7 +34,7 @@ echo "Reading camera configurations from $json_file..."
 # allowed_cameras=("beam_camera_left" "beam_camera_right" "shoulder_camera_left" "shoulder_camera_right" "wrist_camera_left" "wrist_camera_right")
 # allowed_cameras=("shoulder_camera_left" "wrist_camera_left")
 
-allowed_cameras=("wrist_camera_left" "wrist_camera_right" "handset_wrist_camera", "head_camera")
+allowed_cameras=("wrist_camera_left" "wrist_camera_right" "handset_wrist_camera" "head_camera")
 
 # Function to check if a camera is in the allowed list
 is_allowed() {
