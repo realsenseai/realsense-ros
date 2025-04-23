@@ -91,6 +91,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'reconnect_timeout',            'default': '6.', 'description': 'Timeout(seconds) between consequtive reconnection attempts'},
                            {'name': 'base_frame_id',                'default': 'link', 'description': 'Root frame of the sensors transform tree'},
                            {'name': 'tf_prefix',                    'default': '', 'description': 'prefix to be prepended to all frame IDs'},
+                           {'name': 'decimation_filter.filter_magnitude', 'default': '2', 'description': 'decimation filter magnitude'},
                           ]
 
 def declare_configurable_parameters(parameters):
@@ -111,7 +112,8 @@ def launch_setup(context, params, param_name_suffix=''):
     supported_params = set(param['name'] for param in configurable_parameters)
     
     # Check for unsupported parameters in command line arguments
-    for param_name in params.keys():
+    # Warn for any launch arguments not in supported_params
+    for param_name in context.launch_configurations.keys():
         if param_name not in supported_params:
             print(f"\033[33mWarning: Parameter '{param_name}' is not supported. Supported parameters are:\n{sorted(supported_params)}\033[0m")
     
