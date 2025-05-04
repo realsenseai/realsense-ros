@@ -15,7 +15,7 @@
 #pragma once
 
 #include <string>
-#include <rclcpp/rclcpp.hpp>
+#include "ros_node_base.h"
 
 #define REALSENSE_ROS_MAJOR_VERSION    4
 #define REALSENSE_ROS_MINOR_VERSION    55

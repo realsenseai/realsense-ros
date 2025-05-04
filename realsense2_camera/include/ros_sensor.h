@@ -18,7 +18,7 @@
 #include <librealsense2/rsutil.h>
 #include "constants.h"
 #include <map>
-#include <rclcpp/rclcpp.hpp>
+#include "ros_node_base.h"
 #include <ros_utils.h>
 #include <sensor_params.h>
 #include <profile_manager.h>

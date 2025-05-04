@@ -25,6 +25,8 @@
 // Header files for disabling intra-process comms for static broadcaster.
 #include <rclcpp/publisher_options.hpp>
 #include <tf2_ros/qos.hpp>
+#include "pointcloud_filter.h"
+#include "align_depth_filter.h"
 
 using namespace realsense2_camera;
 
@@ -90,7 +92,7 @@ size_t SyncedImuPublisher::getNumSubscribers()
     return _publisher->get_subscription_count();
 }
 
-BaseRealSenseNode::BaseRealSenseNode(rclcpp::Node& node,
+BaseRealSenseNode::BaseRealSenseNode(RosNodeBase& node,
                                      rs2::device dev,
                                      std::shared_ptr<Parameters> parameters,
                                      bool use_intra_process) :
@@ -230,7 +232,7 @@ void BaseRealSenseNode::setupFilters()
     _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::temporal_filter>(), _parameters, _logger));
     _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::hole_filling_filter>(), _parameters, _logger));
     _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::disparity_transform>(false), _parameters, _logger));
-    _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::rotation_filter>(), _parameters, _logger));
+    _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::rotation_filter>(std::vector< rs2_stream >{ RS2_STREAM_DEPTH, RS2_STREAM_COLOR, RS2_STREAM_INFRARED }), _parameters, _logger));
 
     /* 
     update_align_depth_func is being used in the align depth filter for triggiring the thread that monitors profile
@@ -601,6 +603,7 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
         }
 
         rs2::video_frame original_color_frame = frameset.get_color_frame();
+        rs2::video_frame original_infra2_frame = frameset.get_infrared_frame(2);
 
         ROS_DEBUG("num_filters: %d", static_cast<int>(_filters.size()));
         for (auto filter_it : _filters)
@@ -645,6 +648,11 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
                     if (original_color_frame && _align_depth_filter->is_enabled())
                     {
                         publishFrame(f, t, COLOR, _depth_aligned_image, _depth_aligned_info_publisher, _depth_aligned_image_publishers, false);
+                        continue;
+                    }
+                    if (original_infra2_frame && _align_depth_filter->is_enabled())
+                    {
+                        publishFrame(f, t, INFRA2, _depth_aligned_image, _depth_aligned_info_publisher, _depth_aligned_image_publishers, false);
                         continue;
                     }
                 }

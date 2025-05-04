@@ -19,8 +19,14 @@
   <depend>image_transport</depend>
   <depend>librealsense2</depend>
   <depend>rclcpp</depend>
+
+  <!-- Lifecycle dependencies are optional -DUSE_LIFECYCLE_NODE -->
+  <depend>rclcpp_lifecycle</depend>
+  <depend>lifecycle_msgs</depend>
+
   <depend>rclcpp_components</depend>
   <depend>realsense2_camera_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>std_srvs</depend>
   <depend>std_msgs</depend>

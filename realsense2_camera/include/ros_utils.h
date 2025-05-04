@@ -17,7 +17,7 @@
 
 #include <iostream>
 #include <vector>
-#include <rclcpp/rclcpp.hpp>
+#include "ros_node_base.h"
 #include <librealsense2/rs.hpp>
 #include <librealsense2/rsutil.h>
 

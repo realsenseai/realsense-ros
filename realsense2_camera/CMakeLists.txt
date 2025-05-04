@@ -30,6 +30,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 option(BUILD_WITH_OPENMP "Use OpenMP" OFF)
 option(SET_USER_BREAK_AT_STARTUP "Set user wait point in startup (for debug)" OFF)
+# Define an option to enable or disable lifecycle nodes
+option(USE_LIFECYCLE_NODE "Enable lifecycle nodes (ON/OFF)" OFF)
 
 # Compiler Defense Flags
 if(UNIX OR APPLE)
@@ -112,6 +114,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
@@ -143,6 +146,8 @@ set(SOURCES
     src/dynamic_params.cpp
     src/sensor_params.cpp
     src/named_filter.cpp
+    src/pointcloud_filter.cpp
+    src/align_depth_filter.cpp
     src/profile_manager.cpp
     src/image_publisher.cpp
     src/tfs.cpp
@@ -205,6 +210,8 @@ set(INCLUDES
     include/dynamic_params.h
     include/sensor_params.h
     include/named_filter.h
+    include/pointcloud_filter.h
+    include/align_depth_filter.h
     include/ros_param_backend.h
     include/profile_manager.h
     include/image_publisher.h)
@@ -260,6 +267,25 @@ if (BUILD_ACCELERATE_GPU_WITH_GLSL)
 else()
   list(APPEND dependencies realsense2)
 endif()
+
+# If the flag is enabled, define the macro
+if(USE_LIFECYCLE_NODE)
+    find_package(rclcpp_lifecycle REQUIRED)
+    find_package(lifecycle_msgs REQUIRED)
+    list(APPEND dependencies rclcpp_lifecycle lifecycle_msgs)
+    add_definitions(-DUSE_LIFECYCLE_NODE)
+    message("🚀 USE_LIFECYCLE_NODE is ENABLED")
+
+    # Create a configuration file for the launch file
+    file(WRITE "${CMAKE_BINARY_DIR}/global_settings.yaml"
+        "use_lifecycle_node: true\n")
+else()
+    file(WRITE "${CMAKE_BINARY_DIR}/global_settings.yaml"
+        "use_lifecycle_node: false\n")
+endif()
+
+install(FILES "${CMAKE_BINARY_DIR}/global_settings.yaml"
+    DESTINATION share/${PROJECT_NAME}/config)
 
 ament_target_dependencies(${PROJECT_NAME}
   ${dependencies}
