@@ -84,6 +84,8 @@ void BaseRealSenseNode::monitoringProfileChanges()
 
 void BaseRealSenseNode::setAvailableSensors()
 {
+    _dev_sensors = _dev.query_sensors();
+
     if (!_json_file_path.empty())
     {
         if (_dev.is<rs400::advanced_mode>())
@@ -96,8 +98,15 @@ void BaseRealSenseNode::setAvailableSensors()
                 std::string json_file_content = ss.str();
 
                 auto adv = _dev.as<rs400::advanced_mode>();
-                adv.load_json(json_file_content);
-                ROS_INFO_STREAM("JSON file is loaded! (" << _json_file_path << ")");
+                try
+                {
+                    adv.load_json(json_file_content);
+                    ROS_INFO_STREAM("JSON file is loaded! (" << _json_file_path << ")");
+                }
+                catch (std::exception &e)
+                {
+                    ROS_WARN_STREAM("Failed to load preset from JSON: " << e.what());
+                }
             }
             else
                 ROS_WARN_STREAM("JSON file provided doesn't exist! (" << _json_file_path << ")");
@@ -152,14 +161,16 @@ void BaseRealSenseNode::setAvailableSensors()
 
     std::function<void()> hardware_reset_func = [this](){hardwareResetRequest();};
 
-    _dev_sensors = _dev.query_sensors();
-
     for(auto&& sensor : _dev_sensors)
     {
         const std::string module_name(rs2_to_ros(sensor.get_info(RS2_CAMERA_INFO_NAME)));
         std::unique_ptr<RosSensor> rosSensor;
-        if (sensor.is<rs2::depth_sensor>() ||
-            sensor.is<rs2::color_sensor>())
+        if (sensor.is<rs2::depth_sensor>())
+        {
+            ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
+            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+        }
+        else if (sensor.is<rs2::color_sensor>())
         {
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
             rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
