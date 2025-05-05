@@ -18,8 +18,8 @@
 #include "ros_node_base.h"
 
 #define REALSENSE_ROS_MAJOR_VERSION    4
-#define REALSENSE_ROS_MINOR_VERSION    55
-#define REALSENSE_ROS_PATCH_VERSION    1
+#define REALSENSE_ROS_MINOR_VERSION    56
+#define REALSENSE_ROS_PATCH_VERSION    10
 
 #define STRINGIFY(arg) #arg
 #define VAR_ARG_STRING(arg) STRINGIFY(arg)
