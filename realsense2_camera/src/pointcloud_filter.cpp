@@ -102,7 +102,7 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
     rs2::frameset::iterator texture_frame_itr = frameset.end();
     if (use_texture)
     {
-        std::set<rs2_format> available_formats{ rs2_format::RS2_FORMAT_RGB8, rs2_format::RS2_FORMAT_Y8 };
+        std::set<rs2_format> available_formats{ RS2_FORMAT_RGB8, RS2_FORMAT_Y8, RS2_FORMAT_Z16 };
 
         texture_frame_itr = std::find_if(frameset.begin(), frameset.end(), [&texture_source_id, &available_formats] (rs2::frame f)
                                 {return (rs2_stream(f.get_profile().stream_type()) == texture_source_id) &&
@@ -155,9 +155,14 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
             case RS2_FORMAT_Y8:
                 format_str = "intensity";
                 break;
+            case RS2_FORMAT_Z16:
+                // Depth can't be used as color texture — skip coloring
+                format_str = "";  // Don't add any color field
+                break;
             default:
-                throw std::runtime_error("Unhandled texture format passed in pointcloud " + std::to_string(texture_frame.get_profile().format()));
-        }
+                RCLCPP_WARN(_logger, "Skipping unsupported texture format %d for pointcloud", texture_frame.get_profile().format());
+                return;
+        }        
         msg_pointcloud->point_step = addPointField(*msg_pointcloud, format_str.c_str(), 1, sensor_msgs::msg::PointField::FLOAT32, msg_pointcloud->point_step);
         msg_pointcloud->row_step = msg_pointcloud->width * msg_pointcloud->point_step;
         msg_pointcloud->data.resize(msg_pointcloud->height * msg_pointcloud->row_step);
