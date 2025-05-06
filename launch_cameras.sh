@@ -33,8 +33,16 @@ echo "Reading camera configurations from $json_file..."
 # Define the list of allowed camera names
 # allowed_cameras=("beam_camera_left" "beam_camera_right" "shoulder_camera_left" "shoulder_camera_right" "wrist_camera_left" "wrist_camera_right")
 # allowed_cameras=("shoulder_camera_left" "wrist_camera_left")
+allowed_cameras_file="$DATA/allowed_cameras.json"
+if [ ! -f "$allowed_cameras_file" ]; then
+    echo "Error: File $allowed_cameras_file does not exist."
+    exit 1
+fi
 
-allowed_cameras=("wrist_camera_left" "wrist_camera_right" "handset_wrist_camera" "head_camera")
+echo "Reading allowed cameras from $allowed_cameras_file..."
+readarray -t allowed_cameras < <(jq -r '.allowed_cameras[]' "$allowed_cameras_file")
+
+# allowed_cameras=("wrist_camera_left" "wrist_camera_right" "handset_wrist_camera" "head_camera")
 
 # Function to check if a camera is in the allowed list
 is_allowed() {
