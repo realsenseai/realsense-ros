@@ -74,7 +74,7 @@ jobs:
         repository: IntelRealSense/librealsense-private
         path: librealsense-private
         ref: hkr
-        token: ${{secrets.SAMER_SECRET_PAT}}
+        token: ${{secrets.REMI_ROS_PRIVATE_SECRET}}
             
     - name: Build RealSense SDK 2.0 (hkr branch) from source
       run: |
