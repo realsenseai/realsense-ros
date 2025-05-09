@@ -15,6 +15,7 @@
 #include <pointcloud_filter.h>
 #include <fstream>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
+#include "dynamic_params.h"
 
 
 using namespace realsense2_camera;
@@ -95,11 +96,13 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
         if ((!_pointcloud_publisher) || (!(_pointcloud_publisher->get_subscription_count())))
             return;
     }
+    
     rs2_stream texture_source_id = static_cast<rs2_stream>(_filter->get_option(rs2_option::RS2_OPTION_STREAM_FILTER));
     bool use_texture = texture_source_id != RS2_STREAM_ANY;
     static int warn_count(0);
     static const int DISPLAY_WARN_NUMBER(5);
     rs2::frameset::iterator texture_frame_itr = frameset.end();
+    
     if (use_texture)
     {
         std::set<rs2_format> available_formats{ RS2_FORMAT_RGB8, RS2_FORMAT_Y8, RS2_FORMAT_Z16 };
@@ -115,12 +118,15 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
             return;
         }
         warn_count = 0;
-    } else {
+    } 
+    else {
         warn_count++;
         std::string texture_source_name = _filter->get_option_value_description(rs2_option::RS2_OPTION_STREAM_FILTER, static_cast<float>(texture_source_id));
-        ROS_WARN_STREAM_COND(warn_count == DISPLAY_WARN_NUMBER, "No stream match for pointcloud chosen texture " \
-            << texture_source_name << " - " << "set pointcloud.stream_profile parameter to color/depth/infra stream");
-        return;
+        ROS_WARN_STREAM_COND(
+            warn_count == DISPLAY_WARN_NUMBER,
+            "No stream match for pointcloud chosen texture: " << texture_source_name
+            << ". The 'pointcloud.stream_profile' parameter is set to 'any'"
+        );        
     }
 
     int texture_width(0), texture_height(0);
