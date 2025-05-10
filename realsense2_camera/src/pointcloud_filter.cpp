@@ -119,11 +119,14 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
     } 
     else {
         warn_count++;
-        std::string texture_source_name = _filter->get_option_value_description(rs2_option::RS2_OPTION_STREAM_FILTER, static_cast<float>(texture_source_id));
+        std::string texture_source_name = _filter->get_option_value_description(
+            rs2_option::RS2_OPTION_STREAM_FILTER,
+            static_cast<float>(texture_source_id)
+        );
         ROS_WARN_STREAM_COND(
             warn_count == DISPLAY_WARN_NUMBER,
-            "No stream match for pointcloud chosen texture: " << texture_source_name
-            << ". The 'pointcloud.stream_profile' parameter is set to 'any'"
+            "No matching stream for texture '" << texture_source_name
+            << "'. Set 'pointcloud.stream_profile' to 'depth(1)', 'color(2)', or 'infrared(3)' to enable textured pointclouds."
         );        
     }
 
