@@ -14,7 +14,7 @@
 
 #pragma once
 #include <librealsense2/rs.hpp>
-#include <rclcpp/rclcpp.hpp>
+#include "ros_node_base.h"
 #include <dynamic_params.h>
 
 namespace realsense2_camera

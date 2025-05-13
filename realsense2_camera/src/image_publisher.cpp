@@ -17,7 +17,7 @@
 using namespace realsense2_camera;
 
 // --- image_rcl_publisher implementation ---
-image_rcl_publisher::image_rcl_publisher( rclcpp::Node & node,
+image_rcl_publisher::image_rcl_publisher( RosNodeBase & node,
                                           const std::string & topic_name,
                                           const rmw_qos_profile_t & qos )
 {

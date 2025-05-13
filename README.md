@@ -30,6 +30,7 @@
   * [ROS1 and ROS2 legacy](#ros1-and-ros2-legacy)
   * [Installation on Ubuntu](#installation-on-ubuntu)
   * [Installation on Windows](#installation-on-windows)
+  * [ROS2 LifeCycleNode](#ros2-lifecyclenode)
   * [Usage](#usage)
      * [Starting the camera node](#start-the-camera-node)
      * [Camera name and namespace](#camera-name-and-camera-namespace)
@@ -248,6 +249,47 @@
 <hr>
 
 
+
+# ROS2 LifeCycleNode
+
+The `USE_LIFECYCLE_NODE` cmake flag enables **ROS2 Lifecycle Node** (`rclcpp_lifecycle::LifecycleNode`) in the **Realsense SDK**, providing better node management and explicit state transitions.  
+
+However, enabling this flag introduces a limitation where **Image Transport functionality (`image_transport`) is** <span style="color:#ff6666">**disabled**</span> **when `USE_LIFECYCLE_NODE=ON`**.  
+This means that **compressed image topics (e.g., JPEG, PNG, Theora) will not be available** and<br>
+**Subscribers** must use raw image topics, which may increase bandwidth usage.
+
+> Note: Users who do not depend on image_transport will not be affected by this change and can safely enable Lifecycle Node without any impact on their workflow.
+
+### 📌 Why This Limitation?
+
+At the time Lifecycle Node support was added, image_transport did not support rclcpp_lifecycle::LifecycleNode.<br>
+🔗 [ROS2 `image_transport` does not support Lifecycle Node](https://github.com/ros-perception/image_common/issues/108).  
+
+To build the SDK with Lifecycle Node enabled:
+```bash
+colcon build --cmake-args -DUSE_LIFECYCLE_NODE=ON
+```  
+
+To use standard ROS2 node **(default behavior)** and retain image_transport functionality:
+```bash
+colcon build --cmake-args -DUSE_LIFECYCLE_NODE=OFF
+```
+
+### Lifecycle State Transitions
+The RealSense node follows the ROS2 managed lifecycle. Below is a breakdown of each state and the corresponding function calls:
+
+| **State**         | **Transition Function**       | **Description** |
+|-------------------|-----------------------------|-----------------|
+| `UNCONFIGURED`   | **Node Created**             | The node is instantiated but not initialized. |
+| `CONFIGURING`    | `on_configure()` → `init()`  | Initializes parameters and attempts to discover the RealSense device. |
+| `INACTIVE`       | -                            | The node is initialized but not yet publishing data. |
+| `ACTIVATING`     | `on_activate()` → `startDevice()` | Starts the RealSense device and begins publishing topics. |
+| `ACTIVE`         | -                            | The node is fully operational and publishing data. |
+| `DEACTIVATING`   | `on_deactivate()` → `stopDevice()` | Stops publishing but retains device configuration. |
+| `CLEANUP`        | `on_cleanup()` → `closeDevice()` | Resets all resources, allowing reconfiguration. |
+| `SHUTDOWN`       | `on_shutdown()` → `closeDevice()` | Cleans up before process termination (doesnt actually terminate the process itself due to ROS2 composable nodes and component manager ) |
+<hr>
+
 # Usage
 
 ## Start the camera node
@@ -281,14 +323,16 @@ User can set the camera name and camera namespace, to distinguish between camera
     
   - With ros2 run (using remapping mechanisim [Reference](https://docs.ros.org/en/humble/How-To-Guides/Node-arguments.html)):
     
-  ```ros2 run realsense2_camera realsense2_camera_node --ros-args -r __node:=D455_1 -r __ns:=robot1```
+  ```ros2 run realsense2_camera realsense2_camera_node --ros-args -r __node:=D455_1 -r __ns:=/robot1```
 
+  > ⚠️ **Note:** Using `ros2 run` may produce slightly different topics and services due to parameters not being initialized with the values assigned in `rs_launch.py`. This may result in additional topics such as IMU data.
   - Result
   ```
   > ros2 node list
   /robot1/D455_1
   
   > ros2 topic list
+  /parameter_events
   /robot1/D455_1/color/camera_info
   /robot1/D455_1/color/image_raw
   /robot1/D455_1/color/metadata
@@ -296,11 +340,21 @@ User can set the camera name and camera namespace, to distinguish between camera
   /robot1/D455_1/depth/image_rect_raw
   /robot1/D455_1/depth/metadata
   /robot1/D455_1/extrinsics/depth_to_color
-  /robot1/D455_1/imu
+  /robot1/D455_1/extrinsics/depth_to_depth
+  /rosout
+  /tf_static
   
   > ros2 service list
-  /robot1/D455_1/hw_reset
+  /robot1/D455_1/calib_config_read
+  /robot1/D455_1/calib_config_write
+  /robot1/D455_1/describe_parameters
   /robot1/D455_1/device_info
+  /robot1/D455_1/get_parameter_types
+  /robot1/D455_1/get_parameters
+  /robot1/D455_1/hw_reset
+  /robot1/D455_1/list_parameters
+  /robot1/D455_1/set_parameters
+  /robot1/D455_1/set_parameters_atomically
   ```
 
 ### Default behavior if non of these parameters are given:
@@ -319,11 +373,22 @@ User can set the camera name and camera namespace, to distinguish between camera
 /camera/camera/depth/image_rect_raw
 /camera/camera/depth/metadata
 /camera/camera/extrinsics/depth_to_color
-/camera/camera/imu
+/camera/camera/extrinsics/depth_to_depth
+/parameter_events
+/rosout
+/tf_static
 
 > ros2 service list
-/camera/camera/hw_reset
+/camera/camera/calib_config_read
+/camera/camera/calib_config_write
+/camera/camera/describe_parameters
 /camera/camera/device_info
+/camera/camera/get_parameter_types
+/camera/camera/get_parameters
+/camera/camera/hw_reset
+/camera/camera/list_parameters
+/camera/camera/set_parameters
+/camera/camera/set_parameters_atomically
 ```
 
 <hr>
