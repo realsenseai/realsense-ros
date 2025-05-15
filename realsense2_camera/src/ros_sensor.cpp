@@ -27,7 +27,7 @@ using namespace rs2;
         }                                                            \
         catch(std::exception& e)                                     \
         {                                                            \
-            ROS_WARN_STREAM("Failed to set option: " << e.what());   \
+            ROS_WARN_STREAM("Failed to set option: " << rs2_option_to_string(opt) << " to val: " << val << " error: " << e.what());   \
         }                                                            \
     }                                                                \
     
