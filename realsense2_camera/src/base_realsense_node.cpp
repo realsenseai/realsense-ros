@@ -229,7 +229,7 @@ void BaseRealSenseNode::setupFilters()
     _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::temporal_filter>(), _parameters, _logger));
     _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::hole_filling_filter>(), _parameters, _logger));
     _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::disparity_transform>(false), _parameters, _logger));
-    _filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::rotation_filter>(std::vector< rs2_stream >{ RS2_STREAM_DEPTH, RS2_STREAM_COLOR, RS2_STREAM_INFRARED }), _parameters, _logger));
+    //_filters.push_back(std::make_shared<NamedFilter>(std::make_shared<rs2::rotation_filter>(std::vector< rs2_stream >{ RS2_STREAM_DEPTH, RS2_STREAM_COLOR, RS2_STREAM_INFRARED }), _parameters, _logger));
 
     /* 
     update_align_depth_func is being used in the align depth filter for triggiring the thread that monitors profile
