@@ -1,9 +1,9 @@
 
 <p align="center">
   <b>Step-by-step guide for Jetson Orin users: Setting up Intel RealSense SDK and ROS2 Wrapper (PointCloud/Depth) on JetPack 6 + Ubuntu 22.04 + ROS2 Humble</b><br>
-  <a href="https://github.com/IntelRealSense/realsense-ros/releases">Latest release notes</a><br>
-  <small>Guide maintained by <a href="https://github.com/NamaiBest">NamaiBest</a></small>
+  <a href="https://github.com/IntelRealSense/realsense-ros/releases">Latest release notes</a>
 </p>
+
 <hr>
 
 [![humble][humble-badge]][humble]
@@ -75,13 +75,14 @@ sudo apt install -y python3-colcon-common-extensions python3-rosdep
 
 ---
 
-### Step 2: Install Intel® RealSense™ SDK 2.0 (librealsense)
+### Step 2: Build Intel® RealSense™ SDK 2.0 (librealsense) from source
 
-**For Jetson, use ONLY the JetsonHacksNano [`installLibrealsense.sh`](https://github.com/JetsonHacksNano/installLibrealsense) script (no kernel patching required!).**  
+**For Jetson, you should build librealsense from source using the JetsonHacksNano [`buildLibrealsense.sh`](https://github.com/JetsonHacksNano/installLibrealsense) script. No kernel patching required!**
+
 > **Original article:** https://wp.me/p7ZgI9-34j  
 > **LibRealSense SDK:** https://github.com/IntelRealSense/librealsense
 
-This will install the official Intel librealsense2 (D400, T265, SR300 support) via the Intel APT repository.
+Building from source ensures maximum compatibility and avoids version mismatches, which can occur when mixing source builds with binary (APT) installs.
 
 #### 1. Clone the helper scripts
 
@@ -90,14 +91,13 @@ git clone https://github.com/JetsonHacksNano/installLibrealsense.git
 cd installLibrealsense
 ```
 
-#### 2. Install librealsense using the install script (**RECOMMENDED, what I did**)
+#### 2. Build librealsense using the build script (**RECOMMENDED, what I did**)
 
 ```bash
-# Run the install script (no kernel patching required)
-./installLibrealsense.sh
+# Run the build script (no kernel patching required)
+./buildLibrealsense.sh
 ```
-**Do NOT run the `buildLibrealsense.sh` script unless you have a very advanced use-case.**
-- This script installs the official Intel® RealSense™ SDK (librealsense2) from the Intel APT repository (i.e., using apt-get install).
+- This script builds and installs the official Intel® RealSense™ SDK (librealsense2) from source.
 - You do **not** have to patch modules or kernels.
 - This will install the required libraries and set up udev rules.
 - **All necessary USB permissions (udev rules) are also set up automatically by this script, no extra steps required.**
@@ -117,7 +117,7 @@ realsense-viewer
 
 ---
 
-### Step 3: Install Intel® RealSense™ ROS2 Wrapper
+### Step 3: Build Intel® RealSense™ ROS2 Wrapper from source
 
 To avoid version mismatches, **build the ROS2 wrapper from source** (especially on Jetson).
 
