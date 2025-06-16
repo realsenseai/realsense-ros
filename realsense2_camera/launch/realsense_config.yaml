@@ -1,0 +1,19 @@
+enable_sync: true
+align_depth:
+  enable: true
+initial_reset: true
+depth_module:
+  depth_profile: 848x480x15
+  laser_power: 360
+rgb_camera:
+  color_profile: 848x480x15
+pointcloud:
+  enable: true
+  ordered_pc: false
+  allow_no_texture_points: false
+filters: colorizer
+colorizer:
+  visual_preset: 2
+  color_scheme: 2
+usb_port_id: "2-1.4"
+reconnect_timeout: 6.0
