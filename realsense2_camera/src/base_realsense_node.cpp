@@ -1147,14 +1147,24 @@ void BaseRealSenseNode::publishRGBD(
 
         realsense2_camera_msgs::msg::RGBD::UniquePtr msg(new realsense2_camera_msgs::msg::RGBD());
 
+        msg->rgb_camera_info = _camera_info.at(COLOR);
+        msg->depth_camera_info = _camera_info.at(DEPTH);
+
+        auto depth_stream_index_pair = DEPTH;
+        if (_align_depth_filter->is_enabled())
+        {
+            depth_stream_index_pair = COLOR;
+            msg->depth_camera_info = _camera_info.at(COLOR);
+        }
+
         bool rgb_message_filled = fillROSImageMsgAndReturnStatus(rgb_cv_matrix, COLOR, rgb_width, rgb_height, color_format, t, &msg->rgb);
         if(!rgb_message_filled)
         {
             ROS_ERROR_STREAM("Failed to fill rgb message inside RGBD message");
             return;
         }
-
-        bool depth_messages_filled = fillROSImageMsgAndReturnStatus(depth_cv_matrix, DEPTH, depth_width, depth_height, depth_format, t, &msg->depth);
+        
+        bool depth_messages_filled = fillROSImageMsgAndReturnStatus(depth_cv_matrix, depth_stream_index_pair, depth_width, depth_height, depth_format, t, &msg->depth);
         if(!depth_messages_filled)
         {
             ROS_ERROR_STREAM("Failed to fill depth message inside RGBD message");
@@ -1164,11 +1174,6 @@ void BaseRealSenseNode::publishRGBD(
         msg->header.frame_id = "camera_rgbd_optical_frame";
         msg->header.stamp = t;
 
-        auto rgb_camera_info = _camera_info.at(COLOR);
-        msg->rgb_camera_info = rgb_camera_info;
-
-        auto depth_camera_info = _camera_info.at(DEPTH);
-        msg->depth_camera_info = depth_camera_info;
 
         realsense2_camera_msgs::msg::RGBD *msg_address = msg.get();
         _rgbd_publisher->publish(std::move(msg));
