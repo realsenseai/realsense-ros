@@ -32,10 +32,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [iron, humble]
+        ros_distro: [kilted, jazzy, humble]
         include:
-        - ros_distro: 'iron'
-          os: ubuntu-22.04
+        - ros_distro: 'kilted'
+          os: ubuntu-24.04
+        - ros_distro: 'jazzy'
+          os: ubuntu-24.04
         - ros_distro: 'humble'
           os: ubuntu-22.04
           
