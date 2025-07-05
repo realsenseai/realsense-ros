@@ -98,7 +98,7 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
     rs2_stream texture_source_id = static_cast<rs2_stream>(_filter->get_option(rs2_option::RS2_OPTION_STREAM_FILTER));
     bool use_texture = texture_source_id != RS2_STREAM_ANY;
     static int warn_count(0);
-    static const int DISPLAY_WARN_NUMBER(5);
+    static const int DISPLAY_WARN_NUMBER(15);
     rs2::frameset::iterator texture_frame_itr = frameset.end();
     
     if (use_texture)
