@@ -103,7 +103,7 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
     
     if (use_texture)
     {
-        std::set<rs2_format> available_formats{ RS2_FORMAT_RGB8, RS2_FORMAT_Y8, RS2_FORMAT_Z16 };
+        std::set<rs2_format> available_formats{ rs2_format::RS2_FORMAT_RGB8, rs2_format::RS2_FORMAT_Y8, rs2_format::RS2_FORMAT_Z16 };
 
         texture_frame_itr = std::find_if(frameset.begin(), frameset.end(), [&texture_source_id, &available_formats] (rs2::frame f)
                                 {return (rs2_stream(f.get_profile().stream_type()) == texture_source_id) &&
