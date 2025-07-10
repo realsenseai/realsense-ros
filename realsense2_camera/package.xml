@@ -31,7 +31,9 @@
   <depend>std_srvs</depend>
   <depend>std_msgs</depend>
   <depend>nav_msgs</depend>
-  <depend>tf2</depend>
+  <depend condition="$ROS_DISTRO != jazzy and $ROS_DISTRO != humble" version_gte="0.40.0">tf2</depend>
+  <depend condition="$ROS_DISTRO == jazzy" version_gte="0.36.7">tf2</depend>
+  <depend condition="$ROS_DISTRO == humble" version_gte="0.25.10">tf2</depend>
   <depend>tf2_ros</depend>
   <depend>diagnostic_updater</depend>
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_gtest</test_depend>
