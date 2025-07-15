@@ -45,7 +45,12 @@
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 
+#if defined(HUMBLE) || defined(IRON) || defined(JAZZY) 
 #include <tf2/LinearMath/Quaternion.h>
+#else
+#include <tf2/LinearMath/Quaternion.hpp>
+#endif
+
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <eigen3/Eigen/Geometry>
