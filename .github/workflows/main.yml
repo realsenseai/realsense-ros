@@ -27,9 +27,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [rolling, iron, humble, jazzy]
+        ros_distro: [rolling, iron, humble, jazzy, kilted]
         include:
         - ros_distro: 'rolling'
+          os: ubuntu-24.04
+        - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
           os: ubuntu-24.04
@@ -54,8 +56,8 @@ jobs:
         cd ${{github.workspace}}/ros2/src/realsense-ros/scripts
         ./pr_check.sh 
 
-    # setup-ros@v0.7 is needed to support humble/iron/rolling/jazzy
-    - name: build ROS2 for humble/iron/rolling/jazzy
+    # setup-ros@v0.7.13 is needed to support humble/iron/rolling/jazzy
+    - name: build ROS2 for humble/rolling/jazzy/kilted
       uses: ros-tooling/setup-ros@a6ce30ecca1e5dcc10ae5e6a44fe2169115bf852 #v0.7
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
@@ -110,7 +112,7 @@ jobs:
     #    wget $bag_filename -P "records/"
     #    sudo apt install ros-${{ matrix.ros_distro}}-launch-pytest
 
-    - name: Install Packages For Humble/Iron/Rolling/Jazzy Tests
+    - name: Install Packages For Humble/Iron/Rolling/Jazzy/Kilted Tests
       run: |
         # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
         # and manage python packages within it. Ref: https://peps.python.org/pep-0668/

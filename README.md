@@ -12,6 +12,7 @@
 
 
 [![rolling][rolling-badge]][rolling]
+[![kilted][kilted-badge]][kilted]
 [![jazzy][jazzy-badge]][jazzy]
 [![iron][iron-badge]][iron]
 [![humble][humble-badge]][humble]
@@ -93,6 +94,7 @@
   </summary>
 
 - #### Ubuntu 24.04:
+  - [ROS2 Kilted](https://docs.ros.org/en/kilted/Installation/Ubuntu-Install-Debs.html)
   - [ROS2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debians.html)
 
 - #### Ubuntu 22.04:
@@ -164,7 +166,7 @@
 
   -  Source environment
    ```bash
-   ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: jazzy, iron, humble, foxy
+   ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: kilted, jazzy, iron, humble, foxy
    source /opt/ros/$ROS_DISTRO/setup.bash
    cd ~/ros2_ws
    . install/local_setup.bash
@@ -187,6 +189,7 @@
   **Please choose only one option from the two options below (in order to prevent multiple versions installation and workspace conflicts)**
   
   - Manual install from ROS2 formal documentation:
+    - [ROS2 Kilted](https://docs.ros.org/en/kilted/Installation/Windows-Install-Binary.html)
     - [ROS2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Windows-Install-Binary.html)
     - [ROS2 Iron](https://docs.ros.org/en/iron/Installation/Windows-Install-Binary.html)
     - [ROS2 Humble](https://docs.ros.org/en/humble/Installation/Windows-Install-Binary.html)
@@ -194,7 +197,7 @@
   - Microsoft IOT binary installation:
     - https://ms-iot.github.io/ROSOnWindows/GettingStarted/SetupRos2.html
     - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for Intel&reg; RealSense&trade; cameras)
-	- Please replace the word "Foxy" with Humble, Iron or Jazzy, depends on the chosen distro.
+	- Please replace the word "Foxy" with Humble, Iron, Jazzy or Kilted, depends on the chosen distro.
 </details>
   
 <details>
@@ -833,6 +836,8 @@ ros2 launch realsense2_camera rs_intra_process_demo_launch.py intra_process_comm
 
 [rolling-badge]: https://img.shields.io/badge/-ROLLING-orange?style=flat-square&logo=ros
 [rolling]: https://docs.ros.org/en/rolling/index.html
+[kilted-badge]: https://img.shields.io/badge/-KILTED-orange?style=flat-square&logo=ros
+[kilted]: https://docs.ros.org/en/kilted/index.html
 [jazzy-badge]: https://img.shields.io/badge/-JAZZY-orange?style=flat-square&logo=ros
 [jazzy]: https://docs.ros.org/en/jazzy/index.html
 [foxy-badge]: https://img.shields.io/badge/-FOXY-orange?style=flat-square&logo=ros
