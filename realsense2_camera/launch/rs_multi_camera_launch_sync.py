@@ -14,12 +14,14 @@
 
 # DESCRIPTION #
 # ----------- #
-# Use this launch file to launch 2 devices.
-# The Parameters available for definition in the command line for each camera are described in rs_launch.configurable_parameters
-# For each device, the parameter name was changed to include an index.
-# For example: to set camera_name for device1 set parameter camera_name1.
-# command line example:
-# ros2 launch realsense2_camera rs_multi_camera_launch.py camera_name1:=D400 device_type2:=l5. device_type1:=d4..
+# Use this launch file to launch 2 devices and enable the hardware synchronization. 
+# As describe in https://dev.intelrealsense.com/docs/multiple-depth-cameras-configuration both devices
+# have to be connected using a sync cable. The devices will by default stream asynchronously. 
+# Using this launch file one device will operate as master and the other as slave. As a result they will
+# capture at exactly the same time and rate. 
+# command line example: (to be adapted with the serial numbers or the used devices)
+# ros2 launch realsense2_camera rs_multi_camera_launch_sync.py camera_name1:=cam_1 camera_name2:=cam_2 camera_namespace1:=camera camera_namespace2:=camera serial_no1:="'_031422250097'" serial_no2:="'_336222301921'"
+# The value of the param can be checked using ros2 param get /camera/cam_1 depth_module.inter_cam_sync_mode and ros2 param get /camera/cam_2 depth_module.inter_cam_sync_mode
 
 """Launch realsense2_camera node."""
 import copy
@@ -39,12 +41,14 @@ local_parameters = [{'name': 'camera_name1', 'default': 'camera1', 'description'
                     {'name': 'camera_name2', 'default': 'camera2', 'description': 'camera2 unique name'},
                     {'name': 'camera_namespace1', 'default': 'camera1', 'description': 'camera1 namespace'},
                     {'name': 'camera_namespace2', 'default': 'camera2', 'description': 'camera2 namespace'},
+                    {'name': 'depth_module.inter_cam_sync_mode1', 'default': '1', 'description': 'master'},
+                    {'name': 'depth_module.inter_cam_sync_mode2', 'default': '2', 'description': 'slave'},
                     ]
 
 def yaml_to_dict(path_to_yaml):
     with open(path_to_yaml, "r") as f:
         return yaml.load(f, Loader=yaml.SafeLoader)
-    
+
 def set_configurable_parameters(local_params):
     return dict([(param['original_name'], LaunchConfiguration(param['name'])) for param in local_params])
 

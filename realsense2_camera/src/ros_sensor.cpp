@@ -58,7 +58,6 @@ RosSensor::RosSensor(rs2::sensor sensor,
 {
     _frame_callback = [this](rs2::frame frame)
         {
-            runFirstFrameInitialization();
             auto stream_type = frame.get_profile().stream_type();
             auto stream_index = frame.get_profile().stream_index();
             stream_index_pair sip{stream_type, stream_index};
@@ -232,41 +231,6 @@ void RosSensor::registerSensorParameters()
     if (profile_manager->isTypeExist())
     {
         _profile_managers.push_back(profile_manager);
-    }
-}
-
-void RosSensor::runFirstFrameInitialization()
-{
-    if (_is_first_frame)
-    {
-        ROS_DEBUG_STREAM("runFirstFrameInitialization: " << _first_frame_functions_stack.size());
-        _is_first_frame = false;
-        if (!_first_frame_functions_stack.empty())
-        {
-            std::thread t = std::thread([=]()
-            {
-                try
-                {
-                    while (!_first_frame_functions_stack.empty())
-                    {
-                        _first_frame_functions_stack.back()();
-                        _first_frame_functions_stack.pop_back();
-                    }
-                }
-                catch(const std::exception& e)
-                {
-                    std::cerr << "runFirstFrameInitialization(): " << e.what() << '\n';
-                    throw e;
-                }
-                catch(...)
-                {
-                    std::cerr << "runFirstFrameInitialization()!!!" << std::endl;
-                    throw;
-                }                
-
-            });
-            t.detach();
-        }
     }
 }
 

@@ -24,7 +24,7 @@ param2: value
 Example:
 ```
 enable_color: true
-rgb_camera.profile: 1280x720x15
+rgb_camera.color_profile: 1280x720x15
 enable_depth: true
 align_depth.enable: true
 enable_sync: true

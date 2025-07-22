@@ -101,7 +101,7 @@ class TestD415_Change_Resolution(pytest_rs_utils.RsTestBaseClass):
             '''
             self.init_test("RsTest"+params['camera_name'])
             self.spin_for_time(wait_time=1.0)
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
             self.spin_for_time(wait_time=1.0)
 
             for key in cap:

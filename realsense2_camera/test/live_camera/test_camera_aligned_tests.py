@@ -108,7 +108,7 @@ class TestCamera_AlignDepthColor(pytest_rs_utils.RsTestBaseClass):
             print("Starting camera test...")
             self.init_test("RsTest"+params['camera_name'])
             self.wait_for_node(params['camera_name'])
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
             ret = self.run_test(themes)
             assert ret[0], ret[1]
             assert self.process_data(themes)
@@ -211,7 +211,7 @@ class TestCamera_AllAlignDepthColor(pytest_rs_utils.RsTestBaseClass):
             if cap == None:
                 debug_print("Device not found? : " + params['device_type'])
                 return
-            self.create_param_ifs(get_node_heirarchy(params))
+            self.create_service_client_ifs(get_node_heirarchy(params))
             color_profiles = set([i[1] for i in cap["color_profile"] if i[2] == "RGB8"])
             depth_profiles = set([i[1] for i in cap["depth_profile"] if i[0] == "Depth"])
             for color_profile in color_profiles:

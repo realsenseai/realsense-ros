@@ -12,9 +12,11 @@
 
 
 [![rolling][rolling-badge]][rolling]
+[![jazzy][jazzy-badge]][jazzy]
 [![iron][iron-badge]][iron]
 [![humble][humble-badge]][humble]
 [![foxy][foxy-badge]][foxy]
+[![ubuntu24][ubuntu24-badge]][ubuntu24]
 [![ubuntu22][ubuntu22-badge]][ubuntu22]
 [![ubuntu20][ubuntu20-badge]][ubuntu20]
 
@@ -28,6 +30,7 @@
   * [ROS1 and ROS2 legacy](#ros1-and-ros2-legacy)
   * [Installation on Ubuntu](#installation-on-ubuntu)
   * [Installation on Windows](#installation-on-windows)
+  * [ROS2 LifeCycleNode](#ros2-lifecyclenode)
   * [Usage](#usage)
      * [Starting the camera node](#start-the-camera-node)
      * [Camera name and namespace](#camera-name-and-camera-namespace)
@@ -40,6 +43,7 @@
      * [Metadata Topic](#metadata-topic)
      * [Post-Processing Filters](#post-processing-filters)
      * [Available Services](#available-services)
+     * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
@@ -50,9 +54,9 @@
 
 <details>
   <summary>
-    Intel RealSense ROS1 Wrapper
+    ROS1 Wrapper for Intel® RealSense™ cameras
   </summary>
-    Intel Realsense ROS1 Wrapper is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
+    ROS1 Wrapper for Intel® RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
     For ROS1 wrapper, go to <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros1-legacy">ros1-legacy</a> branch
 </details>
 
@@ -87,7 +91,10 @@
   <summary>
     Step 1: Install the ROS2 distribution 
   </summary>
-  
+
+- #### Ubuntu 24.04:
+  - [ROS2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debians.html)
+
 - #### Ubuntu 22.04:
   - [ROS2 Iron](https://docs.ros.org/en/iron/Installation/Ubuntu-Install-Debians.html)
   - [ROS2 Humble](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
@@ -120,7 +127,7 @@
   
 <details>
   <summary>
-    Step 3: Install Intel&reg; RealSense&trade; ROS2 wrapper
+    Step 3: Install ROS Wrapper for Intel&reg; RealSense&trade; cameras
   </summary>
   
 #### Option 1: Install debian package from ROS servers (Foxy EOL distro is not supported by this option):
@@ -136,7 +143,7 @@
       cd ~/ros2_ws/src/
       ```
   
-  - Clone the latest ROS2 Intel&reg; RealSense&trade;  wrapper from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
+  - Clone the latest ROS Wrapper for Intel&reg; RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
       ```bashrc
       git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
       cd ~/ros2_ws
@@ -157,7 +164,7 @@
 
   -  Source environment
    ```bash
-   ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: iron, humble, foxy
+   ROS_DISTRO=<YOUR_SYSTEM_ROS_DISTRO>  # set your ROS_DISTRO: jazzy, iron, humble, foxy
    source /opt/ros/$ROS_DISTRO/setup.bash
    cd ~/ros2_ws
    . install/local_setup.bash
@@ -168,7 +175,7 @@
 <hr>
 
 # Installation on Windows
-  **PLEASE PAY ATTENTION: RealSense ROS2 Wrapper is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
+  **PLEASE PAY ATTENTION: ROS Wrapper for Intel&reg; RealSense&trade; cameras is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
 
 <details>
   <summary>
@@ -180,13 +187,14 @@
   **Please choose only one option from the two options below (in order to prevent multiple versions installation and workspace conflicts)**
   
   - Manual install from ROS2 formal documentation:
+    - [ROS2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Windows-Install-Binary.html)
     - [ROS2 Iron](https://docs.ros.org/en/iron/Installation/Windows-Install-Binary.html)
     - [ROS2 Humble](https://docs.ros.org/en/humble/Installation/Windows-Install-Binary.html)
     - [ROS2 Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html)
   - Microsoft IOT binary installation:
     - https://ms-iot.github.io/ROSOnWindows/GettingStarted/SetupRos2.html
-    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by RealSense ROS2 Wrapper)
-	- Please replace the word "Foxy" with Humble or Iron, depends on the chosen distro.
+    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for Intel&reg; RealSense&trade; cameras)
+	- Please replace the word "Foxy" with Humble, Iron or Jazzy, depends on the chosen distro.
 </details>
   
 <details>
@@ -194,7 +202,7 @@
     Step 2: Download RealSense&trade; ROS2 Wrapper and RealSense&trade; SDK 2.0 source code from github:
   </summary>
   
-- Download Intel&reg; RealSense&trade; ROS2 Wrapper source code from [Intel&reg; RealSense&trade; ROS2 Wrapper Releases](https://github.com/IntelRealSense/realsense-ros/releases)
+- Download ROS Wrapper for Intel&reg; RealSense&trade; cameras source code from [ROS Wrapper for Intel&reg; RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
 - Download the corrosponding supported Intel&reg; RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose fronm the link above
 - Place the librealsense folder inside the realsense-ros folder, to make the librealsense package set beside realsense2_camera, realsense2_camera_msgs and realsense2_description packages
 </details>
@@ -240,6 +248,47 @@
 <hr>
 
 
+
+# ROS2 LifeCycleNode
+
+The `USE_LIFECYCLE_NODE` cmake flag enables **ROS2 Lifecycle Node** (`rclcpp_lifecycle::LifecycleNode`) in the **Realsense SDK**, providing better node management and explicit state transitions.  
+
+However, enabling this flag introduces a limitation where **Image Transport functionality (`image_transport`) is** <span style="color:#ff6666">**disabled**</span> **when `USE_LIFECYCLE_NODE=ON`**.  
+This means that **compressed image topics (e.g., JPEG, PNG, Theora) will not be available** and<br>
+**Subscribers** must use raw image topics, which may increase bandwidth usage.
+
+> Note: Users who do not depend on image_transport will not be affected by this change and can safely enable Lifecycle Node without any impact on their workflow.
+
+### 📌 Why This Limitation?
+
+At the time Lifecycle Node support was added, image_transport did not support rclcpp_lifecycle::LifecycleNode.<br>
+🔗 [ROS2 `image_transport` does not support Lifecycle Node](https://github.com/ros-perception/image_common/issues/108).  
+
+To build the SDK with Lifecycle Node enabled:
+```bash
+colcon build --cmake-args -DUSE_LIFECYCLE_NODE=ON
+```  
+
+To use standard ROS2 node **(default behavior)** and retain image_transport functionality:
+```bash
+colcon build --cmake-args -DUSE_LIFECYCLE_NODE=OFF
+```
+
+### Lifecycle State Transitions
+The RealSense node follows the ROS2 managed lifecycle. Below is a breakdown of each state and the corresponding function calls:
+
+| **State**         | **Transition Function**       | **Description** |
+|-------------------|-----------------------------|-----------------|
+| `UNCONFIGURED`   | **Node Created**             | The node is instantiated but not initialized. |
+| `CONFIGURING`    | `on_configure()` → `init()`  | Initializes parameters and attempts to discover the RealSense device. |
+| `INACTIVE`       | -                            | The node is initialized but not yet publishing data. |
+| `ACTIVATING`     | `on_activate()` → `startDevice()` | Starts the RealSense device and begins publishing topics. |
+| `ACTIVE`         | -                            | The node is fully operational and publishing data. |
+| `DEACTIVATING`   | `on_deactivate()` → `stopDevice()` | Stops publishing but retains device configuration. |
+| `CLEANUP`        | `on_cleanup()` → `closeDevice()` | Resets all resources, allowing reconfiguration. |
+| `SHUTDOWN`       | `on_shutdown()` → `closeDevice()` | Cleans up before process termination (doesnt actually terminate the process itself due to ROS2 composable nodes and component manager ) |
+<hr>
+
 # Usage
 
 ## Start the camera node
@@ -252,7 +301,6 @@
   #### with ros2 launch:
     ros2 launch realsense2_camera rs_launch.py
     ros2 launch realsense2_camera rs_launch.py depth_module.depth_profile:=1280x720x30 pointcloud.enable:=true
-
 <hr>
 
 ## Camera Name And Camera Namespace
@@ -273,7 +321,9 @@ User can set the camera name and camera namespace, to distinguish between camera
     
   - With ros2 run (using remapping mechanisim [Reference](https://docs.ros.org/en/humble/How-To-Guides/Node-arguments.html)):
     
-  ```ros2 run realsense2_camera realsense2_camera_node --ros-args -r __node:=D455_1 -r __ns:=robot1```
+  ```ros2 run realsense2_camera realsense2_camera_node --ros-args -r __node:=D455_1 -r __ns:=/robot1```
+
+  > ⚠️ **Note:** Using `ros2 run` may produce slightly different topics and services due to parameters not being initialized with the values assigned in `rs_launch.py`. This may result in additional topics such as IMU data.
 
   - Result
   ```
@@ -281,6 +331,7 @@ User can set the camera name and camera namespace, to distinguish between camera
   /robot1/D455_1
   
   > ros2 topic list
+  /parameter_events
   /robot1/D455_1/color/camera_info
   /robot1/D455_1/color/image_raw
   /robot1/D455_1/color/metadata
@@ -288,10 +339,21 @@ User can set the camera name and camera namespace, to distinguish between camera
   /robot1/D455_1/depth/image_rect_raw
   /robot1/D455_1/depth/metadata
   /robot1/D455_1/extrinsics/depth_to_color
-  /robot1/D455_1/imu
+  /robot1/D455_1/extrinsics/depth_to_depth
+  /rosout
+  /tf_static
   
   > ros2 service list
+  /robot1/D455_1/calib_config_read
+  /robot1/D455_1/calib_config_write
+  /robot1/D455_1/describe_parameters
   /robot1/D455_1/device_info
+  /robot1/D455_1/get_parameter_types
+  /robot1/D455_1/get_parameters
+  /robot1/D455_1/hw_reset
+  /robot1/D455_1/list_parameters
+  /robot1/D455_1/set_parameters
+  /robot1/D455_1/set_parameters_atomically
   ```
 
 ### Default behavior if non of these parameters are given:
@@ -310,10 +372,22 @@ User can set the camera name and camera namespace, to distinguish between camera
 /camera/camera/depth/image_rect_raw
 /camera/camera/depth/metadata
 /camera/camera/extrinsics/depth_to_color
-/camera/camera/imu
+/camera/camera/extrinsics/depth_to_depth
+/parameter_events
+/rosout
+/tf_static
 
 > ros2 service list
+/camera/camera/calib_config_read
+/camera/camera/calib_config_write
+/camera/camera/describe_parameters
 /camera/camera/device_info
+/camera/camera/get_parameter_types
+/camera/camera/get_parameters
+/camera/camera/hw_reset
+/camera/camera/list_parameters
+/camera/camera/set_parameters
+/camera/camera/set_parameters_atomically
 ```
 
 <hr>
@@ -625,14 +699,90 @@ The following post processing filters are available:
     - ```temporal_filter``` - filter the depth image temporally.
     - ```hole_filling_filter``` - apply hole-filling filter.
     - ```decimation_filter``` - reduces depth scene complexity.
+    - ```rotation_filter``` - rotates depth and ir frames.
+    
 
 Each of the above filters have it's own parameters, following the naming convention of `<filter_name>.<parameter_name>` including a `<filter_name>.enable` parameter to enable/disable it. 
 
 <hr>
 
 ## Available services
-  
-- device_info : retrieve information about the device - serial_number, firmware_version etc. Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list. Call example: `ros2 service call /camera/camera/device_info realsense2_camera_msgs/srv/DeviceInfo`
+
+### hw_reset:
+  - reset the device. The call stops all the streams too.
+  - Call example: `ros2 service call /camera/camera/hw_reset std_srvs/srv/Empty`
+
+### device_info:
+  - retrieve information about the device - serial_number, firmware_version etc.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/DeviceInfo` for the full list.
+  - Call example: `ros2 service call /camera/camera/device_info realsense2_camera_msgs/srv/DeviceInfo`
+
+### calib_config_read (for specific camera modules):
+  - Read calibration config.
+  - Note that reading calibration config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/CalibConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/calib_config_read realsense2_camera_msgs/srv/CalibConfigRead`
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    `response: realsense2_camera_msgs.srv.CalibConfigRead_Response(success=True, error_message='', calib_config='{"calibration_config":{"camera_position":{"rotation":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],"translation":[0.0,0.0,0.0]},"crypto_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"roi_0":{"vertex_0":[0,0],"vertex_1":[0,0],"vertex_2":[0,0],"vertex_3":[0,0]},"roi_1":{"vertex_0":[0,0],"vertex_1":[0,0],"vertex_2":[0,0],"vertex_3":[0,0]},"roi_2":{"vertex_0":[0,0],"vertex_1":[0,0],"vertex_2":[0,0],"vertex_3":[0,0]},"roi_3":{"vertex_0":[0,0],"vertex_1":[0,0],"vertex_2":[0,0],"vertex_3":[0,0]},"roi_num_of_segments":0}}')`
+
+    </details>
+
+### calib_config_write (for specific camera modules):
+  - Write calibration config.
+  - Note that writing calibration config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/CalibConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `ros2 service call /camera/camera/calib_config_write realsense2_camera_msgs/srv/CalibConfigWrite "{calib_config: '{\"calibration_config\":{\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.0]},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"roi_0\":{\"vertex_0\":[0,0],\"vertex_1\":[0,0],\"vertex_2\":[0,0],\"vertex_3\":[0,0]},\"roi_1\":{\"vertex_0\":[0,0],\"vertex_1\":[0,0],\"vertex_2\":[0,0],\"vertex_3\":[0,0]},\"roi_2\":{\"vertex_0\":[0,0],\"vertex_1\":[0,0],\"vertex_2\":[0,0],\"vertex_3\":[0,0]},\"roi_3\":{\"vertex_0\":[0,0],\"vertex_1\":[0,0],\"vertex_2\":[0,0],\"vertex_3\":[0,0]},\"roi_num_of_segments\":0}}' }"`
+
+    </details>
+
+  - [JSON calib config example](realsense2_camera/examples/d500_tables/calib_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.CalibConfigWrite_Response(success=True, error_message='')`
+
+<hr>
+
+## Available actions
+
+### triggered_calibration (supported only for D500 devices)
+  - Type `ros2 interface show realsense2_camera_msgs/action/TriggeredCalibration` for the full request/result/feedback fields.
+    ```
+    # request
+    string json "calib run"  # default value
+    ---
+    # result
+    bool success
+    string error_msg
+    string calibration
+    float32 health
+    ---
+    # feedback
+    float32 progress
+
+    ```
+  - Before calling triggered calibration, user should set the following parameters:
+    - `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
+    - `depth_module.emitter_enabled: true` # enable emitter in depth module
+    - `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+    - `enable_depth: false` # turn off depth stream
+    - `enable_infra1: false` # turn off infra1 stream
+    - `enable_infra2: false` # turn off infra2 stream
+  - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
+  - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
+  - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
+  - If failed, it will return the error message inside the result. For example:
+  ```
+  Result:
+    success: false
+    error_msg: 'TriggeredCalibrationExecute: Aborted. Error: Calibration completed but algorithm failed'
+    calibration: '{}'
+    health: 0.0
+  ```
 
 <hr>
 
@@ -683,12 +833,16 @@ ros2 launch realsense2_camera rs_intra_process_demo_launch.py intra_process_comm
 
 [rolling-badge]: https://img.shields.io/badge/-ROLLING-orange?style=flat-square&logo=ros
 [rolling]: https://docs.ros.org/en/rolling/index.html
-[foxy-badge]: https://img.shields.io/badge/-foxy-orange?style=flat-square&logo=ros
+[jazzy-badge]: https://img.shields.io/badge/-JAZZY-orange?style=flat-square&logo=ros
+[jazzy]: https://docs.ros.org/en/jazzy/index.html
+[foxy-badge]: https://img.shields.io/badge/-FOXY-orange?style=flat-square&logo=ros
 [foxy]: https://docs.ros.org/en/foxy/index.html
 [humble-badge]: https://img.shields.io/badge/-HUMBLE-orange?style=flat-square&logo=ros
 [humble]: https://docs.ros.org/en/humble/index.html
 [iron-badge]: https://img.shields.io/badge/-IRON-orange?style=flat-square&logo=ros
 [iron]: https://docs.ros.org/en/iron/index.html
+[ubuntu24-badge]: https://img.shields.io/badge/-UBUNTU%2024%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
+[ubuntu24]: https://releases.ubuntu.com/noble/
 [ubuntu22-badge]: https://img.shields.io/badge/-UBUNTU%2022%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
 [ubuntu22]: https://releases.ubuntu.com/jammy/
 [ubuntu20-badge]: https://img.shields.io/badge/-UBUNTU%2020%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white

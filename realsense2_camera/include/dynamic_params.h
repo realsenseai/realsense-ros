@@ -23,7 +23,7 @@ namespace realsense2_camera
     class Parameters
     {
         public:
-            Parameters(rclcpp::Node& node);
+            Parameters(RosNodeBase& node);
             ~Parameters();
             template <class T>
             T setParam(std::string param_name, const T& initial_value, 
@@ -46,6 +46,9 @@ namespace realsense2_camera
 
             template <class T>
             void queueSetRosValue(const std::string& param_name, const T value);
+       
+            template<typename T>
+            T getOrDeclareParameter(const std::string param_name, const T& initial_value);
 
             template <class T>
             T getParam(std::string param_name);
@@ -54,7 +57,7 @@ namespace realsense2_camera
             void monitor_update_functions();
 
         private:
-            rclcpp::Node& _node;
+            RosNodeBase& _node;
             rclcpp::Logger _logger;
             std::map<std::string, std::function<void(const rclcpp::Parameter&)> > _param_functions;
             std::map<void*, std::string> _param_names;

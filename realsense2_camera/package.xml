@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_camera</name>
-  <version>4.55.1</version>
+  <version>4.56.4</version>
   <description>RealSense camera package allowing access to Intel D400 3D cameras</description>
   <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
   <license>Apache License 2.0</license>
@@ -19,10 +19,16 @@
   <depend>image_transport</depend>
   <depend>librealsense2</depend>
   <depend>rclcpp</depend>
+
+  <!-- Lifecycle dependencies are optional -DUSE_LIFECYCLE_NODE -->
+  <depend>rclcpp_lifecycle</depend>
+  <depend>lifecycle_msgs</depend>
+
   <depend>rclcpp_components</depend>
   <depend>realsense2_camera_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>std_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>tf2</depend>

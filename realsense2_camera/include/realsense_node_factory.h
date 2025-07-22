@@ -19,8 +19,8 @@
 #include "base_realsense_node.h"
 #include <builtin_interfaces/msg/time.hpp>
 #include <console_bridge/console.h>
-#include <rclcpp/rclcpp.hpp>
 #include "rclcpp_components/register_node_macro.hpp"
+#include "ros_node_base.h"
 #include <algorithm>
 #include <csignal>
 #include <iostream>
@@ -34,25 +34,35 @@
 
 namespace realsense2_camera
 {
-    class RealSenseNodeFactory : public rclcpp::Node
+    class RealSenseNodeFactory : public RosNodeBase
     {
     public:
+
         explicit RealSenseNodeFactory(const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions());
         RealSenseNodeFactory(
             const std::string & node_name, const std::string & ns,
             const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions());
         virtual ~RealSenseNodeFactory();
+        #ifdef USE_LIFECYCLE_NODE
+            using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+            CallbackReturn on_configure(const rclcpp_lifecycle::State & state) override;
+            CallbackReturn on_activate(const rclcpp_lifecycle::State & state) override;
+            CallbackReturn on_deactivate(const rclcpp_lifecycle::State & state) override;
+            CallbackReturn on_cleanup(const rclcpp_lifecycle::State & state) override;
+            CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
+        #endif
 
     private:
         void init();
         void closeDevice();
         void startDevice();
+        void stopDevice();
         void changeDeviceCallback(rs2::event_information& info);
         void getDevice(rs2::device_list list);
         void tryGetLogSeverity(rs2_log_severity& severity) const;
         static std::string parseUsbPort(std::string line);
 
-        rclcpp::Node::SharedPtr _node;
+        RosNodeBase::SharedPtr _node;
         rs2::device _device;
         std::unique_ptr<BaseRealSenseNode> _realSenseNode;
         rs2::context _ctx;

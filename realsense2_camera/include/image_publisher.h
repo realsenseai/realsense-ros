@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <rclcpp/rclcpp.hpp>
+#include "ros_node_base.h"
 #include <sensor_msgs/msg/image.hpp>
 
 #include <image_transport/image_transport.hpp>
@@ -32,7 +32,7 @@ public:
 class image_rcl_publisher : public image_publisher
 {
 public:
-    image_rcl_publisher( rclcpp::Node & node,
+    image_rcl_publisher( RosNodeBase & node,
                          const std::string & topic_name,
                          const rmw_qos_profile_t & qos );
     void publish( sensor_msgs::msg::Image::UniquePtr image_ptr ) override;

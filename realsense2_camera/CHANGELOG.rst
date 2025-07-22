@@ -2,6 +2,114 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.56.4 (2025-07-22)
+-------------------
+* PR `#3329 <https://github.com/IntelRealSense/realsense-ros/issues/3329>`_ from Nir-Az: Update version to 4.56.4
+* update version to 4.56.4
+* PR `#3325 <https://github.com/IntelRealSense/realsense-ros/issues/3325>`_ from ashrafk93: use ykush to switch ports
+* test ci
+* disable all ports
+* change port logic
+* map ports dynamically
+* use yakush to switch ports
+* PR `#3319 <https://github.com/IntelRealSense/realsense-ros/issues/3319>`_ from ashrafk93: Add LifeCycle Node support at compile time
+* Remove message on default normal node
+* Fix typo
+* Update config file name
+* Update README
+* Fix PR markups
+* Add lifecycle node dependency
+* Merge pull request `#3313 <https://github.com/IntelRealSense/realsense-ros/issues/3313>`_ from FarStryke21/ros2-development
+  Added base_frame_id param to the rs_launch.py file
+* Added base_frame_id param to the rs_launch.py file
+* Merge remote-tracking branch 'origin/ros2-development' into change_topics_in_readme
+* PR `#3303 <https://github.com/IntelRealSense/realsense-ros/issues/3303>`_ from noacoohen: Enable rotation filter for color and depth sensors
+* rotate infra sensor
+* enable rotation filter for color and depth
+* PR `#3293 <https://github.com/IntelRealSense/realsense-ros/issues/3293>`_ from remibettan: align_depth_to_infra2 enabled, pointcloud and align_depth filters to own files
+* cr adjustments
+* align_depth_to_infra2 enabled, pointcloud and align_depth filters to own files
+* PR `#3284 <https://github.com/IntelRealSense/realsense-ros/issues/3284>`_ from noacoohen: Add color format to depth module in the launch file
+* edit description
+* add color foramt for depth module for d405
+* PR  `#3274 <https://github.com/IntelRealSense/realsense-ros/issues/3274>`_ from noacoohen: Enable rotation filter ROS2
+* PR `#3276 <https://github.com/IntelRealSense/realsense-ros/issues/3276>`_ from remibettan: removing dead code in RosSensor class
+  runFirstFrameInitialization and _first_frame_functions_stack removed
+* removing dead code
+* init _is_first_frame to true
+* Update rs_launch.py to include additional rotation filter support
+* add rotation filter to ros2
+* PR `#3214 <https://github.com/IntelRealSense/realsense-ros/issues/3214>`_ from acornaglia: Add ROS bag loop option
+* Merge branch 'ros2-development' into change_topics_in_readme
+* PR `#3239 <https://github.com/IntelRealSense/realsense-ros/issues/3239>`_ from SamerKhshiboun: Update CMakeLists.txt - remove find_package(fastrtps REQUIRED)
+* Update CMakeLists.txt
+* Update CMakeLists.txt
+* Merge branch 'ros2-development' of github.com:IntelRealSense/realsense-ros into rosbag_loop
+* Using variable for avoiding double function call
+* Merge branch 'ros2-development' into rosbag_loop
+* PR `#3225 <https://github.com/IntelRealSense/realsense-ros/issues/3225>`_ from SamerKhshiboun: Use new APIs for motion, accel and gryo streams
+* use new APIs for motion, accel and gryo streams
+* PR `#3222 <https://github.com/IntelRealSense/realsense-ros/issues/3222>`_ from SamerKhshiboun: Support D555 and its motion profiles
+* support latched QoS for imu_info
+* adjusments to DDS Support for ROS Wrapper
+* Add D555 PID
+* PR `#3221 <https://github.com/IntelRealSense/realsense-ros/issues/3221>`_ from patrickwasp: fix config typo
+* fix config typo
+* PR `#3216 <https://github.com/IntelRealSense/realsense-ros/issues/3216>`_ from PrasRsRos: hw_reset implementation
+* Added rosbag_loop parameter to launch_from_rosbag example
+* Added loop back argument description to launch_from_rosbag README
+* Added hw_reset service implementation
+  Added a test in D455 to validate the hw_reset
+* Added hw_reset service implementation
+  Added a test in D455 to validate the hw_reset
+* Added hw_reset service implementation
+  Added a test in D455 to validate the hw_reset
+* Added hw_reset service call to reset the device
+  Added a test in D455 to test the reset device
+* Added hw_reset service call to reset the device
+* Fixed bag looping mechanism
+* Fixed compilation error
+* Added ROS bag loop option
+* PR `#3200 <https://github.com/IntelRealSense/realsense-ros/issues/3200>`_ from kadiredd: retry thrice finding devices with Ykush reset
+* retry thrice finding devices with Ykush reset
+* retry thrice finding devices with Ykush reset
+* PR `#3178 <https://github.com/IntelRealSense/realsense-ros/issues/3178>`_ from kadiredd: disabling FPS & TF tests for ROS-CI
+* disabling FPS & TF tests for ROS-CI
+* PR `#3166 <https://github.com/IntelRealSense/realsense-ros/issues/3166>`_ from SamerKhshiboun: Update Calibration Config API
+* update calib config usage to the new API, and update readme
+* PR `#3159 <https://github.com/IntelRealSense/realsense-ros/issues/3159>`_ from noacoohen: Add D421 PID
+* add D421 pid
+* PR `#3153 <https://github.com/IntelRealSense/realsense-ros/issues/3153>`_ from SamerKhshiboun: TC | Fix feedback and update readme
+* fix feedback and update readme for TC
+* PR `#3147 <https://github.com/IntelRealSense/realsense-ros/issues/3147>`_ from SamerKhshiboun: Update READMEs and CONTRIBUTING files regarding ros2-master
+* PR `#3148 <https://github.com/IntelRealSense/realsense-ros/issues/3148>`_ from SamerKhshiboun: update READMEs and CONTRIBUTING files regarding ros2-master
+* update READMEs and CONTRIBUTING files regarding ros2-master
+* update READMEs and CONTRIBUTING files regarding ros2-master
+* PR `#3138 <https://github.com/IntelRealSense/realsense-ros/issues/3138>`_ from SamerKhshiboun: Support Triggered Calibration as ROS2 Action
+* implement Triggered Calibration action
+* Update CMakeLists.txt
+* PR `#3135 <https://github.com/IntelRealSense/realsense-ros/issues/3135>`_ from kadiredd: Casefolding device name instead of strict case sensitive comparison
+* Casefolding device name instead os strict case sensitive comparison
+* PR `#3133 <https://github.com/IntelRealSense/realsense-ros/issues/3133>`_ from SamerKhshiboun: update librealsense2 version to 2.56.0
+* update librealsense2 version to 2.56.0
+  since it includes new API that need for ros2-development
+* PR `#3124 <https://github.com/IntelRealSense/realsense-ros/issues/3124>`_ from kadiredd: Support testing ROS2 service call device_info
+* PR `#3125 <https://github.com/IntelRealSense/realsense-ros/issues/3125>`_ from SamerKhshiboun: Support calibration config read/write services
+* support calib config read/write services
+* [ROS][Test Infra] Support testing ROS2 service call device_info
+* PR `#3114 <https://github.com/IntelRealSense/realsense-ros/issues/3114>`_ from Arun-Prasad-V: Ubuntu 24.04 support for Rolling and Jazzy distros
+* Ubuntu 24.04 support for Rolling and Jazzy
+* PR `#3102 <https://github.com/IntelRealSense/realsense-ros/issues/3102>`_ from fortizcuesta: Allow hw synchronization of several realsense using a synchonization cable
+* PR `#3096 <https://github.com/IntelRealSense/realsense-ros/issues/3096>`_ from anisotropicity: Update rs_launch.py to add depth_module.color_profile
+* Expose depth_module.inter_cam_sync_mode in launch files
+* Revert changes
+* Merge branch 'ros2-development' into feature/ros2-development-allow-hw-synchronization
+* Allow hw synchronization of several realsense devices
+* Update rs_launch.py to add depth_module.color_profile
+  Fix for not being able to set the color profile for D405 cameras.
+  See https://github.com/IntelRealSense/realsense-ros/issues/3090
+* Contributors: Aman Chulawala, Arun-Prasad-V, Ashraf Kattoura, Cornaglia, Alessandro, Madhukar Reddy Kadireddy, Nir Azkiel, Ortiz Cuesta, Fernando, Patrick Wspanialy, PrasRsRos, Remi Bettan, Samer Khshiboun, SamerKhshiboun, acornaglia, administrator, anisotropicity, louislelay, noacoohen, remibettan
+
 4.55.1 (2024-05-28)
 -------------------
 * PR `#3106 <https://github.com/IntelRealSense/realsense-ros/issues/3106>`_ from SamerKhshiboun: Remove unused parameter _is_profile_exist

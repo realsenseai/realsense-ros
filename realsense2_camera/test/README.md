@@ -20,7 +20,7 @@ It is recommended to use the test folder itself for storing all the cpp tests. H
 ## Test using pytest
 The default folder for the test py files is realsense2_camera/test. Two test template files test_launch_template.py and test_integration_template.py are available in the same folder for reference.
 ### Add a new test
-To add a new test, the user can create a copy of the test_launch_template.py or test_integration_template.py and start from there. Please name the file in the format test_`testname`.py so that the CMake detects the file and add as a new test. Please be aware that, multiple tests can be added into one file, the test_integration_template.py itself has more than one test.i The marker `@pytest.mark.launch` is used to specify the test entry point.  
+To add a new test, the user can create a copy of the test_launch_template.py or test_integration_template.py and start from there. Please name the file in the format test_`testname`.py so that the CMake detects the file and add as a new test. Please be aware that, multiple tests can be added into one file, the test_integration_template.py itself has more than one test. The marker `@pytest.mark.launch` is used to specify the test entry point.  
 
 The test_launch_template.py uses the rs_launch.py to start the camera node, so this template can be used for testing the rs_launch.py together with the rs node.
 
@@ -28,7 +28,7 @@ The test_integration_template.py gives a better control for testing, it uses few
 
 The test_integration_template.py has two types of tests, one has a function "test_using_function". If the user wants to have a better control over the launch context for any specific test scenarios, this can be used. Both the function based test and class based tests use a default launch configuration from the utils. It's recommended to modify the camera name to a unique one in the parameters itself so that there are not clashes between tests. 
 
-It is expected that the class based test is used as the test format for most of the usecases. The class based test inherits from pytest_rs_utils.RsTestBaseClass and it has three steps, namely: init, run_test and process_data. Unless for the basic tests, the user will have to override the process_data function and check if the data received from the topics are as expected. Also, if the user doesn't want the base class to modify the data, use 'store_raw_data':True in the theme definition. Please see the test_integration_template.py for reference.
+It is expected that the class based test is used as the test format for most of the usecases. The class based test inherits from `pytest_rs_utils.RsTestBaseClass` and it has three steps, namely: init, run_test and process_data. Unless for the basic tests, the user will have to override the process_data function and check if the data received from the topics are as expected. Also, if the user doesn't want the base class to modify the data, use 'store_raw_data':True in the theme definition. Please see the test_integration_template.py for reference.
 
 An assert command can be used to indicate if the test failed or passed. Please see the template for more info.
 
@@ -47,11 +47,11 @@ new_folder_for_pytest #<-- new folder #but please be aware that the utils functi
 ```
 
 ### Grouping of tests  
-The pytests can be grouped using markers. These markers can be used to run a group of tests. However, "colcon test" command doesn't pass a custom marker using (--pytest-args -m `marker_name`) to the pytest internally. This is because, the ament_cmake that works as a bridge between colcon and pytest doesn't pass the pytest arguments to pytest. So till this is fixed, pytest command has to be used directly for running a group of tests. Please see the next session for the commands to run a group py tests.
+The pytests can be grouped using markers. These markers can be used to run a group of tests. However, "colcon test" command doesn't pass a custom marker using (--pytest-args -m `marker_name`) to the pytest internally. This is because, the ament_cmake that works as a bridge between colcon and pytest doesn't pass the pytest arguments to pytest. So until this is fixed, pytest command has to be used directly for running a group of tests. Please see the next session for the commands to run a group of py tests.
 
 The grouping is specified by adding a marker just before the test declaration. In the test_integration_template.py `rosbag` is specified as a marker specify tests that use rosbag file. This is achieved by adding "@pytest.mark.rosbag" to the begining of the test. So when the pytest parses for test, it detects the marker for the test. If this marker is selected or none of the markers are specified, the test will be added to the list, else will be listed as a deselected test.
 
-It is recommended to use markers such as ds457, rosbag, ds415 etc to differentiate the tests so that it's easier to run a group of tests in a machine that has the required hardware.
+It is recommended to use markers such as d457, rosbag, or d435i etc to differentiate the tests so that it's easier to run a group of tests in a machine that has the required hardware.
  
 ## Building and running tests  
 
@@ -134,7 +134,7 @@ Then, the path to execute the tests would be ~/ros2_ws/src/realsense-ros.
 
 2. Please setup below required environment variables. If not, Please prefix them for every test execution.
 
-		PYTHONPATH=$PYTHONPATH:$PWD/realsense2_camera/test/utils:$PWD/realsense2_camera//launch:$PWD/realsense2_camera//scripts
+		export PYTHONPATH=$PYTHONPATH:$PWD/realsense2_camera/test/utils:$PWD/realsense2_camera//launch:$PWD/realsense2_camera//scripts
 
 User can run all the tests in a pytest file directly using the below command:
 
@@ -169,7 +169,7 @@ If a user wants to add a test to this conditional skip, user can add by adding a
 ## Points to be noted while writing pytests
 The tests that are in one file are normally run in parallel, there could also be changes in the pytest plugin. So if there are multiple tests in one file, the system capacity can influence the test execution. It's recomended to have 3-4 tests in file, more than that can affect the test results due to delays.
 ### Passing/changing parameters
-The parameters passed while creating the node can be initialized individually for each test, please see the test_parameterized_template example for reference. The default values are taken from rs_launch.py and the passed parameters are used for overriding the default values. The parameters that can be dynamically modified can be changed using the param interface provided. However, the function create_param_ifs has to be called to create this interface. Please see the test_d455_basic_tests.py for reference. There are specific functions to change the string, integer and bool parameters, the utils can be extended if any more types are needed.
+The parameters passed while creating the node can be initialized individually for each test, please see the test_parameterized_template example for reference. The default values are taken from rs_launch.py and the passed parameters are used for overriding the default values. The parameters that can be dynamically modified can be changed using the param interface provided. However, the function `create_service_client_ifs()` has to be called to create this interface. Please see the test_d455_basic_tests.py for reference. There are specific functions to change the string, integer and bool parameters, the utils can be extended if any more types are needed.
 ### Difference in setting the bool parameters
 There is a difference between setting the default values of bool parameters and setting them dynamically.
 The bool test params are assinged withn quotes as below.
@@ -183,4 +183,7 @@ The bool test params are assinged withn quotes as below.
 
 However the function that implements the setting of bool parameter dynamically takes the python bool datatype. For example:
 	self.set_bool_param('enable_accel', False)
-
+### Adding 'service call' client interface
+1. Create a client for respective service call in method `create_service_client_ifs()`, refer client creation for service call `device_info` with service type `DeviceInfo`.
+2. Create a `get_` or `set_` method for each service call, refer `get_deviceinfo` in pytest_rs_utils.py
+3. Use the `get_`, `set_` service calls as used in test_camera_service_call.py

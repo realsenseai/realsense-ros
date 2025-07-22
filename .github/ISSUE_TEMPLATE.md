@@ -18,7 +18,7 @@
 | Librealsense SDK Version       |  { 2.<?>.<?> }                                                    | 
 | Language                               |  {C/C#/labview/opencv/pcl/python/unity }         | 
 | Segment			         |  {Robot/Smartphone/VR/AR/others }                             | 
-| ROS Distro			         |  {Iron/Humble/Rolling/etc.. }                                           | 
+| ROS Distro			         |  {Iron/Humble/Jazzy/Rolling/etc.. }                                           | 
 | RealSense ROS Wrapper Version   |  {4.51.1, 4.54.1, etc..}                                                  | 
 
 

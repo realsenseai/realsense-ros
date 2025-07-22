@@ -1,4 +1,4 @@
-# Copyright 2023 Intel Corporation. All Rights Reserved.
+# Copyright 2025 Intel Corporation. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 
 # DESCRIPTION #
 # ----------- #
-# Use this launch file to launch a device from rosbag file.
+# Use this launch file to launch a device and align depth to infrared 2.
 # The Parameters available for definition in the command line for the camera are described in rs_launch.configurable_parameters
 # command line example:
-# ros2 launch realsense2_camera rs_launch_from_rosbag.py
+# ros2 launch realsense2_camera rs_align_depth_to infra_launch.py
 
 """Launch realsense2_camera node."""
 from launch import LaunchDescription
@@ -32,13 +32,14 @@ from ament_index_python.packages import get_package_share_directory
 sys.path.append(os.path.join(get_package_share_directory('realsense2_camera'), 'launch'))
 import rs_launch
 
-local_parameters = [{'name': 'camera_name',         'default': 'camera', 'description': 'camera unique name'},
-                    {'name': 'camera_namespace',    'default': 'camera', 'description': 'camera namespace'},
-                    {'name': 'enable_depth',        'default': 'true', 'description': 'enable depth stream'},
-                    {'name': 'enable_gyro',         'default': 'true', 'description': "'enable gyro stream'"},
-                    {'name': 'enable_accel',        'default': 'true', 'description': "'enable accel stream'"},
-                    {'name': 'rosbag_filename',     'default': [ThisLaunchFileDir(), "/rosbag/D435i_Depth_and_IMU_Stands_still.bag"], 'description': 'A realsense bagfile to run from as a device'},
-                    {'name': 'rosbag_loop',         'default': 'false', 'description': 'enable realsense bagfile loop playback'},
+local_parameters = [{'name': 'camera_name',                  'default': 'camera', 'description': 'camera unique name'},
+                    {'name': 'camera_namespace',             'default': 'camera', 'description': 'camera namespace'},
+                    {'name': 'enable_color',                 'default': 'false', 'description': 'enable color stream'},
+                    {'name': 'enable_depth',                 'default': 'true', 'description': 'enable depth stream'},
+                    {'name': 'enable_infra2',                'default': 'true', 'description': 'enable depth stream'},
+                    {'name': 'enable_sync',                  'default': 'true', 'description': 'enable sync mode'},
+                    {'name': 'pointcloud.enable',            'default': 'true', 'description': 'enable pointcloud'},
+                    {'name': 'pointcloud.stream_filter',     'default': '3', 'description': 'pointcloud with infrared'},
                    ]
 
 def set_configurable_parameters(local_params):
@@ -49,7 +50,7 @@ def generate_launch_description():
     params = rs_launch.configurable_parameters
     return LaunchDescription(
         rs_launch.declare_configurable_parameters(local_parameters) +
-        rs_launch.declare_configurable_parameters(params) +
+        rs_launch.declare_configurable_parameters(params) + 
         [
         OpaqueFunction(function=rs_launch.launch_setup,
                 kwargs = {'params' : set_configurable_parameters(params)}

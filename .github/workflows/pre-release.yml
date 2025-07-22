@@ -45,6 +45,6 @@ jobs:
       BASEDIR: ${{ github.workspace }}/.work
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       - name: industrial_ci
-        uses: ros-industrial/industrial_ci@master
+        uses: ros-industrial/industrial_ci@d23b9ad2c63bfad638a2b1fe3df34b8df9a2f17b #Replace reference to 'master' with the latest commit hash

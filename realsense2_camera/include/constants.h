@@ -15,11 +15,11 @@
 #pragma once
 
 #include <string>
-#include <rclcpp/rclcpp.hpp>
+#include "ros_node_base.h"
 
 #define REALSENSE_ROS_MAJOR_VERSION    4
-#define REALSENSE_ROS_MINOR_VERSION    55
-#define REALSENSE_ROS_PATCH_VERSION    1
+#define REALSENSE_ROS_MINOR_VERSION    56
+#define REALSENSE_ROS_PATCH_VERSION    4
 
 #define STRINGIFY(arg) #arg
 #define VAR_ARG_STRING(arg) STRINGIFY(arg)
@@ -53,6 +53,7 @@ namespace realsense2_camera
     const uint16_t RS430_MM_PID     = 0x0ad5; // AWGT
     const uint16_t RS_USB2_PID      = 0x0ad6; // USB2
     const uint16_t RS420_PID        = 0x0af6; // PWG
+    const uint16_t RS421_PID        = 0x1155; // D421
     const uint16_t RS420_MM_PID     = 0x0afe; // PWGT
     const uint16_t RS410_MM_PID     = 0x0aff; // ASR
     const uint16_t RS400_MM_PID     = 0x0b00; // PSR
@@ -64,7 +65,8 @@ namespace realsense2_camera
     const uint16_t RS430i_PID       = 0x0b4b; // D430i
     const uint16_t RS405_PID        = 0x0B5B; // DS5U
     const uint16_t RS455_PID        = 0x0B5C; // D455
-    const uint16_t RS457_PID        = 0xABCD; // D457   
+    const uint16_t RS457_PID        = 0xABCD; // D457
+    const uint16_t RS555_PID        = 0x0B56; // D555
 
     const bool ALLOW_NO_TEXTURE_POINTS = false;
     const bool ORDERED_PC     = false;
