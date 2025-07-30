@@ -83,6 +83,10 @@ void BaseRealSenseNode::getParameters()
     _base_frame_id = (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << _base_frame_id)).str();
     _parameters_names.push_back(param_name);
 
+    param_name = std::string("tf_prefix");
+    _tf_prefix = _parameters->setParam<std::string>(param_name, "");
+    _parameters_names.push_back(param_name);
+
 #if defined (ACCELERATE_GPU_WITH_GLSL)
     param_name = std::string("accelerate_gpu_with_glsl");
      _parameters->setParam<bool>(param_name, false, 

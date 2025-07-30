@@ -19,7 +19,7 @@
 
 #define REALSENSE_ROS_MAJOR_VERSION    4
 #define REALSENSE_ROS_MINOR_VERSION    56
-#define REALSENSE_ROS_PATCH_VERSION    10
+#define REALSENSE_ROS_PATCH_VERSION    0
 
 #define STRINGIFY(arg) #arg
 #define VAR_ARG_STRING(arg) STRINGIFY(arg)
@@ -69,6 +69,7 @@ namespace realsense2_camera
     const uint16_t RS_D585_PID      = 0x0B6A; // D585, D for depth
     const uint16_t RS_D585S_PID     = 0x0B6B; // D585S, S for safety
     const uint16_t RS555_PID        = 0x0B56; // D555
+    const uint16_t RS436_PID        = 0x1156; // D436
 
     const bool ALLOW_NO_TEXTURE_POINTS = false;
     const bool ORDERED_PC     = false;

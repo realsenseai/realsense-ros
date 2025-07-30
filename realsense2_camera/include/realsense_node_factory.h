@@ -37,6 +37,7 @@ namespace realsense2_camera
     class RealSenseNodeFactory : public RosNodeBase
     {
     public:
+
         explicit RealSenseNodeFactory(const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions());
         RealSenseNodeFactory(
             const std::string & node_name, const std::string & ns,
