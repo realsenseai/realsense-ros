@@ -59,7 +59,7 @@ aluminum peripherial evaluation case.
       <origin xyz="0 ${-r410_cam_mount_from_center_offset} ${r410_cam_height/2}" rpy="${M_PI/2} 0 ${M_PI/2}"/>
         <geometry>
           <box size="${r410_cam_width} ${r410_cam_height} ${r410_cam_depth}"/>
-          <!--<mesh filename="file://$(find realsense2_description)/meshes/r410/r410.dae" />-->
+          <!--<mesh filename="package://realsense2_description/meshes/r410/r410.dae" />-->
         </geometry>
         <material name="aluminum"/>
       </visual>

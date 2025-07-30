@@ -75,7 +75,7 @@ aluminum peripherial evaluation case.
           <!-- the mesh origin is at front plate in between the two infrared camera axes -->
           <origin xyz="${d435_zero_depth_to_glass + d435_glass_to_front} ${-d435_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
           <geometry>
-            <mesh filename="file://$(find realsense2_description)/meshes/d435.dae" />
+            <mesh filename="package://realsense2_description/meshes/d435.dae" />
           </geometry>
         </xacro:if>
         <xacro:unless value="${use_mesh}">
