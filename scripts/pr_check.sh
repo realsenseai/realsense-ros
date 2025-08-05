@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2024 Intel Corporation. All Rights Reserved.
+# Copyright 2024 RealSense, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ function check_folder {
             if [[ ! $filename == *"usbhost"* ]]; then
                 # Only check files that are not .gitignore-d
                 if [[ $(git check-ignore $filename | wc -l) -eq 0 ]]; then
-                    if [[ $(grep -oP "Copyright $year_format Intel Corporation. All Rights Reserved" $filename | wc -l) -eq 0 &&
-                          $(grep -oP "Copyright $year_format-$year_format Intel Corporation. All Rights Reserved" $filename | wc -l) -eq 0 || 
+                    if [[ $(grep -oP "Copyright $year_format RealSense, Inc. All Rights Reserved" $filename | wc -l) -eq 0 &&
+                          $(grep -oP "Copyright $year_format-$year_format RealSense, Inc. All Rights Reserved" $filename | wc -l) -eq 0 || 
                           $(grep -oP "Licensed under the Apache License, Version 2.0" $filename | wc -l) -eq 0
                        ]]; then
                         echo "[ERROR] $filename is missing the copyright/license notice"
