@@ -2,15 +2,13 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the ros2-development branch
+  # Triggers the workflow on push or pull request events but only for the ros2-hkr branch
   push:
     branches:
-      - ros2-development
-      - ros2-master
+      - ros2-hkr
   pull_request:
     branches:
-      - ros2-development
-      - ros2-master
+      - ros2-hkr
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -62,21 +60,23 @@ jobs:
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
 
-    - name: Checkout librealsense/development
-      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
+    - name: Checkout librealsense-private/hkr
+      uses: actions/checkout@v4
       with:
-        repository: IntelRealSense/librealsense
-        path: librealsense
-        ref: development
+        repository: IntelRealSense/librealsense-private
+        path: librealsense-private
+        ref: hkr
+        token: ${{secrets.REMI_GHA_SECRET}}
 
-    - name: Build RealSense SDK 2.0 (development branch) from source
+            
+    - name: Build RealSense SDK 2.0 (hkr branch) from source
       run: |
 
         # libusb-1.0-0-dev is needed for librealsense build in ubuntu 20.04
         # This apt install command will be ignored in ubuntu 22.04 as libusb-1.0-0-dev already installed there
         sudo apt install -y libusb-1.0-0-dev
         
-        cd ${{github.workspace}}/librealsense
+        cd ${{github.workspace}}/librealsense-private
         sudo mkdir build
         cd build
         sudo cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=false -DBUILD_GRAPHICAL_EXAMPLES=false

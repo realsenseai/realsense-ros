@@ -46,6 +46,7 @@
      * [Available Services](#available-services)
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
+  * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
 
@@ -462,6 +463,10 @@ User can set the camera name and camera namespace, to distinguish between camera
     - 1 -> **copy**: Every gyro message will be attached by the last accel message.
     - 2 -> **linear_interpolation**: Every gyro message will be attached by an accel message which is interpolated to gyro's timestamp.
   - Note: When the param *unite_imu_method* is dynamically updated, re-enable either gyro or accel stream for the change to take effect.
+- **safety_camera.safety_mode**:
+  - 0 -> **Run** mode
+  - 1 -> **Standby** mode
+  - 2 -> **Service** mode
 - **accelerate_gpu_with_glsl**:
   - Boolean: GPU accelerated with GLSL for processing PointCloud and Colorizer filters.
   - Note:
@@ -755,6 +760,395 @@ Each of the above filters have it's own parameters, following the naming convent
   - [JSON calib config example](realsense2_camera/examples/d500_tables/calib_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.CalibConfigWrite_Response(success=True, error_message='')`
 
+### safety_preset_read:
+  - Read safety preset at a given index.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/safety_preset_read realsense2_camera_msgs/srv/SafetyPresetRead "{index: 63}"`
+
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    ```
+    realsense2_camera_msgs.srv.SafetyPresetRead_Response(success=True, error_message='', safety_preset=
+    '{
+      "safety_preset":
+      {
+          "platform_config": 
+          {
+              "transformation_link":
+              {
+                  "rotation":
+                  [
+                      [ 0.0,  0.0,  1.0],
+                      [-1.0,  0.0,  0.0],
+                      [ 0.0, -1.0,  0.0]
+                  ],
+                  "translation": [0.0, 0.0, 0.27]
+              },
+              "robot_height": 1.0,
+              "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          "safety_zones": 
+          {
+              "danger_zone":
+              {
+                  "zone_polygon":
+                  {
+                      "p0": {"x": 0.5, "y":  0.1},
+                      "p1": {"x": 0.8, "y":  0.1},
+                      "p2": {"x": 0.8, "y": -0.1},
+                      "p3": {"x": 0.5, "y": -0.1}
+                  },
+                  "safety_trigger_confidence": 3,
+                  "reserved": [0, 0, 0, 0, 0, 0, 0]
+              },
+              "warning_zone":
+              {
+                  "zone_polygon":
+                  {
+                      "p0": {"x": 0.8, "y":  0.1},
+                      "p1": {"x": 1.2, "y":  0.1},
+                      "p2": {"x": 1.2, "y": -0.1},
+                      "p3": {"x": 0.8, "y": -0.1}
+                  },
+                  "safety_trigger_confidence": 3,
+                  "reserved": [0, 0, 0, 0, 0, 0, 0]
+              }
+          },
+          "masking_zones": 
+          {
+              "0":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "1":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "2":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "3":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "4":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "5":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "6":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "7":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [500, 3300],
+                      "vertex_1": [800, 3300],
+                      "vertex_2": [800, 3100],
+                      "vertex_3": [500, 3100]
+                  }
+              }
+          },
+          "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "environment": 
+          {
+              "safety_trigger_duration": 1.0,
+              "zero_safety_monitoring": 0,
+              "hara_history_continuation": 0,
+              "reserved1": [0, 0],
+              "angular_velocity": 0.0,
+              "payload_weight": 0.0,
+              "surface_inclination": 15.0,
+              "surface_height": 0.05,
+              "diagnostic_zone_fill_rate_threshold": 255,
+              "floor_fill_threshold": 255,
+              "depth_fill_threshold": 255,
+              "diagnostic_zone_height_median_threshold": 255,
+              "vision_hara_persistency": 1,
+              "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "reserved2": [0, 0, 0]
+          }
+      }
+    }')
+    ```
+    </details>
+
+### safety_preset_write:
+  - Write safety preset at given index.
+  - Note that writing safety presets is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetWrite` for the full request/response fields.
+  - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping.
+    <details>
+    <summary>Click to see full call example, writing new Safety Preset to index 63</summary>
+
+    `
+    ros2 service call /camera/camera/safety_preset_write realsense2_camera_msgs/srv/SafetyPresetWrite "{safety_preset: ' {\"safety_preset\":{\"platform_config\":{\"transformation_link\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27]},\"robot_height\":1.0,\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},\"safety_zones\":{\"danger_zone\":{\"zone_polygon\":{\"p0\":{\"x\":0.5,\"y\":0.1},\"p1\":{\"x\":0.8,\"y\":0.1},\"p2\":{\"x\":0.8,\"y\":-0.1},\"p3\":{\"x\":0.5,\"y\":-0.1}},\"safety_trigger_confidence\":3,\"reserved\":[0,0,0,0,0,0,0]},\"warning_zone\":{\"zone_polygon\":{\"p0\":{\"x\":0.8,\"y\":0.1},\"p1\":{\"x\":1.2,\"y\":0.1},\"p2\":{\"x\":1.2,\"y\":-0.1},\"p3\":{\"x\":0.8,\"y\":-0.1}},\"safety_trigger_confidence\":3,\"reserved\":[0,0,0,0,0,0,0]}},\"masking_zones\":{\"0\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"1\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"2\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"3\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"4\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"5\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"6\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"7\":{\"attributes\":1,\"minimal_range\":0,\"region_of_interests\":{\"vertex_0\":[500,3300],\"vertex_1\":[800,3300],\"vertex_2\":[800,3100],\"vertex_3\":[500,3100]}}},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"environment\":{\"safety_trigger_duration\":1.0,\"zero_safety_monitoring\":0,\"hara_history_continuation\":0,\"reserved1\":[0,0],\"angular_velocity\":0.0,\"payload_weight\":0.0,\"surface_inclination\":15.0,\"surface_height\":0.05,\"diagnostic_zone_fill_rate_threshold\":255,\"floor_fill_threshold\":255,\"depth_fill_threshold\":255,\"diagnostic_zone_height_median_threshold\":255,\"vision_hara_persistency\":1,\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"reserved2\":[1,1,1]}}} ', index: 63}"
+    `
+    </details>
+
+  - [JSON safety preset example](realsense2_camera/examples/d500_tables/safety_preset_example.json)
+  - Result example: `realsense2_camera_msgs.srv.SafetyPresetWrite_Response(success=True, error_message='')`
+
+### safety_interface_config_read:
+  - Read safety interface config.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/safety_interface_config_read realsense2_camera_msgs/srv/SafetyInterfaceConfigRead`
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    ```
+    realsense2_camera_msgs.srv.SafetyInterfaceConfigRead_Response(success=True, error_message='', safety_interface_config='
+    {
+      "safety_interface_config":
+      {
+          "m12_safety_pins_configuration":
+          {
+              "power":
+              {
+                  "direction": "In",
+                  "functionality": "p24VDC"
+              },
+              "ossd1_b":
+              {
+                  "direction": "Out",
+                  "functionality": "pOSSD1_B"
+              },
+              "ossd1_a":
+              {
+                  "direction": "Out",
+                  "functionality": "pOSSD1_A"
+              },
+              "preset3_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect3_A"
+              },
+              "preset3_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect3_B"
+              },
+              "preset4_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect4_A"
+              },
+              "preset1_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect1_B"
+              },
+              "preset1_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect1_A"
+              },
+              "gpio_0":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect5_A"
+              },
+              "gpio_1":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect5_B"
+              },
+              "gpio_3":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect6_B"
+              },
+              "gpio_2":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect6_A"
+              },
+              "preset2_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect2_B"
+              },
+              "gpio_4":
+              {
+                  "direction": "Out",
+                  "functionality": "pDeviceReady"
+              },
+              "preset2_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect2_A"
+              },
+              "preset4_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect4_B"
+              },
+              "ground":
+              {
+                  "direction": "In",
+                  "functionality": "pGND"
+              }
+          },
+          "gpio_stabilization_interval" : 150,
+          "camera_position":
+          {
+              "rotation":
+              [
+                  [ 0.0,  0.0,  1.0],
+                  [-1.0,  0.0,  0.0],
+                  [ 0.0, -1.0,  0.0]
+              ],
+              "translation": [0.0, 0.0, 0.27]
+          },
+          "occupancy_grid_params":
+          {
+              "grid_cell_seed" : 20,
+              "close_range_quorum" : 12 ,
+              "mid_range_quorum" : 6,
+              "long_range_quorum" : 4
+          },
+          "smcu_arbitration_params":
+          {
+              "l_0_total_threshold": 100,
+              "l_0_sustained_rate_threshold": 20,
+              "l_1_total_threshold": 100,
+              "l_1_sustained_rate_threshold": 20,
+              "l_2_total_threshold": 10,
+              "hkr_stl_timeout": 15,
+              "mcu_stl_timeout": 10,
+              "sustained_aicv_frame_drops": 95,
+              "ossd_self_test_pulse_width": 23
+          },
+          "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      }
+    }
+    ')
+    ```
+    </details>
+
+### safety_interface_config_write:
+  - Write safety interface config at given index.
+  - Note that writing safety interface config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `
+    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"m12_safety_pins_configuration\":{\"power\":{\"direction\":\"In\",\"functionality\":\"p24VDC\"},\"ossd1_b\":{\"direction\":\"Out\",\"functionality\":\"pOSSD1_B\"},\"ossd1_a\":{\"direction\":\"Out\",\"functionality\":\"pOSSD1_A\"},\"preset3_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect3_A\"},\"preset3_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect3_B\"},\"preset4_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect4_A\"},\"preset1_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect1_B\"},\"preset1_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect1_A\"},\"gpio_0\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect5_A\"},\"gpio_1\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect5_B\"},\"gpio_3\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect6_B\"},\"gpio_2\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect6_A\"},\"preset2_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect2_B\"},\"gpio_4\":{\"direction\":\"Out\",\"functionality\":\"pDeviceReady\"},\"preset2_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect2_A\"},\"preset4_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect4_B\"},\"ground\":{\"direction\":\"In\",\"functionality\":\"pGND\"}},\"gpio_stabilization_interval\":150,\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27]},\"occupancy_grid_params\":{\"grid_cell_seed\":20,\"close_range_quorum\":12,\"mid_range_quorum\":6,\"long_range_quorum\":4},\"smcu_arbitration_params\":{\"l_0_total_threshold\":100,\"l_0_sustained_rate_threshold\":20,\"l_1_total_threshold\":100,\"l_1_sustained_rate_threshold\":20,\"l_2_total_threshold\":10,\"hkr_stl_timeout\":15,\"mcu_stl_timeout\":10,\"sustained_aicv_frame_drops\":95,\"ossd_self_test_pulse_width\":23},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}'}"
+    `
+    </details>
+
+  - [JSON safety interface config example](realsense2_camera/examples/d500_tables/safety_interface_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.SafetyInterfaceConfigWrite_Response(success=True, error_message='')`
+
+### application_config_read:
+  - Read application config.
+  - Note that reading application config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/ApplicationConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/application_config_read realsense2_camera_msgs/srv/ApplicationConfigRead`
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    `response: realsense2_camera_msgs.srv.ApplicationConfigRead_Response(success=True, error_message='', application_config='{"application_config":{"depth_pipe_safety_checks_override":0,"depth_pipeline_config":0,"depth_roi":0,"dev_rules_selection":0,"developer_mode":{"hkr":0,"hkr_simulated_lock_state":0,"sc":0,"smcu":0},"digital_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ir_for_sip":0,"peripherals_sensors_disable_mask":0,"sht4x_humidity_threshold":23,"sip":{"immediate_mode_safety_features_selection":0,"mechanisms_sampling_interval":[0,0,0,0,0,0,0,0],"tc_consecutives_failures_threshold":3,"mechanisms_thresholds":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"temporal_safety_features_selection":0},"smcu_bypass_directly_to_maintenance_mode":0,"smcu_skip_spi_error":0,"temp_thresholds":{"apm_left":[0,0,0,0],"apm_right":[0,0,0,0],"hkr_core":[0,0,0,0],"imu":[0,0,0,0],"ir_left":[0,0,0,0],"ir_right":[0,0,0,0],"sht4x":[0,0,0,0],"smcu_right":[0,0,0,0]},"triggered_calib_safety_checks_override":0,"voltage_thresholds":{"vdd0v6":0,"vdd0v8":0,"vdd0v8_ddr":0,"vdd1v1":0,"vdd1v2":0,"vdd1v8":0,"vdd3v3":0,"vdd5vo_l":0,"vdd5vo_u":0}}}')`
+
+    </details>
+
+### application_config_write:
+  - Write application config.
+  - Note that writing application config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/ApplicationConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `ros2 service call /camera/camera/application_config_write realsense2_camera_msgs/srv/ApplicationConfigWrite "{application_config: ''{"application_config":{"depth_pipe_safety_checks_override":0,"depth_pipeline_config":0,"depth_roi":0,"dev_rules_selection":0,"developer_mode":{"hkr":0,"hkr_simulated_lock_state":0,"sc":0,"smcu":0},"digital_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ir_for_sip":0,"peripherals_sensors_disable_mask":0,"sht4x_humidity_threshold":23,"sip":{"immediate_mode_safety_features_selection":0,"mechanisms_sampling_interval":[0,0,0,0,0,0,0,0],"tc_consecutives_failures_threshold":3,"mechanisms_thresholds":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"temporal_safety_features_selection":0},"smcu_bypass_directly_to_maintenance_mode":0,"smcu_skip_spi_error":0,"temp_thresholds":{"apm_left":[0,0,0,0],"apm_right":[0,0,0,0],"hkr_core":[0,0,0,0],"imu":[0,0,0,0],"ir_left":[0,0,0,0],"ir_right":[0,0,0,0],"sht4x":[0,0,0,0],"smcu_right":[0,0,0,0]},"triggered_calib_safety_checks_override":0,"voltage_thresholds":{"vdd0v6":0,"vdd0v8":0,"vdd0v8_ddr":0,"vdd1v1":0,"vdd1v2":0,"vdd1v8":0,"vdd3v3":0,"vdd5vo_l":0,"vdd5vo_u":0}}}' }"`
+
+    </details>
+
+  - [JSON application config example](realsense2_camera/examples/d500_tables/application_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.ApplicationonfigWrite_Response(success=True, error_message='')`
+
+### hardware_monitor_command_send:
+  - Send hardware monitor command
+  - Type `ros2 interface show realsense2_camera/srv/HardwareMonitorCommandSend` for the full request/response fields
+  - Call example: `ros2 service call /camera/camera/hardware_monitor_command_send realsense2_camera_msgs/srv/HardwareMonitorCommandSend "{cmd: {opcode: 0x10, param1: 0, param2: 0, param3: 0, param4: 0, data: [] } }"`
+  - A shorter version of the call example (default values for the unsetted params is 0): `ros2 service call /camera/camera/hardware_monitor_command_send realsense2_camera_msgs/srv/HardwareMonitorCommandSend "{cmd: {opcode: 0x10} }"`
+
+  <details>
+  <summary>Click to see full response example</summary>
+
+  `realsense2_camera_msgs.srv.HardwareMonitorCommandSend_Response(success=True, result=[16, 0, 0, 0, 2, 0, 82, 2, 68, 135, 67, 22, 0, 0, 0, 0, 134, 128, 107, 11, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51, 54, 34, 50, 1, 105, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 56, 0, 122, 73, 27, 1, 0, 226, 153, 24, 238, 79, 152, 64, 1, 4, 0, 0, 4, 0, 0, 0, 11, 121, 197, 29, 0, 0, 0, 0, 0, 0, 0, 1, 0, 64, 0, 148, 11, 7, 0, 0, 0, 64, 128, 141, 5, 0, 0, 0, 0, 32, 32, 80, 88, 82, 79, 83, 45, 72, 82, 32, 75, 101, 114, 110, 0, 57, 53, 55, 56, 54, 101, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 7, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 53, 34, 24, 1, 135, 0, 0, 0, 0, 0, 0, 0, 0, 78, 50, 56, 50, 55, 53, 45, 49, 48, 48, 0, 0, 48, 51, 71, 6, 239, 190, 173, 222, 239, 190, 173, 222, 228, 55, 0, 64, 228, 55, 0, 64, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51, 52, 50, 51, 50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 0, 0, 1, 51, 52, 50, 51, 50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 41, 8, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 1, 4, 41, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 1, 4, 41, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 100, 0, 196, 9, 0, 0, 0, 0, 0, 0, 0, 0, 66, 77, 73, 48, 56, 56, 0, 0, 30, 15, 0, 0, 240, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 71, 198, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 3, 0, 3, 0, 3, 0, 3, 0, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 255, 255, 4, 1, 2, 0, 3, 0, 3, 0, 239, 190, 239, 190, 239, 190, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], error_message='')`
+
+  </details>
+
 <hr>
 
 ## Available actions
@@ -776,13 +1170,32 @@ Each of the above filters have it's own parameters, following the naming convent
 
     ```
   - Before calling triggered calibration, user should set the following parameters:
+    - `safety_camera.safety_mode: 2` # switch to service mode
     - `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
     - `depth_module.emitter_enabled: true` # enable emitter in depth module
     - `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+    - `enable_color: false` # turn off color stream
     - `enable_depth: false` # turn off depth stream
     - `enable_infra1: false` # turn off infra1 stream
     - `enable_infra2: false` # turn off infra2 stream
+    - `enable_safety: false` # turn off safety stream
+    - `enable_labeled_point_cloud: false` # turn off labeled pointcloud stream
+    - `enable_occupancy: false` # turn off occupancy stream
   - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
+  ```
+  ros2 param set /camera/camera safety_camera.safety_mode 2
+  ros2 param set /camera/camera depth_module.visual_preset 1
+  ros2 param set /camera/camera depth_module.emitter_enabled true
+  ros2 param set /camera/camera depth_module.enable_auto_exposure true
+  ros2 param set /camera/camera enable_color false
+  ros2 param set /camera/camera enable_depth false
+  ros2 param set /camera/camera enable_infra1 false
+  ros2 param set /camera/camera enable_infra2 false
+  ros2 param set /camera/camera enable_safety false
+  ros2 param set /camera/camera enable_labeled_point_cloud false
+  ros2 param set /camera/camera enable_occupancy false
+  ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}' --feedback
+  ```
   - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
   - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
   - If failed, it will return the error message inside the result. For example:
