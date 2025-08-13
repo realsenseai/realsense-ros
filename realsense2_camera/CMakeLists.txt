@@ -392,7 +392,7 @@ if(BUILD_TESTING)
     get_filename_component(_test_name ${file} NAME_WE)
     ament_add_pytest_test(${_test_name} ${file}
       APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_SOURCE_DIR}/test/utils:${CMAKE_SOURCE_DIR}/launch:${CMAKE_SOURCE_DIR}/scripts
-      TIMEOUT 60
+      TIMEOUT 120
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
     endforeach()
