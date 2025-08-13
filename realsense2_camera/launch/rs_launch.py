@@ -90,7 +90,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'wait_for_device_timeout',      'default': '-1.', 'description': 'Timeout for waiting for device to connect (Seconds)'},
                            {'name': 'reconnect_timeout',            'default': '6.', 'description': 'Timeout(seconds) between consequtive reconnection attempts'},
                            {'name': 'base_frame_id',                'default': 'link', 'description': 'Root frame of the sensors transform tree'},
-						   {'name': 'tf_prefix',                    'default': '', 'description': 'prefix to be prepended to all frame IDs'},
+                           {'name': 'tf_prefix',                    'default': '', 'description': 'prefix to be prepended to all frame IDs'},
                            {'name': 'decimation_filter.filter_magnitude', 'default': '2', 'description': 'decimation filter magnitude'},
                            {'name': 'enable_safety',                'default': 'false', 'description': "'enable safety stream'"},                                                      
                            {'name': 'safety_camera.safety_mode',    'default': '0', 'description': '[int] 0-Run, 1-Standby, 2-Service'},                                                       
