@@ -206,6 +206,7 @@ if (BUILD_ACCELERATE_GPU_WITH_GLSL)
 endif()
 
 set(INCLUDES
+    include/context_singleton_wrapper.h
     include/constants.h
     include/realsense_node_factory.h
     include/base_realsense_node.h
