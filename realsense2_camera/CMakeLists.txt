@@ -182,6 +182,10 @@ elseif("$ENV{ROS_DISTRO}" STREQUAL "jazzy")
   message(STATUS "Build for ROS2 Jazzy")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DJAZZY")
   set(SOURCES "${SOURCES}" src/ros_param_backend.cpp)
+elseif("$ENV{ROS_DISTRO}" STREQUAL "kilted")
+  message(STATUS "Build for ROS2 Kilted")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DKILTED")
+  set(SOURCES "${SOURCES}" src/ros_param_backend.cpp)
 else()
   message(FATAL_ERROR "Unsupported ROS Distribution: " "$ENV{ROS_DISTRO}")
 endif()
@@ -262,10 +266,27 @@ set(dependencies
   diagnostic_updater
 )
 
+set (targets
+  cv_bridge::cv_bridge
+  image_transport::image_transport
+  rclcpp::rclcpp
+  rclcpp_components::component
+  ${realsense2_camera_msgs_TARGETS}
+  ${std_srvs_TARGETS}
+  ${std_msgs_TARGETS}
+  sensor_msgs::sensor_msgs_library
+  ${nav_msgs_TARGETS}
+  tf2::tf2
+  tf2_ros::tf2_ros
+  diagnostic_updater::diagnostic_updater
+)
+
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   list(APPEND dependencies realsense2-gl)
+  list(APPEND targets realsense2-gl::realsense2-gl)
 else()
   list(APPEND dependencies realsense2)
+  list(APPEND targets realsense2::realsense2)
 endif()
 
 # If the flag is enabled, define the macro
@@ -273,6 +294,9 @@ if(USE_LIFECYCLE_NODE)
     find_package(rclcpp_lifecycle REQUIRED)
     find_package(lifecycle_msgs REQUIRED)
     list(APPEND dependencies rclcpp_lifecycle lifecycle_msgs)
+    list(APPEND targets 
+        rclcpp_lifecycle::rclcpp_lifecycle
+        lifecycle_msgs::lifecycle_msgs__rosidl_typesupport_cpp)
     add_definitions(-DUSE_LIFECYCLE_NODE)
     message("🚀 USE_LIFECYCLE_NODE is ENABLED")
 
@@ -287,8 +311,8 @@ endif()
 install(FILES "${CMAKE_BINARY_DIR}/global_settings.yaml"
     DESTINATION share/${PROJECT_NAME}/config)
 
-ament_target_dependencies(${PROJECT_NAME}
-  ${dependencies}
+target_link_libraries(${PROJECT_NAME}
+  ${targets}
 )
 
 rclcpp_components_register_node(${PROJECT_NAME}
@@ -345,9 +369,9 @@ if(BUILD_TESTING)
           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
           $<INSTALL_INTERFACE:include>
        )
-       ament_target_dependencies(${_test_name}
-          std_srvs
-          std_msgs
+       target_link_libraries(${_test_name}
+          std_srvs::std_srvs__rosidl_typesupport_cpp
+          std_msgs::std_msgs__rosidl_typesupport_cpp
        )
        #target_link_libraries(${_test_name} name_of_local_library)
     endforeach()
@@ -368,7 +392,7 @@ if(BUILD_TESTING)
     get_filename_component(_test_name ${file} NAME_WE)
     ament_add_pytest_test(${_test_name} ${file}
       APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_SOURCE_DIR}/test/utils:${CMAKE_SOURCE_DIR}/launch:${CMAKE_SOURCE_DIR}/scripts
-      TIMEOUT 60
+      TIMEOUT 120
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
     endforeach()

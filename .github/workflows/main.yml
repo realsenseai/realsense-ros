@@ -25,9 +25,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [rolling, iron, humble, foxy, jazzy]
+        ros_distro: [rolling, iron, humble, jazzy, kilted]
         include:
         - ros_distro: 'rolling'
+          os: ubuntu-24.04
+        - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
           os: ubuntu-24.04
@@ -35,8 +37,6 @@ jobs:
           os: ubuntu-22.04
         - ros_distro: 'humble'
           os: ubuntu-22.04
-        - ros_distro: 'foxy'
-          os: ubuntu-20.04
 
     steps:
 
@@ -54,17 +54,9 @@ jobs:
         cd ${{github.workspace}}/ros2/src/realsense-ros/scripts
         ./pr_check.sh 
 
-    # setup-ros@v0.6 is the last version supporting foxy (EOL)
-    # setup-ros@v0.7 is needed to support humble/iron/rolling/jazzy
-    # so, seperating steps with if conditions
-    - name: build ROS2 for foxy
-      if: ${{ matrix.ros_distro == 'foxy' }}
-      uses: ros-tooling/setup-ros@236ab287884fd5a314fc030e91b2017abb46719e #v0.6
-      with:
-        required-ros-distributions: ${{ matrix.ros_distro }}
-    - name: build ROS2 for humble/iron/rolling/jazzy
-      if: ${{ matrix.ros_distro != 'foxy' }}
-      uses: ros-tooling/setup-ros@a6ce30ecca1e5dcc10ae5e6a44fe2169115bf852 #v0.7
+    # setup-ros@v0.7.13 is needed to support humble/iron/rolling/jazzy/kilted
+    - name: build ROS2 for humble/iron/rolling/jazzy/kilted
+      uses: ros-tooling/setup-ros@87aeba050fd62d0ee5d5fdf4b6c9f847892ea864 #v0.7.13
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
 
@@ -120,21 +112,7 @@ jobs:
     #    wget $bag_filename -P "records/"
     #    sudo apt install ros-${{ matrix.ros_distro}}-launch-pytest
 
-    - name: Install Packages For Foxy Tests
-      if: ${{ matrix.ros_distro == 'foxy' }}
-      run: |
-        # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
-        # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
-        python3 -m venv .venv
-        # Activate the virtual env such that following python related commands run within it.
-        source .venv/bin/activate
-        sudo apt-get install python3-pip
-        # numpy-quaternion needs numpy<2.0.0. Chose 1.24.1 as it is the highest version that support foxy.
-        pip3 install --force-reinstall numpy==1.24.1
-        pip3 install numpy-quaternion tqdm pyyaml
-
-    - name: Install Packages For Humble/Iron/Rolling/Jazzy Tests
-      if: ${{ matrix.ros_distro != 'foxy' }}
+    - name: Install Packages For Humble/Iron/Rolling/Jazzy/Kilted Tests
       run: |
         # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
         # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
@@ -152,17 +130,13 @@ jobs:
         cd ${{github.workspace}}/ros2
         source ${{github.workspace}}/.bashrc
         . install/local_setup.bash
-        # the next command might be needed for foxy distro, since this package is not installed
-        # by default in ubuntu 20.04. For other distro, the apt install command will be ignored.
-        sudo apt install -y ros-${{matrix.ros_distro}}-sensor-msgs-py
+        # sudo apt install -y ros-${{matrix.ros_distro}}-sensor-msgs-py
         source ../.venv/bin/activate
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
 
-    # don't run integration tests for foxy since some testing dependecies packages like 
     # tf_ros_py are not avaialble
     # TODO: check when we can run integration tests on rolling
     - name: Run integration tests
-      if: ${{ matrix.ros_distro != 'rolling' && matrix.ros_distro != 'foxy' }}
       run: |
         cd ${{github.workspace}}/ros2
         source ${{github.workspace}}/.bashrc

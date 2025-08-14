@@ -481,6 +481,7 @@ void RealSenseNodeFactory::startDevice()
         case RS455_PID:
         case RS457_PID:
         case RS555_PID:
+        case RS436_PID:
         case RS_USB2_PID:
         case RS_D585_PID:
         case RS_D585S_PID:
