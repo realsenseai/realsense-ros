@@ -46,7 +46,7 @@ function check_folder {
                 # Only check files that are not .gitignore-d
                 if [[ $(git check-ignore $filename | wc -l) -eq 0 ]]; then
                     if [[ $(grep -oP "Copyright $year_format RealSense, Inc. All Rights Reserved" $filename | wc -l) -eq 0 &&
-                          $(grep -oP "Copyright $year_format-$year_format Intel Corporation. All Rights Reserved" $filename | wc -l) -eq 0 || 
+                          $(grep -oP "Copyright $year_format-$year_format RealSense, Inc. All Rights Reserved" $filename | wc -l) -eq 0 ||
                           $(grep -oP "Licensed under the Apache License, Version 2.0" $filename | wc -l) -eq 0
                        ]]; then
                         echo "[ERROR] $filename is missing the copyright/license notice"
