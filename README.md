@@ -1,10 +1,15 @@
 
-<h1 align="center">
-   <img src="https://www.intelrealsense.com/wp-content/uploads/2020/09/intel-realsense-logo-360px.png" alt="Intel® RealSense™" title="Intel® RealSense™" />
-</h1>
+<p align="center">
+  <!-- Light mode -->
+  <img src="res/realsense-logo-light-mode.png#gh-light-mode-only" alt="Logo for light mode" width="70%"/>
+
+  <!-- Dark mode -->
+  <img src="res/realsense-logo-dark-mode.png#gh-dark-mode-only" alt="Logo for dark mode" width="70%"/>
+  <br><br>
+</p>
 
 <p align="center">
-  ROS Wrapper for Intel(R) RealSense(TM) Cameras<br>
+  ROS Wrapper for RealSense(TM) Cameras<br>
   <a href="https://github.com/IntelRealSense/realsense-ros/releases">Latest release notes</a>
 </p>
 
@@ -56,9 +61,9 @@
 
 <details>
   <summary>
-    ROS1 Wrapper for Intel® RealSense™ cameras
+    ROS1 Wrapper for RealSense™ cameras
   </summary>
-    ROS1 Wrapper for Intel® RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
+    ROS1 Wrapper for RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
     For ROS1 wrapper, go to <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros1-legacy">ros1-legacy</a> branch
 </details>
 
@@ -107,12 +112,12 @@
   
 <details>
   <summary>
-    Step 2: Install latest Intel&reg; RealSense&trade; SDK 2.0
+    Step 2: Install latest RealSense&trade; SDK 2.0
   </summary>
 
   **Please choose only one option from the 3 options below (in order to prevent multiple versions installation and workspace conflicts)**
 
-- #### Option 1: Install librealsense2 debian package from Intel servers
+- #### Option 1: Install librealsense2 debian package from RealSense servers
   - Jetson users - use the [Jetson Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_jetson.md)
   - Otherwise, install from [Linux Debian Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md#installing-the-packages)
     - In this case treat yourself as a developer: make sure to follow the instructions to also install librealsense2-dev and librealsense2-dkms packages
@@ -123,14 +128,14 @@
     - For example, for Humble distro: ```sudo apt install ros-humble-librealsense2*```
 
 - #### Option 3: Build from source
-  - Download the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
+  - Download the latest [RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
   - Follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
 </details>
   
 <details>
   <summary>
-    Step 3: Install ROS Wrapper for Intel&reg; RealSense&trade; cameras
+    Step 3: Install ROS Wrapper for RealSense&trade; cameras
   </summary>
   
 #### Option 1: Install debian package from ROS servers (Foxy EOL distro is not supported by this option):
@@ -146,7 +151,7 @@
       cd ~/ros2_ws/src/
       ```
   
-  - Clone the latest ROS Wrapper for Intel&reg; RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
+  - Clone the latest ROS Wrapper for RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
       ```bashrc
       git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
       cd ~/ros2_ws
@@ -178,7 +183,7 @@
 <hr>
 
 # Installation on Windows
-  **PLEASE PAY ATTENTION: ROS Wrapper for Intel&reg; RealSense&trade; cameras is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
+  **PLEASE PAY ATTENTION: ROS Wrapper for RealSense&trade; cameras is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
 
 <details>
   <summary>
@@ -197,7 +202,7 @@
     - [ROS2 Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html)
   - Microsoft IOT binary installation:
     - https://ms-iot.github.io/ROSOnWindows/GettingStarted/SetupRos2.html
-    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for Intel&reg; RealSense&trade; cameras)
+    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for RealSense&trade; cameras)
 	- Please replace the word "Foxy" with Humble, Iron, Jazzy or Kilted, depends on the chosen distro.
 </details>
   
@@ -206,8 +211,8 @@
     Step 2: Download RealSense&trade; ROS2 Wrapper and RealSense&trade; SDK 2.0 source code from github:
   </summary>
   
-- Download ROS Wrapper for Intel&reg; RealSense&trade; cameras source code from [ROS Wrapper for Intel&reg; RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
-- Download the corresponding supported Intel&reg; RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose from the link above
+- Download ROS Wrapper for RealSense&trade; cameras source code from [ROS Wrapper for RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
+- Download the corresponding supported RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose from the link above
 - Place the librealsense folder inside the realsense-ros folder, to make the librealsense package set beside realsense2_camera, realsense2_camera_msgs and realsense2_description packages
 </details>
   
