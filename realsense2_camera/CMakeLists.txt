@@ -120,6 +120,7 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(point_cloud_transport REQUIRED)
 
 find_package(realsense2 2.56)
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
@@ -263,6 +264,7 @@ set(dependencies
   tf2
   tf2_ros
   diagnostic_updater
+  point_cloud_transport
 )
 
 set (targets
@@ -278,6 +280,7 @@ set (targets
   tf2::tf2
   tf2_ros::tf2_ros
   diagnostic_updater::diagnostic_updater
+  point_cloud_transport::point_cloud_transport
 )
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
@@ -293,7 +296,7 @@ if(USE_LIFECYCLE_NODE)
     find_package(rclcpp_lifecycle REQUIRED)
     find_package(lifecycle_msgs REQUIRED)
     list(APPEND dependencies rclcpp_lifecycle lifecycle_msgs)
-    list(APPEND targets 
+    list(APPEND targets
         rclcpp_lifecycle::rclcpp_lifecycle
         lifecycle_msgs::lifecycle_msgs__rosidl_typesupport_cpp)
     add_definitions(-DUSE_LIFECYCLE_NODE)
@@ -342,13 +345,13 @@ install(
 )
 
 # Install launch files
-install(DIRECTORY 
+install(DIRECTORY
     launch
     DESTINATION share/${PROJECT_NAME}
     )
 
 # Install example files
-install(DIRECTORY 
+install(DIRECTORY
     examples
     DESTINATION share/${PROJECT_NAME}
 )

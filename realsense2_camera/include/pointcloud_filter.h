@@ -17,9 +17,11 @@
 #include <string>
 #include <memory>
 #include <librealsense2/rs.hpp>
+#include <point_cloud_transport/point_cloud_transport.hpp>
+#include <point_cloud_transport/publisher.hpp>
+#include <ros_sensor.h>
 #include <sensor_params.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
-#include <ros_sensor.h>
 #include "named_filter.h"
 
 namespace realsense2_camera
@@ -28,7 +30,7 @@ namespace realsense2_camera
     {
         public:
             PointcloudFilter(std::shared_ptr<rs2::filter> filter, RosNodeBase& node, std::shared_ptr<Parameters> parameters, rclcpp::Logger logger, bool is_enabled=false);
-        
+
             void setPublisher();
             void Publish(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset, const std::string& frame_id);
 
@@ -41,7 +43,8 @@ namespace realsense2_camera
             bool _allow_no_texture_points;
             bool _ordered_pc;
             std::mutex _mutex_publisher;
-            rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _pointcloud_publisher;
+            std::shared_ptr<point_cloud_transport::PointCloudTransport> _pct;
+            std::shared_ptr<point_cloud_transport::Publisher> _pointcloud_publisher;
             std::string _pointcloud_qos;
     };
 }

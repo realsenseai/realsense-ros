@@ -69,9 +69,9 @@ void PointcloudFilter::setPublisher()
     std::lock_guard<std::mutex> lock_guard(_mutex_publisher);
     if ((_is_enabled) && (!_pointcloud_publisher))
     {
-        _pointcloud_publisher = _node.create_publisher<sensor_msgs::msg::PointCloud2>("~/depth/color/points",
-                                rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(qos_string_to_qos(_pointcloud_qos)),
-                                            qos_string_to_qos(_pointcloud_qos)));
+        _pct = std::make_shared<point_cloud_transport::PointCloudTransport>(_node.shared_from_this());
+        _pointcloud_publisher = std::make_shared<point_cloud_transport::Publisher>(
+            _pct->advertise("~/depth/color/points", qos_string_to_qos(_pointcloud_qos)));
     }
     else if ((!_is_enabled) && (_pointcloud_publisher))
     {
@@ -92,7 +92,7 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
 {
     {
         std::lock_guard<std::mutex> lock_guard(_mutex_publisher);
-        if ((!_pointcloud_publisher) || (!(_pointcloud_publisher->get_subscription_count())))
+        if ((!_pointcloud_publisher) || (!(_pointcloud_publisher->getNumSubscribers())))
             return;
     }
     rs2_stream texture_source_id = static_cast<rs2_stream>(_filter->get_option(rs2_option::RS2_OPTION_STREAM_FILTER));
