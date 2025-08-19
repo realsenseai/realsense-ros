@@ -189,7 +189,7 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
 
         // We still use the same translation vector (trans) since it is already in the optical CS
         // and inside append_static_tf_msg we always convert translation to Robot CS
-        append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, FRAME_ID(sip));
+        append_static_tf_msg(transform_ts_, trans, Q, BASE_FRAME_ID, FRAME_ID(sip));
     }
     else
     {
@@ -202,7 +202,7 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
         Q = quaternion_optical * Q * quaternion_optical.inverse();
 
         // Also here, the translation vector is in the Optical CS, and we convert it to ROS CS inside append_static_tf_msg
-        append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, FRAME_ID(sip));
+        append_static_tf_msg(transform_ts_, trans, Q, BASE_FRAME_ID, FRAME_ID(sip));
     }
 
     // Transform stream frame from ROS CS to optical CS and publish it
