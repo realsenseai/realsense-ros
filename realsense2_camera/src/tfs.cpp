@@ -183,7 +183,7 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
         // - Rotation matrix from Depth (Optical CS) to Labeled Point Cloud (Robot CS)
         // - Translation vector in the Optical CS
         
-        // We take optical rotation (quaternion_optical) and rotate it by Q (which rotates from optical to lpcl/occuapny robot CS)
+        // We take optical rotation (quaternion_optical) and rotate it by Q (which rotates from optical to lpcl/occupancy robot CS)
         // Order is important (from left to right)
         Q = Q * quaternion_optical;
 
