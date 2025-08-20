@@ -1,0 +1,5 @@
+string safety_preset
+uint8 index
+---
+bool success
+string error_message

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot name="realsense2_camera" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="use_nominal_extrinsics" default="false"/>
+  <xacro:include filename="$(find realsense2_description)/urdf/_d585.urdf.xacro" />
+  <xacro:arg name="sp_x" default="0.0"/>
+  <xacro:arg name="sp_y" default="0.0"/>
+  <xacro:arg name="sp_z" default="0.0"/>
+  <xacro:arg name="sp_roll" default="0.0"/>
+  <xacro:arg name="sp_pitch" default="0.0"/>
+  <xacro:arg name="sp_yaw" default="0.0"/>
+
+  <link name="base_link" />
+  <xacro:sensor_d585 parent="base_link" use_nominal_extrinsics="$(arg use_nominal_extrinsics)" sp_x="$(arg sp_x)" sp_y="$(arg sp_y)" sp_z="$(arg sp_z)" sp_roll="$(arg sp_roll)" sp_pitch="$(arg sp_pitch)" sp_yaw="$(arg sp_yaw)">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:sensor_d585>
+</robot>
+

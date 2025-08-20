@@ -43,8 +43,15 @@ set(msg_files
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   "srv/DeviceInfo.srv"
+  "srv/SafetyPresetRead.srv"
+  "srv/SafetyPresetWrite.srv"
+  "srv/SafetyInterfaceConfigRead.srv"
+  "srv/SafetyInterfaceConfigWrite.srv"
   "srv/CalibConfigRead.srv"
   "srv/CalibConfigWrite.srv"
+  "srv/ApplicationConfigRead.srv"
+  "srv/ApplicationConfigWrite.srv"
+  "srv/HardwareMonitorCommandSend.srv"
   "action/TriggeredCalibration.action"
   DEPENDENCIES builtin_interfaces std_msgs sensor_msgs
   ADD_LINTER_TESTS

@@ -386,13 +386,14 @@ def extrinsicsTest(data, gt_data):
 def metadatTest(data, gt_data):
     jdata = json.loads(data.json_data)
     gt_jdata = json.loads(gt_data.json_data)
-    if jdata['frame_number'] != gt_jdata['frame_number']:
+
+    if 'frame_number' in gt_jdata and jdata['frame_number'] != gt_jdata['frame_number']:
         msg = 'Frame no not matching: ' + str(jdata['frame_number']) + " and " + str(gt_jdata['frame_number'])
         return False, msg
-    if jdata['clock_domain'] != gt_jdata['clock_domain']:
+    if 'clock_domain' in gt_jdata and jdata['clock_domain'] != gt_jdata['clock_domain']:
         msg = 'clock_domain not matching: ' + str(jdata['clock_domain']) + " and " + str(gt_jdata['clock_domain'])
         return False, msg
-    if jdata['frame_timestamp'] != gt_jdata['frame_timestamp']:
+    if 'frame_timestamp' in gt_jdata and jdata['frame_timestamp'] != gt_jdata['frame_timestamp']:
         msg = 'frame_timestamp not matching: ' + str(jdata['frame_timestamp']) + " and " + str(gt_jdata['frame_timestamp'])
         return False, msg
     '''
@@ -403,9 +404,13 @@ def metadatTest(data, gt_data):
         msg = 'frame_counter not matching: ' + str(jdata['frame_counter']) + " and " + str(gt_jdata['frame_counter'])
         return False, msg
     '''
-    if jdata['time_of_arrival'] != gt_jdata['time_of_arrival']:
+    if 'time_of_arrival' in gt_jdata and jdata['time_of_arrival'] != gt_jdata['time_of_arrival']:
         msg = 'time_of_arrival not matching: ' + str(jdata['time_of_arrival']) + " and " + str(gt_jdata['time_of_arrival'])
         return False, msg
+    if 'actual_exposure' in gt_jdata and jdata['actual_exposure'] != gt_jdata['actual_exposure']:
+        msg = 'actual_exposure not matching: ' + str(jdata['actual_exposure']) + " and " + str(gt_jdata['actual_exposure'])
+        return False, msg
+
     return True, ""
     
 
