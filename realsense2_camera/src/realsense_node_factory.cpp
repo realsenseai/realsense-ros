@@ -327,8 +327,8 @@ void RealSenseNodeFactory::init()
 #endif
         // Using `getOrDeclareParameter()` to avoid re-declaration issues
         _serial_no = _parameters->getOrDeclareParameter<std::string>("serial_no", "");
-        _usb_port_id = _parameters->getOrDeclareParameter<std::string>("_usb_port_id", "");
-        _device_type = _parameters->getOrDeclareParameter<std::string>("_device_type", "");
+        _usb_port_id = _parameters->getOrDeclareParameter<std::string>("usb_port_id", "");
+        _device_type = _parameters->getOrDeclareParameter<std::string>("device_type", "");
         _wait_for_device_timeout = _parameters->getOrDeclareParameter<double>("wait_for_device_timeout", -1.0);
         _reconnect_timeout = _parameters->getOrDeclareParameter<double>("reconnect_timeout", 6.0);
 
