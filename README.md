@@ -51,6 +51,7 @@
      * [Available Services](#available-services)
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
+     * [Logging](#logging)
   * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
@@ -1256,6 +1257,15 @@ The launch file accepts a parameter, `intra_process_comms`, controlling whether 
 ros2 launch realsense2_camera rs_intra_process_demo_launch.py intra_process_comms:=true
 ```
 
+<hr>
+
+## Logging
+For debugging purposes, users can control the ROS wrapper log level and also the SDK log level.
+* ROS wrapper log level - set the parameter `log_level` in the ros2 launch command or in the launch file itself
+  e.g. `ros2 launch realsense2_camera rs_launch.py log_level:=warn`
+* LibRealSense2 SDK log level - export the environment variable called `LRS_LOG_LEVEL` and set it to the desired log level.
+  e.g. `export LRS_LOG_LEVEL=debug`
+  
 </details>
 
 
