@@ -1,5 +1,5 @@
-﻿# **Intel® RealSense™ ROS Wrapper Third Party Programs**
-## This file specifies all 3rd party SW components used for Intel® RealSense™ ROS Wrapper and the inbound license for each of these 3rd party components.
+﻿# **RealSense™ ROS Wrapper Third Party Programs**
+## This file specifies all 3rd party SW components used for RealSense™ ROS Wrapper and the inbound license for each of these 3rd party components.
 
 # **Apache License 2.0 Third Party Programs**
 

@@ -711,7 +711,7 @@ The following post processing filters are available:
         - `depth_module.gain.2`
       - Make sure to set `depth_module.hdr_enabled` to true, otherwise these parameters won't be considered.
     - To view the effect on the infrared image for each sequence id use the `filter_by_sequence_id.sequence_id` parameter.
-    - For in-depth review of the subject please read the accompanying [white paper](https://dev.intelrealsense.com/docs/high-dynamic-range-with-stereoscopic-depth-cameras).
+    - For in-depth review of the subject please read the accompanying [white paper](https://dev.realsenseai.com/docs/high-dynamic-range-with-stereoscopic-depth-cameras).
     - **Note**: Auto exposure functionality is not supported when HDR is enabled. i.e., Auto exposure will be auto-disabled if HDR is enabled.
 
   - The following filters have detailed descriptions in : https://github.com/IntelRealSense/librealsense/blob/master/doc/post-processing-filters.md
