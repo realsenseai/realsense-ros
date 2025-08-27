@@ -15,7 +15,7 @@
 # DESCRIPTION #
 # ----------- #
 # Use this launch file to launch 2 devices and enable the hardware synchronization. 
-# As describe in https://dev.intelrealsense.com/docs/multiple-depth-cameras-configuration both devices
+# As describe in https://dev.realsenseai.com/docs/multiple-depth-cameras-configuration both devices
 # have to be connected using a sync cable. The devices will by default stream asynchronously. 
 # Using this launch file one device will operate as master and the other as slave. As a result they will
 # capture at exactly the same time and rate. 

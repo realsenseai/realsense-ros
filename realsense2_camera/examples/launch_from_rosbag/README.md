@@ -1,5 +1,5 @@
 # Launching RS ROS2 node from rosbag File
-The following example allows streaming a rosbag file, saved by Intel RealSense Viewer, instead of streaming live with a camera. It can be used for testing and repetition of the same sequence.
+The following example allows streaming a rosbag file, saved by RealSense Viewer, instead of streaming live with a camera. It can be used for testing and repetition of the same sequence.
 ```
 ros2 launch realsense2_camera rs_launch_from_rosbag.py
 ```
