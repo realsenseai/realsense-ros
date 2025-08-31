@@ -65,7 +65,6 @@ namespace realsense2_camera
         RosNodeBase::SharedPtr _node;
         rs2::device _device;
         std::unique_ptr<BaseRealSenseNode> _realSenseNode;
-        rs2::context _ctx;
         std::string _serial_no;
         std::string _usb_port_id;
         std::string _device_type;
