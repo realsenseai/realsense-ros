@@ -129,6 +129,29 @@
     - For example, for Humble distro: ```sudo apt install ros-humble-librealsense2*```
 
 - #### Option 3: Build from source
+
+⚠️ **Note for ROS1 users or when encountering DDS-related build issues**
+
+In some environments, `librealsense` builds may fail due to missing or incompatible
+[FastDDS](https://fast-dds.docs.eprosima.com/) dependencies.
+As a workaround, you can disable DDS support when building `librealsense` from source:
+
+```bash
+git clone https://github.com/IntelRealSense/librealsense.git
+cd librealsense
+mkdir build && cd build
+cmake .. -DBUILD_WITH_DDS=OFF
+make -j$(nproc)
+sudo make install
+```
+
+This avoids the need to install `fastrtps` / `fastcdr`, and is sufficient for using
+the RealSense ROS wrapper without DDS functionality.
+
+Alternatively, if your system works with an older version of `librealsense`
+available via apt (e.g. `sudo apt install librealsense2`), you may continue using
+that version instead.
+
   - Download the latest [RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
   - Follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
@@ -1287,3 +1310,4 @@ For debugging purposes, users can control the ROS wrapper log level and also the
 [ubuntu22]: https://releases.ubuntu.com/jammy/
 [ubuntu20-badge]: https://img.shields.io/badge/-UBUNTU%2020%2E04-blue?style=flat-square&logo=ubuntu&logoColor=white
 [ubuntu20]: https://releases.ubuntu.com/focal/
+
