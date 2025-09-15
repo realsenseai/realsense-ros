@@ -2,8 +2,8 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.3 (2025-09-15)
+-------------------
 * PR `#3430 <https://github.com/intelrealsense/realsense-ros/issues/3430>`_ from Gilaadb: Create a singleton wrapper to rs2::context
 * PR `#3429 <https://github.com/intelrealsense/realsense-ros/issues/3429>`_ from remibettan: intel removed, realsense added
 * PR `#3421 <https://github.com/intelrealsense/realsense-ros/issues/3421>`_ from ynyBonfennil: Fix argument names (`_usb_port_id` and `_device_type`)

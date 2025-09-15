@@ -2,8 +2,8 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.3 (2025-09-15)
+-------------------
 * PR `#3417 <https://github.com/intelrealsense/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final
 * PR `#3410 <https://github.com/intelrealsense/realsense-ros/issues/3410>`_ from Nir-Az: Update copyrights
 * PR `#32 <https://github.com/intelrealsense/realsense-ros/issues/32>`_ from SamerKhshiboun: Support HWM command as ROS2 service and in the ROS-MQTT bridge node

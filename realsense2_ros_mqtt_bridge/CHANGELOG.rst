@@ -2,8 +2,8 @@
 Changelog for package realsense2_ros_mqtt_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.3 (2025-09-15)
+-------------------
 * PR `#3428 <https://github.com/intelrealsense/realsense-ros/issues/3428>`_ from remibettan: fixing mqtt readme
 * PR `#3417 <https://github.com/intelrealsense/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final
 * PR `#38 <https://github.com/intelrealsense/realsense-ros/issues/38>`_ from PrasRsRos: Implement hw reset in mqtt and add test

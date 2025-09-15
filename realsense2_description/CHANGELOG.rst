@@ -2,8 +2,8 @@
 Changelog for package realsense2_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.3 (2025-09-15)
+-------------------
 * PR `#3429 <https://github.com/intelrealsense/realsense-ros/issues/3429>`_ from remibettan: intel removed, realsense added
 * PR `#3417 <https://github.com/intelrealsense/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final
 * PR `#45 <https://github.com/intelrealsense/realsense-ros/issues/45>`_ from remibettan: Merge ros2 dev to ros2 hkr
