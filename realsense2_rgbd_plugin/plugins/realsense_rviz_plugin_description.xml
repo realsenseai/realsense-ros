@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<library path="realsense_rviz_plugin">
+  <class name="realsense_rviz_plugin/RealsenseRvizPlugin"
+         type="realsense_rviz_plugin::RealsenseRvizPlugin"
+         base_class_type="rviz_common::Display">
+    <description>
+      A plugin to visualize RealSense RGBD data in RViz.
+    </description>
+    <message_type>realsense2_camera_msgs/msg/RGBD</message_type>
+  </class>
+</library>
+

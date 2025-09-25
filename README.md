@@ -46,6 +46,7 @@
      * [Extrinsics from sensor A to sensor B](#extrinsics-from-sensor-a-to-sensor-b)
      * [Topics](#published-topics)
      * [RGBD Topic](#rgbd-topic)
+     * [RViz2 Plugin](#rviz2-plugin)
      * [Metadata Topic](#metadata-topic)
      * [Post-Processing Filters](#post-processing-filters)
      * [Available Services](#available-services)
@@ -664,6 +665,57 @@ The current QoS of the topic itself, is the same as Depth and Color streams (SYS
 Example:
 ```
 ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true align_depth.enable:=true enable_color:=true enable_depth:=true 
+```
+
+
+## RViz2 Plugin  
+Custom Visualizations for Intel RealSense Camera RGBD Messages in RViz2
+
+This RViz2 plugin provides advanced and intuitive visualization of Intel RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
+
+
+### Features
+
+#### RGB and Depth Visualization
+- **RGB Stream Display:** Visualize the color camera stream from RealSense devices.
+- **Depth Stream Display:** View depth data with customizable visualization options.
+- **Display Modes:** Show RGB only, depth only, or both side-by-side.
+
+#### Depth Visualization Controls
+- **Min/Max Range Adjustment:** Customize depth visualization by setting minimum and maximum depth values (in meters).
+- **Colormap Options:** Toggle between grayscale and jet colormap for depth visualization.
+
+#### Overlay Mode
+- **RGB + Depth Overlay:** Combine RGB and depth information in a single view.
+- **Adjustable Alpha Blending:** Control the transparency level of the depth overlay on the RGB image.
+- **Enhanced Perception:** See RGB and depth data simultaneously for better environmental understanding.
+
+#### Image Manipulation
+- **180° Rotation:** Flip both RGB and depth images for correct orientation when the camera is mounted upside-down.
+- **Split-Screen View:** View RGB and depth images side-by-side with automatic layout adjustments.
+
+
+### Build Instructions
+
+To use this plugin, you **must enable it at build time** using the `-DRVIZ_RGBD_PLUGIN=ON` flag with `colcon build`.  
+You can do this in two ways:
+
+**1. Build only the plugin package:**
+```bash
+colcon build --packages-select realsense2_rviz_plugin --cmake-args -DRVIZ_RGBD_PLUGIN=ON
+```
+**2. Enable the plugin for the entire workspace at build:**
+```bash
+colcon build --cmake-args -DRVIZ_RGBD_PLUGIN=ON
+```
+
+<hr>
+
+## Metadata topic
+  
+The metadata messages store the camera's available metadata in a *json* format. To learn more, a dedicated script for echoing a metadata topic in runtime is attached. For instance, use the following command to echo the camera/depth/metadata topic:
+```
+python3 src/realsense-ros/realsense2_camera/scripts/echo_metadada.py /camera/camera/depth/metadata
 ```
 
 <hr>
