@@ -266,8 +266,12 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
             else
             {
                 std::stringstream image_raw, camera_info;
+                // Depth stream is rectified, Color is unrectified
+                // IR streams come in two flavors:
+                //   Rectified formats  Y8 and Y8I for Left, Left & Right Luma
+                //   Unrectified raw (calibration) format: Y12I
                 bool rectified_image = false;
-                if (sensor.rs2::sensor::is<rs2::depth_sensor>())
+                if (profile.stream_type() == RS2_STREAM_DEPTH || profile.format() == RS2_FORMAT_Y8 || profile.format() == RS2_FORMAT_Y8I)
                     rectified_image = true;
 
                 // adding "~/" to the topic name will add node namespace and node name to the topic
