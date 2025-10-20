@@ -2,6 +2,19 @@
 Changelog for package realsense2_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.57.3 (2025-09-15)
+-------------------
+* PR `#3429 <https://github.com/intelrealsense/realsense-ros/issues/3429>`_ from remibettan: intel removed, realsense added
+* PR `#3417 <https://github.com/intelrealsense/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final
+* PR `#45 <https://github.com/intelrealsense/realsense-ros/issues/45>`_ from remibettan: Merge ros2 dev to ros2 hkr
+* PR `#3404 <https://github.com/intelrealsense/realsense-ros/issues/3404>`_ from adamwhats: Use package:// to discover meshes
+* PR `#3410 <https://github.com/intelrealsense/realsense-ros/issues/3410>`_ from Nir-Az: Update copyrights
+* PR `#3401 <https://github.com/intelrealsense/realsense-ros/issues/3401>`_ from ashrafk93: remove test dependencies
+* PR `#2813 <https://github.com/intelrealsense/realsense-ros/issues/2813>`_ from SamerKhshiboun: Fix URDF and LPCL for SC
+* PR `#2807 <https://github.com/intelrealsense/realsense-ros/issues/2807>`_ from SamerKhshiboun: Update _d585.urdf.xacro
+* PR `#2771 <https://github.com/intelrealsense/realsense-ros/issues/2771>`_ from SamerKhshiboun: SC urdf
+* Contributors: Arun-Prasad-V, Ashraf Kattoura, Nir Azkiel, Remi Bettan, Samer Khshiboun, adamwhats
+
 4.55.1 (2024-05-28)
 -------------------
 * PR `#2957 <https://github.com/IntelRealSense/realsense-ros/issues/2957>`_ from hellototoro: to_urdf fun retrun a str, not a BufferedRandom
