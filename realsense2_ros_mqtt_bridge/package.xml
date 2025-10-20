@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_ros_mqtt_bridge</name>
-  <version>4.57.3</version>
+  <version>4.57.4</version>
   <description>ROS-MQTT Brdige for realsense2_camera node</description>
   <maintainer email="samer.khshiboun@intel.com">Samer Khshiboun</maintainer>
   <license>Apache-2.0</license>
