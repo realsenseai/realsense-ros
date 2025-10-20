@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
     <name>realsense2_rviz_plugin</name>
-    <version>0.1.0</version>
+    <version>4.57.4</version>
     <description>
         A ROS 2 package providing an RViz plugin to display a combined topic of depth and color (RGBD) from a RealSense camera.
     </description>
