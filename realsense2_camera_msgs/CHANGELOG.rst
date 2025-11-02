@@ -2,6 +2,13 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update realsense2_camera_msgs package.xml to 4.57.4
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* Contributors: Remi Bettan
+
 4.57.3 (2025-09-15)
 -------------------
 * PR `#3417 <https://github.com/intelrealsense/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final

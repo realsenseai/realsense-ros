@@ -2,6 +2,15 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update realsense2_camera package.xml to 4.57.4
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* PR `#3437 <https://github.com/IntelRealSense/realsense-ros/issues/3437>`_ from Gilaadb: bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
+* bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
+* Contributors: Gilad Bretter, Nir Azkiel, Remi Bettan
+
 4.57.3 (2025-09-15)
 -------------------
 * PR `#3430 <https://github.com/intelrealsense/realsense-ros/issues/3430>`_ from Gilaadb: Create a singleton wrapper to rs2::context
