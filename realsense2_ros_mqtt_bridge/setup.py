@@ -19,7 +19,7 @@ package_name = 'realsense2_ros_mqtt_bridge'
 
 setup(
     name=package_name,
-    version='4.57.3',
+    version='4.57.4',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',

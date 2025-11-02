@@ -2,8 +2,8 @@
 Changelog for package realsense2_ros_mqtt_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.4 (2025-11-02)
+-------------------
 * Update realsense2__ros_mqtt_bridge package.xml to .57.4
 * PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
 * Merge tag '4.57.3' into ros2-development

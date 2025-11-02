@@ -2,8 +2,8 @@
 Changelog for package realsense2_rviz_plugin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.4 (2025-11-02)
+-------------------
 * Update realsense2_rgbd_plugin package.xml to 4.57.4
 * PR `#3387 <https://github.com/IntelRealSense/realsense-ros/issues/3387>`_ from NetanelBlumenfeld: add rgbd plug-in for rviz2
 * Update CMakeLists.txt CR year
