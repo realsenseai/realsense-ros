@@ -6,7 +6,8 @@
         A ROS 2 package providing an RViz plugin to display a combined topic of depth and color (RGBD) from a RealSense camera.
     </description>
 
-    <maintainer email="netanel.blumenfeld@intel.com">Your Name</maintainer>
+    <maintainer email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense ROS Team</maintainer>
+    <maintainer email="nir.azkiel@realsenseai.com">Nir Azkiel</maintainer>
     <license>Apache-2.0</license>
 
     <buildtool_depend>ament_cmake</buildtool_depend>
