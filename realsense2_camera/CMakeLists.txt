@@ -126,7 +126,7 @@ if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   find_package(realsense2-gl 2.57.0)
 endif()
 if(NOT realsense2_FOUND)
-    message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/IntelRealSense/librealsense/releases\n\n")
+    message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/realsenseai/librealsense/releases\n\n")
 endif()
 
 #set(CMAKE_NO_SYSTEM_FROM_IMPORTED true)

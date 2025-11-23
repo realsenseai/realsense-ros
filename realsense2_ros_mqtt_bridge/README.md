@@ -44,7 +44,7 @@
 - [Usage Example](#usage-example)
 
 # Installation  
-***This step assumes you have installed ROS environment and ROS Wrapper for Realsense Cameras (including RealSense SDK). For more info about these steps, click [here](https://github.com/IntelRealSense/realsense-ros/tree/ros2-development?tab=readme-ov-file)***
+***This step assumes you have installed ROS environment and ROS Wrapper for Realsense Cameras (including RealSense SDK). For more info about these steps, click [here](https://github.com/realsenseai/realsense-ros/tree/ros2-development?tab=readme-ov-file)***
 
   - Install paho-mqtt from https://pypi.org/project/paho-mqtt/2.1.0/
     ```

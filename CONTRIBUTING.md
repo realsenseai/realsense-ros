@@ -2,7 +2,7 @@
 
 This project welcomes third-party code via GitHub pull requests.
 
-You are welcome to propose and discuss enhancements using project [issues](https://github.com/IntelRealSense/realsense-ros/issues).
+You are welcome to propose and discuss enhancements using project [issues](https://github.com/realsenseai/realsense-ros/issues).
 
 > **Branching Policy**:
 > The `ros2-master` branch is considered stable, at all times.
@@ -10,19 +10,19 @@ You are welcome to propose and discuss enhancements using project [issues](https
 
 In addition, please run `pr_check.sh` under `scripts` directory. This scripts verify compliance with project's standards:
 
-1. Every example / source file must refer to [LICENSE](https://github.com/IntelRealSense/realsense-ros/blob/ros2-development/LICENSE)
+1. Every example / source file must refer to [LICENSE](https://github.com/realsenseai/realsense-ros/blob/ros2-development/LICENSE)
 2. Every example / source file must include correct copyright notice
 3. For indentation we are using spaces and not tabs
 4. Line-endings must be Unix and not DOS style
 
 Most common issues can be automatically resolved by running `./pr_check.sh --fix`
 
-Please familirize yourself with the [Apache License 2.0](https://github.com/IntelRealSense/realsense-ros/blob/ros2-development/LICENSE) before contributing.
+Please familirize yourself with the [Apache License 2.0](https://github.com/realsenseai/realsense-ros/blob/ros2-development/LICENSE) before contributing.
 
 ## Step-by-Step
 
 1. Make sure you have `git` and `cmake` installed on your system. On Windows we recommend using [Git Extensions](https://github.com/gitextensions/gitextensions/releases) for git bash.
-2. Run `git clone https://github.com/IntelRealSense/realsense-ros.git` and `cd realsense-ros`
+2. Run `git clone https://github.com/realsenseai/realsense-ros.git` and `cd realsense-ros`
 3. To align with latest status of the ros2-development branch, run:
 ```
 git fetch origin
@@ -34,7 +34,7 @@ git reset --hard origin/ros2-development
 6. Make sure your local git user is updated, or run `git config --global user.email "email@example.com"` and `git config --global user.user "user"` to set it up. This is the user & email that will appear in GitHub history.
 7. `git add -p` to select the changes you wish to add
 8. `git commit -m "Description of the change"`
-9. Make sure you have a GitHub user and [fork realsense-ros](https://github.com/IntelRealSense/realsense-ros#fork-destination-box)
+9. Make sure you have a GitHub user and [fork realsense-ros](https://github.com/realsenseai/realsense-ros#fork-destination-box)
 10. `git remote add fork https://github.com/username/realsense-ros.git` with your GitHub `username`
 11. `git fetch fork`
 12. `git push fork` to push `name_of_your_contribution` branch to your fork
