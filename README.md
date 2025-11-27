@@ -32,6 +32,15 @@
 
 <hr>
 
+## Important Notice
+
+We are happy to announce that the RealSense GitHub repositories have been successfully migrated to the RealSenseAI organization.
+Please make sure to update your links to the new RealSenseAI organization for both cloning the repositories and accessing specific files within them.
+
+[https://github.com/**IntelRealSense**/realsense-ros](https://github.com/IntelRealSense/realsense-ros) --> [https://github.com/**realsenseai**/realsense-ros](https://github.com/realsenseai/realsense-ros)
+
+Note: A redirection from the previous name IntelRealSense is currently in place, but we cannot guarantee how long it will remain active. We recommend that all users update their references to point to the new GitHub location.
+
 ## Table of contents
   * [ROS1 and ROS2 legacy](#ros1-and-ros2-legacy)
   * [Installation on Ubuntu](#installation-on-ubuntu)
