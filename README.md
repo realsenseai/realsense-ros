@@ -26,9 +26,9 @@
 [![ubuntu22][ubuntu22-badge]][ubuntu22]
 [![ubuntu20][ubuntu20-badge]][ubuntu20]
 
-![GitHubWorkflowStatus](https://img.shields.io/github/actions/workflow/status/IntelRealSense/realsense-ros/main.yml?logo=github&style=flat-square)
-[![GitHubcontributors](https://img.shields.io/github/contributors/IntelRealSense/realsense-ros?style=flat-square)](CONTRIBUTING.md)
-[![License](https://img.shields.io/github/license/IntelRealSense/realsense-ros?style=flat-square)](LICENSE)
+![GitHubWorkflowStatus](https://img.shields.io/github/actions/workflow/status/realsenseai/realsense-ros/main.yml?logo=github&style=flat-square)
+[![GitHubcontributors](https://img.shields.io/github/contributors/realsenseai/realsense-ros?style=flat-square)](CONTRIBUTING.md)
+[![License](https://img.shields.io/github/license/realsenseai/realsense-ros?style=flat-square)](LICENSE)
 
 <hr>
 
@@ -678,9 +678,9 @@ ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true a
 
 
 ## RViz2 Plugin  
-Custom Visualizations for Intel RealSense Camera RGBD Messages in RViz2
+Custom Visualizations for RealSense Camera RGBD Messages in RViz2
 
-This RViz2 plugin provides advanced and intuitive visualization of Intel RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
+This RViz2 plugin provides advanced and intuitive visualization of RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
 
 
 ### Features

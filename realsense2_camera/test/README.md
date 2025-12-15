@@ -74,11 +74,11 @@ Note: The below command helps view the steps taken by the build command.
 
 ### Prerequisites for running the tests
 
-1. The template tests require the rosbag files from librealsense.intel.comi, the following commands download them:
+1. The template tests require the rosbag files from realsenseai.com, the following commands download them:
 ```
-bag_filename="https://librealsense.intel.com/rs-tests/TestData/outdoors_1color.bag";
+bag_filename="https://realsenseai.com/rs-tests/TestData/outdoors_1color.bag";
 wget $bag_filename -P "records/"
-bag_filename="https://librealsense.intel.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
+bag_filename="https://realsenseai.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
 wget $bag_filename -P "records/"
 ```
 2. The tests use the environment variable ROSBAG_FILE_PATH as the directory that contains the rosbag files
@@ -102,9 +102,9 @@ So, all put together:
 
 ```
 sudo apt install  ros-$ROS_DISTRO-launch-pytest
-bag_filename="https://librealsense.intel.com/rs-tests/TestData/outdoors_1color.bag";
+bag_filename="https://realsenseai.com/rs-tests/TestData/outdoors_1color.bag";
 wget $bag_filename -P "records/"
-bag_filename="https://librealsense.intel.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
+bag_filename="https://realsenseai.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
 wget $bag_filename -P "records/"
 export ROSBAG_FILE_PATH=$PWD/records
 . install/local_setup.bash
