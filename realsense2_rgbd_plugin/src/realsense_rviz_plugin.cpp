@@ -19,7 +19,11 @@
 #include <rviz_rendering/render_window.hpp>
 
 #include <sensor_msgs/image_encodings.hpp>
-#include <cv_bridge/cv_bridge.h>
+#if defined(GALACTIC) || defined(FOXY) ||defined(HUMBLE) || defined(IRON) 
+  #include <cv_bridge/cv_bridge.h>
+#else
+  #include <cv_bridge/cv_bridge.hpp>
+#endif
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <OgreMaterialManager.h>
