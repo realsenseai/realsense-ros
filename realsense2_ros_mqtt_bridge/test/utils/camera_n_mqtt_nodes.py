@@ -95,7 +95,7 @@ def get_camera_device_info(device_type, serial_no):
         '''
         rs-enumerate-devices -S
         Device Name                   Serial Number       Firmware Version
-        RealSense D585S         416422320067        8.17.17151.218
+        Intel RealSense D585S         416422320067        8.17.17151.218
         Device info: 
             Name                          : RealSense D585S
             Serial Number                 : 416422320067

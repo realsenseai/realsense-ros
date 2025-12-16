@@ -450,7 +450,7 @@ void RealSenseNodeFactory::startDevice()
     std::string pid_str(_device.get_info(RS2_CAMERA_INFO_PRODUCT_ID));
     uint16_t pid;
 
-    if (device_name == "RealSense D555")
+    if (device_name == "Intel RealSense D555")
     {
         // currently the PID of DDS devices is hardcoded as "DDS"
         // need to be fixed in librealsense
