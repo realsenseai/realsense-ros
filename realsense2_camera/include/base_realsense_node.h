@@ -49,7 +49,7 @@
 #include <sensor_msgs/msg/imu.hpp>
 #include <nav_msgs/msg/grid_cells.hpp>
 
-#if defined(HUMBLE) || defined(IRON) || defined(JAZZY) 
+#if defined(HUMBLE) || defined(IRON) || defined(JAZZY) || defined(FOXY) 
 #include <tf2/LinearMath/Quaternion.h>
 #else
 #include <tf2/LinearMath/Quaternion.hpp>
