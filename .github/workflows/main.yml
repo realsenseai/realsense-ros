@@ -125,6 +125,7 @@ jobs:
         pip3 install numpy-quaternion tqdm pyyaml
         pip3 install typing_extensions
         pip3 install empy
+        pip install lark-parser
 
     - name: Run Tests
       run: |
