@@ -56,9 +56,8 @@ jobs:
         cd ${{github.workspace}}/ros2/src/realsense-ros/scripts
         ./pr_check.sh 
 
-    # setup-ros@v0.7.13 is needed to support humble/iron/rolling/jazzy/kilted
     - name: build ROS2 for humble/iron/rolling/jazzy/kilted
-      uses: ros-tooling/setup-ros@87aeba050fd62d0ee5d5fdf4b6c9f847892ea864 #v0.7.13
+      uses: ros-tooling/setup-ros@2b7b7e10fd30ff131dfb33248ddd71c5ba31dd30 #v0.7.15
       with:
         required-ros-distributions: ${{ matrix.ros_distro }}
 
@@ -124,6 +123,8 @@ jobs:
         pip3 install --force-reinstall numpy==1.26.4
         pip3 install numpy-quaternion tqdm pyyaml
         pip3 install typing_extensions
+        pip3 install empy
+        pip install lark-parser
 
     - name: Run Tests
       run: |
