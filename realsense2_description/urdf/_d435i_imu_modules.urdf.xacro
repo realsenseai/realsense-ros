@@ -18,7 +18,7 @@
 
 <!--
 This is the URDF model for the inertial modules of the
-Intel RealSense 435i camera.
+RealSense 435i camera.
 -->
 <robot name="d435i_imu_modules" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:macro name="d435i_imu_modules" params="name use_nominal_extrinsics">
