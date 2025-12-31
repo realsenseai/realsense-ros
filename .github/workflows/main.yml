@@ -124,6 +124,7 @@ jobs:
         pip3 install --force-reinstall numpy==1.26.4
         pip3 install numpy-quaternion tqdm pyyaml
         pip3 install typing_extensions
+        pip3 install empy
 
     - name: Run Tests
       run: |
