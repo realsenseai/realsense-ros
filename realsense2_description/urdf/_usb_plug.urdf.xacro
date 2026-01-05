@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-# Copyright 2023 Intel Corporation. All Rights Reserved.
+# Copyright 2023 RealSense, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ aluminum peripherial evaluation case.
         <origin xyz="0. -0.022425 0." rpy="0 0 ${M_PI/2}"/>
         <geometry>
           <!--box size="0.044850 0.008 0.0185" /-->
-          <mesh filename="file://$(find realsense2_description)/meshes/plug.stl" />
+          <mesh filename="package://realsense2_description/meshes/plug.stl" />
         </geometry>
         <material name="plastic"/>
       </visual>
@@ -44,7 +44,7 @@ aluminum peripherial evaluation case.
         <origin xyz="0. -0.022425 0." rpy="0 0 ${M_PI/2}"/>
         <geometry>
           <!--box size="0.044850 0.008 0.0185" /-->
-          <mesh filename="file://$(find realsense2_description)/meshes/plug_collision.stl" />
+          <mesh filename="package://realsense2_description/meshes/plug_collision.stl" />
         </geometry>
       </collision>
     </link>

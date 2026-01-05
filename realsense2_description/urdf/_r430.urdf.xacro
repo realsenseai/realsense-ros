@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-# Copyright 2023 Intel Corporation. All Rights Reserved.
+# Copyright 2023 RealSense, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ aluminum peripherial evaluation case.
       <origin xyz="0 ${-r430_cam_mount_from_center_offset} ${r430_cam_height/2}" rpy="${M_PI/2} 0 ${M_PI/2}"/>
         <geometry>
           <box size="${r430_cam_width} ${r430_cam_height} ${r430_cam_depth}"/>
-          <!--<mesh filename="file://$(find realsense2_description)/meshes/r430/r430.dae" />-->
+          <!--<mesh filename="package://realsense2_description/meshes/r430/r430.dae" />-->
         </geometry>
         <material name="aluminum"/>
       </visual>

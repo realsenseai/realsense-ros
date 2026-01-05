@@ -1,4 +1,4 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
+// Copyright 2023 RealSense, Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 #include "ros_node_base.h"
 
 #define REALSENSE_ROS_MAJOR_VERSION    4
-#define REALSENSE_ROS_MINOR_VERSION    56
-#define REALSENSE_ROS_PATCH_VERSION    4
+#define REALSENSE_ROS_MINOR_VERSION    57
+#define REALSENSE_ROS_PATCH_VERSION    3
 
 #define STRINGIFY(arg) #arg
 #define VAR_ARG_STRING(arg) STRINGIFY(arg)
@@ -66,7 +66,10 @@ namespace realsense2_camera
     const uint16_t RS405_PID        = 0x0B5B; // DS5U
     const uint16_t RS455_PID        = 0x0B5C; // D455
     const uint16_t RS457_PID        = 0xABCD; // D457
+    const uint16_t RS_D585_PID      = 0x0B6A; // D585, D for depth
+    const uint16_t RS_D585S_PID     = 0x0B6B; // D585S, S for safety
     const uint16_t RS555_PID        = 0x0B56; // D555
+    const uint16_t RS436_PID        = 0x1156; // D436
 
     const bool ALLOW_NO_TEXTURE_POINTS = false;
     const bool ORDERED_PC     = false;

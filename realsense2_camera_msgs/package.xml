@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_camera_msgs</name>
-  <version>4.56.4</version>
+  <version>4.57.4</version>
   <description>RealSense camera_msgs package containing realsense camera messages definitions</description>
   <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
   <license>Apache License 2.0</license>
@@ -17,7 +17,6 @@
   <build_depend>builtin_interfaces</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
-  <build_depend>action_msgs</build_depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>builtin_interfaces</exec_depend>

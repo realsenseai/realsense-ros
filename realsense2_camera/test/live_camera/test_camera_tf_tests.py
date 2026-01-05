@@ -1,4 +1,4 @@
-# Copyright 2023 Intel Corporation. All Rights Reserved.
+# Copyright 2023 RealSense, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -220,4 +220,70 @@ class TestCamera_TestTF_DYN(pytest_rs_utils.RsTestBaseClass):
         assert ret[0], ret[1]
         #return True, ""
 
+        return True, ""
+
+
+test_params_tf_prefix_d455 = {
+    'camera_name': 'D455',
+    'device_type': 'D455',
+    'publish_tf': 'true',
+    'tf_publish_rate': '1.1',
+    'tf_prefix': 'robot1/',
+    'enable_depth': 'true',
+    'enable_color': 'true',
+    'enable_gyro': 'true',
+    'enable_accel': 'true'
+    }
+@pytest.mark.parametrize("launch_descr_with_parameters", [
+    pytest.param(test_params_tf_prefix_d455, marks=pytest.mark.d455),
+    ],indirect=True)
+@pytest.mark.launch(fixture=launch_descr_with_parameters)
+class TestCamera_TestTF_Prefix(pytest_rs_utils.RsTestBaseClass):
+    def test_camera_test_tf_prefix(self,launch_descr_with_parameters):
+        self.params = launch_descr_with_parameters[1]
+        if pytest_live_camera_utils.check_if_camera_connected(self.params['device_type']) == False:
+            print("Device not found? : " + self.params['device_type'])
+            assert False
+            return
+        themes = [
+        {'topic':'/tf',
+         'msg_type':msg_TFMessage,
+         'expected_data_chunks':3,
+         'qos': QoSProfile(depth=100,durability=DurabilityPolicy.VOLATILE,history=HistoryPolicy.KEEP_LAST,)
+        },
+        {'topic':'/tf_static',
+         'msg_type':msg_TFMessage,
+         'expected_data_chunks':1,
+         'qos': QoSProfile(depth=100,durability=DurabilityPolicy.TRANSIENT_LOCAL,history=HistoryPolicy.KEEP_LAST,)
+        }
+        ]
+        try:
+            self.init_test("RsTest"+self.params['camera_name'])
+            self.wait_for_node(self.params['camera_name'])
+            self.create_service_client_ifs(get_node_heirarchy(self.params))
+            ret = self.run_test(themes, timeout=10)
+            assert ret[0], ret[1]
+            ret = self.process_data(themes)
+            assert ret[0], ret[1]
+        finally:
+            self.shutdown()
+
+    def process_data(self, themes):
+        prefix = self.params['tf_prefix']
+        frame_ids = [
+            prefix + self.params['camera_name']+'_link', 
+            prefix + self.params['camera_name']+'_depth_frame', 
+            prefix + self.params['camera_name']+'_color_frame'
+        ]
+        data = self.node.pop_first_chunk('/tf_static')
+        print(data)
+        ret = self.check_transform_data(data, frame_ids, True)
+        assert ret[0], ret[1]
+        
+        # Check dynamic transforms
+        for _ in range(3):  # We expect 3 chunks as per expected_data_chunks
+            data = self.node.pop_first_chunk('/tf')
+            ret = self.check_transform_data(data, frame_ids)
+            assert ret[0], ret[1]
+        
         return True, ""

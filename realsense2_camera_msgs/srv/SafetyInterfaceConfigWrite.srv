@@ -1,0 +1,4 @@
+string safety_interface_config
+---
+bool success
+string error_message

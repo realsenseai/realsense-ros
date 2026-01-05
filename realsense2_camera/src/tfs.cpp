@@ -1,4 +1,4 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
+// Copyright 2023 RealSense, Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -175,18 +175,37 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
 
     float3 trans{tf_ex.translation[0], tf_ex.translation[1], tf_ex.translation[2]};
 
-    // Rotation order is important (start from left to right):
-    // 1. quaternion_optical.inverse() [ROS -> Optical]
-    // 2. Q [Optical -> Optical] (usually no rotation, but might be very small rotations between sensors, like from Depth to Color)
-    // 3. quaternion_optical [Optical -> ROS]
-    // We do all these products since we want to finish in ROS CS, while Q is a rotation from optical to optical,
-    // and cant be used directly in ROS TF without this combination 
-    Q = quaternion_optical * Q * quaternion_optical.inverse();
+    if(profile.stream_type() == RS2_STREAM_LABELED_POINT_CLOUD ||
+       profile.stream_type() == RS2_STREAM_OCCUPANCY)
+    {
+        // e.g. tf_ex will include the 
+        // Extrinsics from "Labeled Point Cloud" to "Depth" which is:
+        // - Rotation matrix from Depth (Optical CS) to Labeled Point Cloud (Robot CS)
+        // - Translation vector in the Optical CS
+        
+        // We take optical rotation (quaternion_optical) and rotate it by Q (which rotates from optical to lpcl/occupancy robot CS)
+        // Order is important (from left to right)
+        Q = Q * quaternion_optical;
 
-    // The translation vector is in the Optical CS, and we convert it to ROS CS inside append_static_tf_msg
-    append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, FRAME_ID(sip));
-    
-     // Transform stream frame from ROS CS to optical CS and publish it
+        // We still use the same translation vector (trans) since it is already in the optical CS
+        // and inside append_static_tf_msg we always convert translation to Robot CS
+        append_static_tf_msg(transform_ts_, trans, Q, BASE_FRAME_ID, FRAME_ID(sip));
+    }
+    else
+    {
+        // Rotation order is important (start from left to right):
+        // 1. quaternion_optical.inverse() [ROS -> Optical]
+        // 2. Q [Optical -> Optical] (usually no rotation, but might be very small rotations between sensors, like from Depth to Color)
+        // 3. quaternion_optical [Optical -> ROS]
+        // We do all these products since we want to finish in ROS CS, while Q is a rotation from optical to optical,
+        // and cant be used directly in ROS TF without this combination 
+        Q = quaternion_optical * Q * quaternion_optical.inverse();
+
+        // Also here, the translation vector is in the Optical CS, and we convert it to ROS CS inside append_static_tf_msg
+        append_static_tf_msg(transform_ts_, trans, Q, BASE_FRAME_ID, FRAME_ID(sip));
+    }
+
+    // Transform stream frame from ROS CS to optical CS and publish it
     // We are using zero translation vector here, since no translation between frame and optical_frame, but only rotation
     append_static_tf_msg(transform_ts_, zero_trans, quaternion_optical, FRAME_ID(sip), OPTICAL_FRAME_ID(sip));
 
@@ -194,7 +213,7 @@ void BaseRealSenseNode::calcAndAppendTransformMsgs(const rs2::stream_profile& pr
                 profile.stream_type() != RS2_STREAM_DEPTH &&
                 profile.stream_index() == 1)
     {
-        append_static_tf_msg(transform_ts_, trans, Q, _base_frame_id, ALIGNED_DEPTH_TO_FRAME_ID(sip));
+        append_static_tf_msg(transform_ts_, trans, Q, BASE_FRAME_ID, ALIGNED_DEPTH_TO_FRAME_ID(sip));
         append_static_tf_msg(transform_ts_, zero_trans, quaternion_optical, 
                                                 ALIGNED_DEPTH_TO_FRAME_ID(sip), OPTICAL_FRAME_ID(sip));
     }
@@ -210,14 +229,14 @@ void BaseRealSenseNode::eraseTransformMsgs(const stream_index_pair& sip, const r
 {
     std::lock_guard<std::mutex> lock_guard(_publish_tf_mutex);
 
-    erase_static_tf_msg(_base_frame_id, FRAME_ID(sip));
+    erase_static_tf_msg(BASE_FRAME_ID, FRAME_ID(sip));
     erase_static_tf_msg(FRAME_ID(sip), OPTICAL_FRAME_ID(sip));
 
     if (profile.is<rs2::video_stream_profile>() &&
                 profile.stream_type() != RS2_STREAM_DEPTH &&
                 profile.stream_index() == 1)
     {
-        erase_static_tf_msg(_base_frame_id, ALIGNED_DEPTH_TO_FRAME_ID(sip));
+        erase_static_tf_msg(BASE_FRAME_ID, ALIGNED_DEPTH_TO_FRAME_ID(sip));
         erase_static_tf_msg(ALIGNED_DEPTH_TO_FRAME_ID(sip), OPTICAL_FRAME_ID(sip));
     }
 

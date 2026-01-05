@@ -1,4 +1,4 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
+// Copyright 2023 RealSense, Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,9 @@ namespace realsense2_camera
     const stream_index_pair INFRA2{RS2_STREAM_INFRARED, 2};
     const stream_index_pair GYRO{RS2_STREAM_GYRO, 0};
     const stream_index_pair ACCEL{RS2_STREAM_ACCEL, 0};
+    const stream_index_pair SAFETY{RS2_STREAM_SAFETY, 0};
+    const stream_index_pair LABELED_POINT_CLOUD{RS2_STREAM_LABELED_POINT_CLOUD, 0};
+    const stream_index_pair OCCUPANCY{RS2_STREAM_OCCUPANCY, 0};
     const stream_index_pair MOTION{RS2_STREAM_MOTION, 0};
 
     bool isValidCharInName(char c);

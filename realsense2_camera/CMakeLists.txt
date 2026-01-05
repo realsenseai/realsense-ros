@@ -1,4 +1,4 @@
-# Copyright 2024 Intel Corporation. All Rights Reserved.
+# Copyright 2024 RealSense, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,9 +121,9 @@ find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
 
-find_package(realsense2 2.56)
+find_package(realsense2 2.57.0)
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
-  find_package(realsense2-gl 2.56)
+  find_package(realsense2-gl 2.57.0)
 endif()
 if(NOT realsense2_FOUND)
     message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/IntelRealSense/librealsense/releases\n\n")
@@ -152,6 +152,7 @@ set(SOURCES
     src/image_publisher.cpp
     src/tfs.cpp
     src/actions.cpp
+    src/safety.cpp
   )
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
@@ -205,6 +206,7 @@ if (BUILD_ACCELERATE_GPU_WITH_GLSL)
 endif()
 
 set(INCLUDES
+    include/context_singleton_wrapper.h
     include/constants.h
     include/realsense_node_factory.h
     include/base_realsense_node.h
@@ -391,7 +393,7 @@ if(BUILD_TESTING)
     get_filename_component(_test_name ${file} NAME_WE)
     ament_add_pytest_test(${_test_name} ${file}
       APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_SOURCE_DIR}/test/utils:${CMAKE_SOURCE_DIR}/launch:${CMAKE_SOURCE_DIR}/scripts
-      TIMEOUT 60
+      TIMEOUT 120
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
     endforeach()

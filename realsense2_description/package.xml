@@ -2,8 +2,8 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_description</name>
-  <version>4.56.4</version>
-  <description>RealSense description package for Intel 3D D400 cameras</description>
+  <version>4.57.4</version>
+  <description>RealSense description package for RealSense 3D D400 cameras</description>
   <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
   <license>Apache License 2.0</license>
   
@@ -20,8 +20,6 @@
   
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>xacro</exec_depend>
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
