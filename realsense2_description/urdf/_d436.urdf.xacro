@@ -18,7 +18,7 @@
 
 <!--
 This is the URDF model for the Intel RealSense D436 camera, in its
-aluminum peripherial evaluation case.
+aluminum peripheral evaluation case.
 -->
 
 <robot name="sensor_d436" xmlns:xacro="http://ros.org/wiki/xacro">
@@ -36,9 +36,9 @@ aluminum peripherial evaluation case.
     <xacro:property name="d436_cam_depth_to_color_offset_y" value="0.015"/>
     <xacro:property name="d436_cam_depth_to_color_offset_x" value="-0.00555"/>
 
-    <!-- The following values model the aluminum peripherial case for the
+    <!-- The following values model the aluminum peripheral case for the
   	d436 camera, with the camera joint represented by the actual
-  	peripherial camera tripod mount -->
+  	peripheral camera tripod mount -->
     <xacro:property name="d436_cam_width" value="0.090"/>
     <xacro:property name="d436_cam_height" value="0.025"/>
     <xacro:property name="d436_cam_depth" value="0.02505"/>
@@ -49,7 +49,7 @@ aluminum peripherial evaluation case.
     <!-- convenience precomputation to avoid clutter-->
     <xacro:property name="d436_mesh_x_offset" value="${d436_cam_mount_from_center_offset-d436_glass_to_front-d436_zero_depth_to_glass}"/>
 
-    <!-- The following offset is relative to the physical d436 camera peripherial
+    <!-- The following offset is relative to the physical d436 camera peripheral
   	camera tripod mount -->
     <xacro:property name="d436_cam_depth_px" value="${d436_cam_mount_from_center_offset}"/>
     <xacro:property name="d436_cam_depth_py" value="0.0175"/>
