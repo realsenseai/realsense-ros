@@ -2,8 +2,8 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_camera</name>
-  <version>4.56.4</version>
-  <description>RealSense camera package allowing access to Intel D400 3D cameras</description>
+  <version>4.57.4</version>
+  <description>RealSense camera package allowing access to RealSense D400 3D cameras</description>
   <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
   <license>Apache License 2.0</license>
   

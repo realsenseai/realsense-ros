@@ -1,4 +1,4 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
+// Copyright 2023 RealSense, Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,9 @@
 #include "realsense2_camera_msgs/srv/device_info.hpp"
 #include "realsense2_camera_msgs/srv/calib_config_read.hpp"
 #include "realsense2_camera_msgs/srv/calib_config_write.hpp"
+#include "realsense2_camera_msgs/srv/application_config_read.hpp"
+#include "realsense2_camera_msgs/srv/application_config_write.hpp"
+#include "realsense2_camera_msgs/srv/hardware_monitor_command_send.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "realsense2_camera_msgs/action/triggered_calibration.hpp"
 #include <librealsense2/hpp/rs_processing.hpp>
@@ -44,6 +47,7 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
+#include <nav_msgs/msg/grid_cells.hpp>
 
 #if defined(HUMBLE) || defined(IRON) || defined(JAZZY) 
 #include <tf2/LinearMath/Quaternion.h>
@@ -68,15 +72,22 @@
 #include <atomic>
 #include <thread>
 
+//Safety Camera
+#include "realsense2_camera_msgs/srv/safety_preset_read.hpp"
+#include "realsense2_camera_msgs/srv/safety_preset_write.hpp"
+#include "realsense2_camera_msgs/srv/safety_interface_config_read.hpp"
+#include "realsense2_camera_msgs/srv/safety_interface_config_write.hpp"
+
 using realsense2_camera_msgs::msg::Extrinsics;
 using realsense2_camera_msgs::msg::IMUInfo;
 using realsense2_camera_msgs::msg::RGBD;
 
-#define FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << STREAM_NAME(sip) << "_frame")).str()
-#define IMU_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_imu_frame")).str()
-#define IMU_OPTICAL_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_imu_optical_frame")).str()
-#define OPTICAL_FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << STREAM_NAME(sip) << "_optical_frame")).str()
-#define ALIGNED_DEPTH_TO_FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _camera_name << "_" << "aligned_depth_to_" << STREAM_NAME(sip) << "_frame")).str()
+#define BASE_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _tf_prefix << _base_frame_id)).str()
+#define FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _tf_prefix << _camera_name << "_" << STREAM_NAME(sip) << "_frame")).str()
+#define IMU_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _tf_prefix << _camera_name << "_imu_frame")).str()
+#define IMU_OPTICAL_FRAME_ID (static_cast<std::ostringstream&&>(std::ostringstream() << _tf_prefix << _camera_name << "_imu_optical_frame")).str()
+#define OPTICAL_FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _tf_prefix << _camera_name << "_" << STREAM_NAME(sip) << "_optical_frame")).str()
+#define ALIGNED_DEPTH_TO_FRAME_ID(sip) (static_cast<std::ostringstream&&>(std::ostringstream() << _tf_prefix << _camera_name << "_" << "aligned_depth_to_" << STREAM_NAME(sip) << "_frame")).str()
 
 namespace realsense2_camera
 {
@@ -201,6 +212,30 @@ namespace realsense2_camera
         void eraseTransformMsgs(const stream_index_pair& sip, const rs2::stream_profile& profile);
         void setup();
 
+        //Safety Camera
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetRead>::SharedPtr _safety_preset_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyPresetWrite>::SharedPtr _safety_preset_write_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigRead>::SharedPtr _safety_interface_config_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite>::SharedPtr _safety_interface_config_write_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::ApplicationConfigRead>::SharedPtr _application_config_read_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::ApplicationConfigWrite>::SharedPtr _application_config_write_srv;
+        rclcpp::Service<realsense2_camera_msgs::srv::HardwareMonitorCommandSend>::SharedPtr _hardware_monitor_command_send_srv;
+
+        void SafetyPresetReadService(const realsense2_camera_msgs::srv::SafetyPresetRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyPresetRead::Response::SharedPtr res);
+        void SafetyPresetWriteService(const realsense2_camera_msgs::srv::SafetyPresetWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyPresetWrite::Response::SharedPtr res);
+        void SafetyInterfaceConfigReadService(const realsense2_camera_msgs::srv::SafetyInterfaceConfigRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyInterfaceConfigRead::Response::SharedPtr res);
+        void SafetyInterfaceConfigWriteService(const realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::SafetyInterfaceConfigWrite::Response::SharedPtr res);
+        void ApplicationConfigReadService(const realsense2_camera_msgs::srv::ApplicationConfigRead::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::ApplicationConfigRead::Response::SharedPtr res);
+        void ApplicationConfigWriteService(const realsense2_camera_msgs::srv::ApplicationConfigWrite::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::ApplicationConfigWrite::Response::SharedPtr res);
+        void HardwareMonitorCommandSendService(const realsense2_camera_msgs::srv::HardwareMonitorCommandSend::Request::SharedPtr req,
+                                 realsense2_camera_msgs::srv::HardwareMonitorCommandSend::Response::SharedPtr res);
+
     private:
         class CimuData
         {
@@ -238,6 +273,9 @@ namespace realsense2_camera
         void startDynamicTf();
         void publishDynamicTransforms();
         void publishPointCloud(rs2::points f, const rclcpp::Time& t, const rs2::frameset& frameset);
+        void publishOccupancyFrame(rs2::frame f, const rclcpp::Time& t);
+        void publishLabeledPointCloud(rs2::labeled_points lpc, const rclcpp::Time& t);
+        bool shouldPublishCameraInfo(const stream_index_pair& sip);
         Extrinsics rsExtrinsicsToMsg(const rs2_extrinsics& extrinsics) const;
         IMUInfo getImuInfo(const rs2::stream_profile& profile);
         void initializeFormatsMaps();
@@ -333,7 +371,8 @@ namespace realsense2_camera
 
         bool _use_intra_process;      
         std::map<stream_index_pair, std::shared_ptr<image_publisher>> _image_publishers;
-        
+        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _labeled_pointcloud_publisher;
+        rclcpp::Publisher<nav_msgs::msg::GridCells>::SharedPtr _occupancy_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr> _imu_publishers;
         std::shared_ptr<SyncedImuPublisher> _synced_imu_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> _info_publishers;
@@ -386,12 +425,20 @@ namespace realsense2_camera
         std::shared_ptr<diagnostic_updater::Updater> _diagnostics_updater;
         rs2::stream_profile _base_profile;
 
+        //Safety Camera
+        rs2::sensor* _safety_sensor;
+        void setSafetySensorIfAvailable();
+        void publishSafetyServices();
+
+
 #if defined (ACCELERATE_GPU_WITH_GLSL)
         GLwindow _app;
         rclcpp::TimerBase::SharedPtr _timer;
         bool _accelerate_gpu_with_glsl;
         bool _is_accelerate_gpu_with_glsl_changed;
 #endif
+
+std::string _tf_prefix;
 
     };//end class
 }

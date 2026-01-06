@@ -1,4 +1,4 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
+// Copyright 2023 RealSense, Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,6 @@ namespace realsense2_camera
         RosNodeBase::SharedPtr _node;
         rs2::device _device;
         std::unique_ptr<BaseRealSenseNode> _realSenseNode;
-        rs2::context _ctx;
         std::string _serial_no;
         std::string _usb_port_id;
         std::string _device_type;

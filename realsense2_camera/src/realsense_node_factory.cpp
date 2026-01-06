@@ -1,4 +1,4 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
+// Copyright 2023 RealSense, Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "../include/realsense_node_factory.h"
-#include "../include/base_realsense_node.h"
+#include "realsense_node_factory.h"
+#include "base_realsense_node.h"
+#include "context_singleton_wrapper.h"
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -327,8 +328,8 @@ void RealSenseNodeFactory::init()
 #endif
         // Using `getOrDeclareParameter()` to avoid re-declaration issues
         _serial_no = _parameters->getOrDeclareParameter<std::string>("serial_no", "");
-        _usb_port_id = _parameters->getOrDeclareParameter<std::string>("_usb_port_id", "");
-        _device_type = _parameters->getOrDeclareParameter<std::string>("_device_type", "");
+        _usb_port_id = _parameters->getOrDeclareParameter<std::string>("usb_port_id", "");
+        _device_type = _parameters->getOrDeclareParameter<std::string>("device_type", "");
         _wait_for_device_timeout = _parameters->getOrDeclareParameter<double>("wait_for_device_timeout", -1.0);
         _reconnect_timeout = _parameters->getOrDeclareParameter<double>("reconnect_timeout", 6.0);
 
@@ -340,8 +341,7 @@ void RealSenseNodeFactory::init()
         {
             {
                 ROS_INFO_STREAM("publish topics from rosbag file: " << rosbag_filename.c_str());
-                rs2::context ctx;
-                _device = ctx.load_device(rosbag_filename.c_str());
+                _device = RSContextSingletonWrapper::getInstance().load_device(rosbag_filename.c_str());
                 _serial_no = _device.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER);
             }
             if (_device)
@@ -393,11 +393,11 @@ void RealSenseNodeFactory::init()
                 {
                     try
                     {
-                        getDevice(_ctx.query_devices());
+                        getDevice(RSContextSingletonWrapper::getInstance().query_devices());
                         if (_device)
                         {
                             std::function<void(rs2::event_information&)> change_device_callback_function = [this](rs2::event_information& info){changeDeviceCallback(info);};
-                            _ctx.set_devices_changed_callback(change_device_callback_function);
+                            RSContextSingletonWrapper::getInstance().set_devices_changed_callback(change_device_callback_function);
                             // unconfigure lifecycle state ends here for lifecycled node
                             #ifndef USE_LIFECYCLE_NODE
                             startDevice();
@@ -481,7 +481,10 @@ void RealSenseNodeFactory::startDevice()
         case RS455_PID:
         case RS457_PID:
         case RS555_PID:
+        case RS436_PID:
         case RS_USB2_PID:
+        case RS_D585_PID:
+        case RS_D585S_PID:
             _realSenseNode = std::unique_ptr<BaseRealSenseNode>(new BaseRealSenseNode(*this, _device, _parameters, this->get_node_options().use_intra_process_comms()));
             break;
         default:
@@ -520,7 +523,7 @@ void RealSenseNodeFactory::closeDevice()
     if (_device)
     {
         ROS_INFO("Closing RealSense device...");
-        _ctx.set_devices_changed_callback([](rs2::event_information&) {});
+        RSContextSingletonWrapper::getInstance().set_devices_changed_callback([](rs2::event_information&) {});
 
         // To go into unconfigured lifecycle state for lifecycled node we have to also disconnect the device
         _device = rs2::device();

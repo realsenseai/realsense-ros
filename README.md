@@ -1,10 +1,15 @@
 
-<h1 align="center">
-   <img src="https://www.intelrealsense.com/wp-content/uploads/2020/09/intel-realsense-logo-360px.png" alt="Intel® RealSense™" title="Intel® RealSense™" />
-</h1>
+<p align="center">
+  <!-- Light mode -->
+  <img src="res/realsense-logo-light-mode.png#gh-light-mode-only" alt="Logo for light mode" width="70%"/>
+
+  <!-- Dark mode -->
+  <img src="res/realsense-logo-dark-mode.png#gh-dark-mode-only" alt="Logo for dark mode" width="70%"/>
+  <br><br>
+</p>
 
 <p align="center">
-  ROS Wrapper for Intel(R) RealSense(TM) Cameras<br>
+  ROS Wrapper for RealSense(TM) Cameras<br>
   <a href="https://github.com/IntelRealSense/realsense-ros/releases">Latest release notes</a>
 </p>
 
@@ -27,15 +32,6 @@
 
 <hr>
 
-## Important Notice
-
-We are happy to announce that the RealSense GitHub repositories have been successfully migrated to the RealSenseAI organization.
-Please make sure to update your links to the new RealSenseAI organization for both cloning the repositories and accessing specific files within them.
-
-[https://github.com/**IntelRealSense**/realsense-ros](https://github.com/IntelRealSense/realsense-ros) --> [https://github.com/**realsenseai**/realsense-ros](https://github.com/realsenseai/realsense-ros)
-
-Note: A redirection from the previous name IntelRealSense is currently in place, but we cannot guarantee how long it will remain active. We recommend that all users update their references to point to the new GitHub location.
-
 ## Table of contents
   * [ROS1 and ROS2 legacy](#ros1-and-ros2-legacy)
   * [Installation on Ubuntu](#installation-on-ubuntu)
@@ -50,11 +46,14 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
      * [Extrinsics from sensor A to sensor B](#extrinsics-from-sensor-a-to-sensor-b)
      * [Topics](#published-topics)
      * [RGBD Topic](#rgbd-topic)
+     * [RViz2 Plugin](#rviz2-plugin)
      * [Metadata Topic](#metadata-topic)
      * [Post-Processing Filters](#post-processing-filters)
      * [Available Services](#available-services)
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
+     * [Logging](#logging)
+  * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
 
@@ -64,9 +63,9 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
 
 <details>
   <summary>
-    ROS1 Wrapper for Intel® RealSense™ cameras
+    ROS1 Wrapper for RealSense™ cameras
   </summary>
-    ROS1 Wrapper for Intel® RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
+    ROS1 Wrapper for RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
     For ROS1 wrapper, go to <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros1-legacy">ros1-legacy</a> branch
 </details>
 
@@ -82,7 +81,7 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
           - ros2 launch realsense2_camera rs_launch.py depth_width:=640 depth_height:=480 depth_fps:=30.0 infra1_width:=640 infra1_height:=480 infra1_fps:=30.0
         - **ROS2-master (New)**:
           - ros2 launch realsense2_camera rs_launch.py depth_module.profile:=640x480x30
-    - Removed paramets **\<stream>_frame_id**, **\<stream>_optical_frame_id**. frame_ids are now defined by camera_name
+    - Removed parameters **\<stream>_frame_id**, **\<stream>_optical_frame_id**. frame_ids are now defined by camera_name
     - **"filters"** is removed. All filters (or post-processing blocks) are enabled/disabled using **"\<filter>.enable"**
     - **"align_depth"** is now a regular processing block and as such the parameter for enabling it is replaced with **"align_depth.enable"**
     - **"allow_no_texture_points"**, **"ordered_pc"** are now belong to the pointcloud filter and as such are replaced by **"pointcloud.allow_no_texture_points"**, **"pointcloud.ordered_pc"**
@@ -115,12 +114,12 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
   
 <details>
   <summary>
-    Step 2: Install latest Intel&reg; RealSense&trade; SDK 2.0
+    Step 2: Install latest RealSense&trade; SDK 2.0
   </summary>
 
   **Please choose only one option from the 3 options below (in order to prevent multiple versions installation and workspace conflicts)**
 
-- #### Option 1: Install librealsense2 debian package from Intel servers
+- #### Option 1: Install librealsense2 debian package from RealSense servers
   - Jetson users - use the [Jetson Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_jetson.md)
   - Otherwise, install from [Linux Debian Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md#installing-the-packages)
     - In this case treat yourself as a developer: make sure to follow the instructions to also install librealsense2-dev and librealsense2-dkms packages
@@ -131,14 +130,14 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
     - For example, for Humble distro: ```sudo apt install ros-humble-librealsense2*```
 
 - #### Option 3: Build from source
-  - Download the latest [Intel&reg; RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
+  - Download the latest [RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
   - Follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
 </details>
   
 <details>
   <summary>
-    Step 3: Install ROS Wrapper for Intel&reg; RealSense&trade; cameras
+    Step 3: Install ROS Wrapper for RealSense&trade; cameras
   </summary>
   
 #### Option 1: Install debian package from ROS servers (Foxy EOL distro is not supported by this option):
@@ -154,7 +153,7 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
       cd ~/ros2_ws/src/
       ```
   
-  - Clone the latest ROS Wrapper for Intel&reg; RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
+  - Clone the latest ROS Wrapper for RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
       ```bashrc
       git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
       cd ~/ros2_ws
@@ -186,7 +185,7 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
 <hr>
 
 # Installation on Windows
-  **PLEASE PAY ATTENTION: ROS Wrapper for Intel&reg; RealSense&trade; cameras is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
+  **PLEASE PAY ATTENTION: ROS Wrapper for RealSense&trade; cameras is not meant to be supported on Windows by our team, since ROS2 and its packages are still not fully supported over Windows. We added these installation steps below in order to try and make it easier for users who already started working with ROS2 on Windows and want to take advantage of the capabilities of our RealSense cameras**
 
 <details>
   <summary>
@@ -205,7 +204,7 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
     - [ROS2 Foxy](https://docs.ros.org/en/foxy/Installation/Windows-Install-Binary.html)
   - Microsoft IOT binary installation:
     - https://ms-iot.github.io/ROSOnWindows/GettingStarted/SetupRos2.html
-    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for Intel&reg; RealSense&trade; cameras)
+    - Pay attention that the examples of install are for Foxy distro (which is not supported anymore by ROS Wrapper for RealSense&trade; cameras)
 	- Please replace the word "Foxy" with Humble, Iron, Jazzy or Kilted, depends on the chosen distro.
 </details>
   
@@ -214,8 +213,8 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
     Step 2: Download RealSense&trade; ROS2 Wrapper and RealSense&trade; SDK 2.0 source code from github:
   </summary>
   
-- Download ROS Wrapper for Intel&reg; RealSense&trade; cameras source code from [ROS Wrapper for Intel&reg; RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
-- Download the corrosponding supported Intel&reg; RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose fronm the link above
+- Download ROS Wrapper for RealSense&trade; cameras source code from [ROS Wrapper for RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
+- Download the corresponding supported RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose from the link above
 - Place the librealsense folder inside the realsense-ros folder, to make the librealsense package set beside realsense2_camera, realsense2_camera_msgs and realsense2_description packages
 </details>
   
@@ -331,7 +330,7 @@ User can set the camera name and camera namespace, to distinguish between camera
     
   ```ros2 launch realsense2_camera rs_launch.py camera_namespace:=robot1 camera_name:=D455_1```
     
-  - With ros2 run (using remapping mechanisim [Reference](https://docs.ros.org/en/humble/How-To-Guides/Node-arguments.html)):
+  - With ros2 run (using remapping mechanism [Reference](https://docs.ros.org/en/humble/How-To-Guides/Node-arguments.html)):
     
   ```ros2 run realsense2_camera realsense2_camera_node --ros-args -r __node:=D455_1 -r __ns:=/robot1```
 
@@ -368,7 +367,7 @@ User can set the camera name and camera namespace, to distinguish between camera
   /robot1/D455_1/set_parameters_atomically
   ```
 
-### Default behavior if non of these parameters are given:
+### Default behavior if none of these parameters are given:
   - camera_namespace:=camera
   - camera_name:=camera
 
@@ -456,7 +455,7 @@ User can set the camera name and camera namespace, to distinguish between camera
     - If **publish_tf:=false**, then no TFs will be published, even if **tf_publish_rate** is >0.0 Hz
     - If **publish_tf:=true** and **tf_publish_rate** set to >0.0 Hz, then dynamic TFs will be published at the specified rate
 - **unite_imu_method**:
-  - For the D400 cameras with built in IMU components, below 2 unrelated streams (each with it's own frequency) will be created:
+  - For the D400 cameras with built in IMU components, below 2 unrelated streams (each with its own frequency) will be created:
     - *gyro* - which shows angular velocity 
     - *accel* - which shows linear acceleration. 
   - Both streams will publish data to its corresponding topics:
@@ -471,6 +470,10 @@ User can set the camera name and camera namespace, to distinguish between camera
     - 1 -> **copy**: Every gyro message will be attached by the last accel message.
     - 2 -> **linear_interpolation**: Every gyro message will be attached by an accel message which is interpolated to gyro's timestamp.
   - Note: When the param *unite_imu_method* is dynamically updated, re-enable either gyro or accel stream for the change to take effect.
+- **safety_camera.safety_mode**:
+  - 0 -> **Run** mode
+  - 1 -> **Standby** mode
+  - 2 -> **Service** mode
 - **accelerate_gpu_with_glsl**:
   - Boolean: GPU accelerated with GLSL for processing PointCloud and Colorizer filters.
   - Note:
@@ -515,7 +518,14 @@ User can set the camera name and camera namespace, to distinguish between camera
   - On occasions the device was not closed properly and due to firmware issues needs to reset. 
   - If set to true, the device will reset prior to usage.
   - For example: `initial_reset:=true`
-- **base_frame_id**: defines the frame_id all static transformations refers to.
+- **base_frame_id**: 
+  - Suffix for constructing the camera's root frame that all static transformations refer to. 
+  - Defaults to "link".
+  - For example: camera_link is composed of [camera_name]_[base_frame_id]
+- **tf_prefix**:
+  - Prefix to be prepended to all frame IDs published by this node (e.g., camera link, optical frames, etc.)
+  - Default value is empty string (no prefix)
+  - For example: `tf_prefix:=robot1/` will result in frames like `robot1/camera_link`, `robot1/camera_color_optical_frame`, etc.
 - **clip_distance**:
   - Remove from the depth image all values above a given value (meters). Disable by giving negative value (default)
   - For example: `clip_distance:=1.5`
@@ -565,10 +575,10 @@ The `/diagnostics` topic includes information regarding the device temperatures 
 ## Extrinsics from sensor A to sensor B:
 
 - Extrinsic from sensor A to sensor B means the position and orientation of sensor A relative to sensor B.
-- Imagine that B is the origin (0,0,0), then the Extrensics(A->B) describes where is sensor A relative to sensor B.
+- Imagine that B is the origin (0,0,0), then the Extrinsics(A->B) describes where is sensor A relative to sensor B.
 - For example, depth_to_color, in D435i:
-  - If we look from behind of the D435i, extrinsic from depth to color, means, where is the depth in relative to the color.
-  - If we just look at the X coordinates, in the optical coordiantes (again, from behind) and assume that COLOR(RGB) sensor is (0,0,0), we can say that DEPTH sensor is on the right of RGB by 0.0148m (1.48cm).
+  - If we look from behind of the D435i, extrinsic from depth to color, means, where is the depth relative to the color.
+  - If we just look at the X coordinates, in the optical coordinates (again, from behind) and assume that COLOR(RGB) sensor is (0,0,0), we can say that DEPTH sensor is on the right of RGB by 0.0148m (1.48cm).
 
 ![d435i](https://user-images.githubusercontent.com/99127997/230220297-e392f0fc-63bf-4bab-8001-af1ddf0ed00e.png)
 
@@ -643,9 +653,9 @@ Enabling stream adds matching topics. For instance, enabling the gyro and accel 
 
 RGBD new topic, publishing [RGB + Depth] in the same message (see RGBD.msg for reference). For now, works only with depth aligned to color images, as color and depth images are synchronized by frame time tag.
 
-These boolean paramters should be true to enable rgbd messages:
+These boolean parameters should be true to enable rgbd messages:
 
-- `enable_rgbd`: new paramter, to enable/disable rgbd topic, changeable during runtime
+- `enable_rgbd`: enable/disable rgbd topic, changeable during runtime
 - `align_depth.enable`: align depth images to rgb images
 - `enable_sync`: let librealsense sync between frames, and get the frameset with color and depth images combined
 - `enable_color` + `enable_depth`: enable both color and depth sensors
@@ -655,6 +665,57 @@ The current QoS of the topic itself, is the same as Depth and Color streams (SYS
 Example:
 ```
 ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true align_depth.enable:=true enable_color:=true enable_depth:=true 
+```
+
+
+## RViz2 Plugin  
+Custom Visualizations for Intel RealSense Camera RGBD Messages in RViz2
+
+This RViz2 plugin provides advanced and intuitive visualization of Intel RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
+
+
+### Features
+
+#### RGB and Depth Visualization
+- **RGB Stream Display:** Visualize the color camera stream from RealSense devices.
+- **Depth Stream Display:** View depth data with customizable visualization options.
+- **Display Modes:** Show RGB only, depth only, or both side-by-side.
+
+#### Depth Visualization Controls
+- **Min/Max Range Adjustment:** Customize depth visualization by setting minimum and maximum depth values (in meters).
+- **Colormap Options:** Toggle between grayscale and jet colormap for depth visualization.
+
+#### Overlay Mode
+- **RGB + Depth Overlay:** Combine RGB and depth information in a single view.
+- **Adjustable Alpha Blending:** Control the transparency level of the depth overlay on the RGB image.
+- **Enhanced Perception:** See RGB and depth data simultaneously for better environmental understanding.
+
+#### Image Manipulation
+- **180° Rotation:** Flip both RGB and depth images for correct orientation when the camera is mounted upside-down.
+- **Split-Screen View:** View RGB and depth images side-by-side with automatic layout adjustments.
+
+
+### Build Instructions
+
+To use this plugin, you **must enable it at build time** using the `-DRVIZ_RGBD_PLUGIN=ON` flag with `colcon build`.  
+You can do this in two ways:
+
+**1. Build only the plugin package:**
+```bash
+colcon build --packages-select realsense2_rviz_plugin --cmake-args -DRVIZ_RGBD_PLUGIN=ON
+```
+**2. Enable the plugin for the entire workspace at build:**
+```bash
+colcon build --cmake-args -DRVIZ_RGBD_PLUGIN=ON
+```
+
+<hr>
+
+## Metadata topic
+  
+The metadata messages store the camera's available metadata in a *json* format. To learn more, a dedicated script for echoing a metadata topic in runtime is attached. For instance, use the following command to echo the camera/depth/metadata topic:
+```
+python3 src/realsense-ros/realsense2_camera/scripts/echo_metadada.py /camera/camera/depth/metadata
 ```
 
 <hr>
@@ -702,7 +763,7 @@ The following post processing filters are available:
         - `depth_module.gain.2`
       - Make sure to set `depth_module.hdr_enabled` to true, otherwise these parameters won't be considered.
     - To view the effect on the infrared image for each sequence id use the `filter_by_sequence_id.sequence_id` parameter.
-    - For in-depth review of the subject please read the accompanying [white paper](https://dev.intelrealsense.com/docs/high-dynamic-range-with-stereoscopic-depth-cameras).
+    - For in-depth review of the subject please read the accompanying [white paper](https://dev.realsenseai.com/docs/high-dynamic-range-with-stereoscopic-depth-cameras).
     - **Note**: Auto exposure functionality is not supported when HDR is enabled. i.e., Auto exposure will be auto-disabled if HDR is enabled.
 
   - The following filters have detailed descriptions in : https://github.com/IntelRealSense/librealsense/blob/master/doc/post-processing-filters.md
@@ -757,6 +818,395 @@ Each of the above filters have it's own parameters, following the naming convent
   - [JSON calib config example](realsense2_camera/examples/d500_tables/calib_config_example.json)
   - Result example: `realsense2_camera_msgs.srv.CalibConfigWrite_Response(success=True, error_message='')`
 
+### safety_preset_read:
+  - Read safety preset at a given index.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/safety_preset_read realsense2_camera_msgs/srv/SafetyPresetRead "{index: 63}"`
+
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    ```
+    realsense2_camera_msgs.srv.SafetyPresetRead_Response(success=True, error_message='', safety_preset=
+    '{
+      "safety_preset":
+      {
+          "platform_config": 
+          {
+              "transformation_link":
+              {
+                  "rotation":
+                  [
+                      [ 0.0,  0.0,  1.0],
+                      [-1.0,  0.0,  0.0],
+                      [ 0.0, -1.0,  0.0]
+                  ],
+                  "translation": [0.0, 0.0, 0.27]
+              },
+              "robot_height": 1.0,
+              "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          "safety_zones": 
+          {
+              "danger_zone":
+              {
+                  "zone_polygon":
+                  {
+                      "p0": {"x": 0.5, "y":  0.1},
+                      "p1": {"x": 0.8, "y":  0.1},
+                      "p2": {"x": 0.8, "y": -0.1},
+                      "p3": {"x": 0.5, "y": -0.1}
+                  },
+                  "safety_trigger_confidence": 3,
+                  "reserved": [0, 0, 0, 0, 0, 0, 0]
+              },
+              "warning_zone":
+              {
+                  "zone_polygon":
+                  {
+                      "p0": {"x": 0.8, "y":  0.1},
+                      "p1": {"x": 1.2, "y":  0.1},
+                      "p2": {"x": 1.2, "y": -0.1},
+                      "p3": {"x": 0.8, "y": -0.1}
+                  },
+                  "safety_trigger_confidence": 3,
+                  "reserved": [0, 0, 0, 0, 0, 0, 0]
+              }
+          },
+          "masking_zones": 
+          {
+              "0":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "1":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "2":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "3":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "4":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "5":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "6":
+              {
+                  "attributes": 0,
+                  "minimal_range": 0.5,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [0, 0],
+                      "vertex_1": [0, 320],
+                      "vertex_2": [200, 320],
+                      "vertex_3": [200, 0]
+                  }
+              },
+              "7":
+              {
+                  "attributes": 1,
+                  "minimal_range": 0,
+                  "region_of_interests":
+                  {
+                      "vertex_0": [500, 3300],
+                      "vertex_1": [800, 3300],
+                      "vertex_2": [800, 3100],
+                      "vertex_3": [500, 3100]
+                  }
+              }
+          },
+          "reserved": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "environment": 
+          {
+              "safety_trigger_duration": 1.0,
+              "zero_safety_monitoring": 0,
+              "hara_history_continuation": 0,
+              "reserved1": [0, 0],
+              "angular_velocity": 0.0,
+              "payload_weight": 0.0,
+              "surface_inclination": 15.0,
+              "surface_height": 0.05,
+              "diagnostic_zone_fill_rate_threshold": 255,
+              "floor_fill_threshold": 255,
+              "depth_fill_threshold": 255,
+              "diagnostic_zone_height_median_threshold": 255,
+              "vision_hara_persistency": 1,
+              "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "reserved2": [0, 0, 0]
+          }
+      }
+    }')
+    ```
+    </details>
+
+### safety_preset_write:
+  - Write safety preset at given index.
+  - Note that writing safety presets is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyPresetWrite` for the full request/response fields.
+  - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping.
+    <details>
+    <summary>Click to see full call example, writing new Safety Preset to index 63</summary>
+
+    `
+    ros2 service call /camera/camera/safety_preset_write realsense2_camera_msgs/srv/SafetyPresetWrite "{safety_preset: ' {\"safety_preset\":{\"platform_config\":{\"transformation_link\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27]},\"robot_height\":1.0,\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},\"safety_zones\":{\"danger_zone\":{\"zone_polygon\":{\"p0\":{\"x\":0.5,\"y\":0.1},\"p1\":{\"x\":0.8,\"y\":0.1},\"p2\":{\"x\":0.8,\"y\":-0.1},\"p3\":{\"x\":0.5,\"y\":-0.1}},\"safety_trigger_confidence\":3,\"reserved\":[0,0,0,0,0,0,0]},\"warning_zone\":{\"zone_polygon\":{\"p0\":{\"x\":0.8,\"y\":0.1},\"p1\":{\"x\":1.2,\"y\":0.1},\"p2\":{\"x\":1.2,\"y\":-0.1},\"p3\":{\"x\":0.8,\"y\":-0.1}},\"safety_trigger_confidence\":3,\"reserved\":[0,0,0,0,0,0,0]}},\"masking_zones\":{\"0\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"1\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"2\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"3\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"4\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"5\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"6\":{\"attributes\":0,\"minimal_range\":0.5,\"region_of_interests\":{\"vertex_0\":[0,0],\"vertex_1\":[0,320],\"vertex_2\":[200,320],\"vertex_3\":[200,0]}},\"7\":{\"attributes\":1,\"minimal_range\":0,\"region_of_interests\":{\"vertex_0\":[500,3300],\"vertex_1\":[800,3300],\"vertex_2\":[800,3100],\"vertex_3\":[500,3100]}}},\"reserved\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"environment\":{\"safety_trigger_duration\":1.0,\"zero_safety_monitoring\":0,\"hara_history_continuation\":0,\"reserved1\":[0,0],\"angular_velocity\":0.0,\"payload_weight\":0.0,\"surface_inclination\":15.0,\"surface_height\":0.05,\"diagnostic_zone_fill_rate_threshold\":255,\"floor_fill_threshold\":255,\"depth_fill_threshold\":255,\"diagnostic_zone_height_median_threshold\":255,\"vision_hara_persistency\":1,\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"reserved2\":[1,1,1]}}} ', index: 63}"
+    `
+    </details>
+
+  - [JSON safety preset example](realsense2_camera/examples/d500_tables/safety_preset_example.json)
+  - Result example: `realsense2_camera_msgs.srv.SafetyPresetWrite_Response(success=True, error_message='')`
+
+### safety_interface_config_read:
+  - Read safety interface config.
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/safety_interface_config_read realsense2_camera_msgs/srv/SafetyInterfaceConfigRead`
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    ```
+    realsense2_camera_msgs.srv.SafetyInterfaceConfigRead_Response(success=True, error_message='', safety_interface_config='
+    {
+      "safety_interface_config":
+      {
+          "m12_safety_pins_configuration":
+          {
+              "power":
+              {
+                  "direction": "In",
+                  "functionality": "p24VDC"
+              },
+              "ossd1_b":
+              {
+                  "direction": "Out",
+                  "functionality": "pOSSD1_B"
+              },
+              "ossd1_a":
+              {
+                  "direction": "Out",
+                  "functionality": "pOSSD1_A"
+              },
+              "preset3_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect3_A"
+              },
+              "preset3_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect3_B"
+              },
+              "preset4_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect4_A"
+              },
+              "preset1_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect1_B"
+              },
+              "preset1_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect1_A"
+              },
+              "gpio_0":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect5_A"
+              },
+              "gpio_1":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect5_B"
+              },
+              "gpio_3":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect6_B"
+              },
+              "gpio_2":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect6_A"
+              },
+              "preset2_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect2_B"
+              },
+              "gpio_4":
+              {
+                  "direction": "Out",
+                  "functionality": "pDeviceReady"
+              },
+              "preset2_a":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect2_A"
+              },
+              "preset4_b":
+              {
+                  "direction": "In",
+                  "functionality": "pPresetSelect4_B"
+              },
+              "ground":
+              {
+                  "direction": "In",
+                  "functionality": "pGND"
+              }
+          },
+          "gpio_stabilization_interval" : 150,
+          "camera_position":
+          {
+              "rotation":
+              [
+                  [ 0.0,  0.0,  1.0],
+                  [-1.0,  0.0,  0.0],
+                  [ 0.0, -1.0,  0.0]
+              ],
+              "translation": [0.0, 0.0, 0.27]
+          },
+          "occupancy_grid_params":
+          {
+              "grid_cell_seed" : 20,
+              "close_range_quorum" : 12 ,
+              "mid_range_quorum" : 6,
+              "long_range_quorum" : 4
+          },
+          "smcu_arbitration_params":
+          {
+              "l_0_total_threshold": 100,
+              "l_0_sustained_rate_threshold": 20,
+              "l_1_total_threshold": 100,
+              "l_1_sustained_rate_threshold": 20,
+              "l_2_total_threshold": 10,
+              "hkr_stl_timeout": 15,
+              "mcu_stl_timeout": 10,
+              "sustained_aicv_frame_drops": 95,
+              "ossd_self_test_pulse_width": 23
+          },
+          "crypto_signature": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      }
+    }
+    ')
+    ```
+    </details>
+
+### safety_interface_config_write:
+  - Write safety interface config at given index.
+  - Note that writing safety interface config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `
+    ros2 service call /camera/camera/safety_interface_config_write realsense2_camera_msgs/srv/SafetyInterfaceConfigWrite "{safety_interface_config: '{\"safety_interface_config\":{\"m12_safety_pins_configuration\":{\"power\":{\"direction\":\"In\",\"functionality\":\"p24VDC\"},\"ossd1_b\":{\"direction\":\"Out\",\"functionality\":\"pOSSD1_B\"},\"ossd1_a\":{\"direction\":\"Out\",\"functionality\":\"pOSSD1_A\"},\"preset3_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect3_A\"},\"preset3_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect3_B\"},\"preset4_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect4_A\"},\"preset1_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect1_B\"},\"preset1_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect1_A\"},\"gpio_0\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect5_A\"},\"gpio_1\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect5_B\"},\"gpio_3\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect6_B\"},\"gpio_2\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect6_A\"},\"preset2_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect2_B\"},\"gpio_4\":{\"direction\":\"Out\",\"functionality\":\"pDeviceReady\"},\"preset2_a\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect2_A\"},\"preset4_b\":{\"direction\":\"In\",\"functionality\":\"pPresetSelect4_B\"},\"ground\":{\"direction\":\"In\",\"functionality\":\"pGND\"}},\"gpio_stabilization_interval\":150,\"camera_position\":{\"rotation\":[[0.0,0.0,1.0],[-1.0,0.0,0.0],[0.0,-1.0,0.0]],\"translation\":[0.0,0.0,0.27]},\"occupancy_grid_params\":{\"grid_cell_seed\":20,\"close_range_quorum\":12,\"mid_range_quorum\":6,\"long_range_quorum\":4},\"smcu_arbitration_params\":{\"l_0_total_threshold\":100,\"l_0_sustained_rate_threshold\":20,\"l_1_total_threshold\":100,\"l_1_sustained_rate_threshold\":20,\"l_2_total_threshold\":10,\"hkr_stl_timeout\":15,\"mcu_stl_timeout\":10,\"sustained_aicv_frame_drops\":95,\"ossd_self_test_pulse_width\":23},\"crypto_signature\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}'}"
+    `
+    </details>
+
+  - [JSON safety interface config example](realsense2_camera/examples/d500_tables/safety_interface_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.SafetyInterfaceConfigWrite_Response(success=True, error_message='')`
+
+### application_config_read:
+  - Read application config.
+  - Note that reading application config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/ApplicationConfigRead` for the full request/response fields.
+  - Call example: `ros2 service call /camera/camera/application_config_read realsense2_camera_msgs/srv/ApplicationConfigRead`
+    <details>
+    <summary>Click to see the full response of the call example</summary>
+
+    `response: realsense2_camera_msgs.srv.ApplicationConfigRead_Response(success=True, error_message='', application_config='{"application_config":{"depth_pipe_safety_checks_override":0,"depth_pipeline_config":0,"depth_roi":0,"dev_rules_selection":0,"developer_mode":{"hkr":0,"hkr_simulated_lock_state":0,"sc":0,"smcu":0},"digital_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ir_for_sip":0,"peripherals_sensors_disable_mask":0,"sht4x_humidity_threshold":23,"sip":{"immediate_mode_safety_features_selection":0,"mechanisms_sampling_interval":[0,0,0,0,0,0,0,0],"tc_consecutives_failures_threshold":3,"mechanisms_thresholds":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"temporal_safety_features_selection":0},"smcu_bypass_directly_to_maintenance_mode":0,"smcu_skip_spi_error":0,"temp_thresholds":{"apm_left":[0,0,0,0],"apm_right":[0,0,0,0],"hkr_core":[0,0,0,0],"imu":[0,0,0,0],"ir_left":[0,0,0,0],"ir_right":[0,0,0,0],"sht4x":[0,0,0,0],"smcu_right":[0,0,0,0]},"triggered_calib_safety_checks_override":0,"voltage_thresholds":{"vdd0v6":0,"vdd0v8":0,"vdd0v8_ddr":0,"vdd1v1":0,"vdd1v2":0,"vdd1v8":0,"vdd3v3":0,"vdd5vo_l":0,"vdd5vo_u":0}}}')`
+
+    </details>
+
+### application_config_write:
+  - Write application config.
+  - Note that writing application config is applicable only in Safey Service Mode
+  - Type `ros2 interface show realsense2_camera_msgs/srv/ApplicationConfigWrite` for the full request/response fields.
+    - Only for commnad line usage, user should escape all " with \\". Using ros2 services API from rclcpp/rclpy doesn't need escaping. e.g.,:
+
+    <details>
+    <summary>Click to see full call example</summary>
+
+    `ros2 service call /camera/camera/application_config_write realsense2_camera_msgs/srv/ApplicationConfigWrite "{application_config: ''{"application_config":{"depth_pipe_safety_checks_override":0,"depth_pipeline_config":0,"depth_roi":0,"dev_rules_selection":0,"developer_mode":{"hkr":0,"hkr_simulated_lock_state":0,"sc":0,"smcu":0},"digital_signature":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ir_for_sip":0,"peripherals_sensors_disable_mask":0,"sht4x_humidity_threshold":23,"sip":{"immediate_mode_safety_features_selection":0,"mechanisms_sampling_interval":[0,0,0,0,0,0,0,0],"tc_consecutives_failures_threshold":3,"mechanisms_thresholds":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"temporal_safety_features_selection":0},"smcu_bypass_directly_to_maintenance_mode":0,"smcu_skip_spi_error":0,"temp_thresholds":{"apm_left":[0,0,0,0],"apm_right":[0,0,0,0],"hkr_core":[0,0,0,0],"imu":[0,0,0,0],"ir_left":[0,0,0,0],"ir_right":[0,0,0,0],"sht4x":[0,0,0,0],"smcu_right":[0,0,0,0]},"triggered_calib_safety_checks_override":0,"voltage_thresholds":{"vdd0v6":0,"vdd0v8":0,"vdd0v8_ddr":0,"vdd1v1":0,"vdd1v2":0,"vdd1v8":0,"vdd3v3":0,"vdd5vo_l":0,"vdd5vo_u":0}}}' }"`
+
+    </details>
+
+  - [JSON application config example](realsense2_camera/examples/d500_tables/application_config_example.json)
+  - Result example: `realsense2_camera_msgs.srv.ApplicationonfigWrite_Response(success=True, error_message='')`
+
+### hardware_monitor_command_send:
+  - Send hardware monitor command
+  - Type `ros2 interface show realsense2_camera/srv/HardwareMonitorCommandSend` for the full request/response fields
+  - Call example: `ros2 service call /camera/camera/hardware_monitor_command_send realsense2_camera_msgs/srv/HardwareMonitorCommandSend "{cmd: {opcode: 0x10, param1: 0, param2: 0, param3: 0, param4: 0, data: [] } }"`
+  - A shorter version of the call example (default values for the unsetted params is 0): `ros2 service call /camera/camera/hardware_monitor_command_send realsense2_camera_msgs/srv/HardwareMonitorCommandSend "{cmd: {opcode: 0x10} }"`
+
+  <details>
+  <summary>Click to see full response example</summary>
+
+  `realsense2_camera_msgs.srv.HardwareMonitorCommandSend_Response(success=True, result=[16, 0, 0, 0, 2, 0, 82, 2, 68, 135, 67, 22, 0, 0, 0, 0, 134, 128, 107, 11, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51, 54, 34, 50, 1, 105, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 56, 0, 122, 73, 27, 1, 0, 226, 153, 24, 238, 79, 152, 64, 1, 4, 0, 0, 4, 0, 0, 0, 11, 121, 197, 29, 0, 0, 0, 0, 0, 0, 0, 1, 0, 64, 0, 148, 11, 7, 0, 0, 0, 64, 128, 141, 5, 0, 0, 0, 0, 32, 32, 80, 88, 82, 79, 83, 45, 72, 82, 32, 75, 101, 114, 110, 0, 57, 53, 55, 56, 54, 101, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 7, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 53, 34, 24, 1, 135, 0, 0, 0, 0, 0, 0, 0, 0, 78, 50, 56, 50, 55, 53, 45, 49, 48, 48, 0, 0, 48, 51, 71, 6, 239, 190, 173, 222, 239, 190, 173, 222, 228, 55, 0, 64, 228, 55, 0, 64, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51, 52, 50, 51, 50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 0, 0, 1, 51, 52, 50, 51, 50, 50, 0, 0, 0, 0, 0, 0, 0, 0, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 41, 8, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 1, 4, 41, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 35, 1, 1, 4, 41, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 100, 0, 196, 9, 0, 0, 0, 0, 0, 0, 0, 0, 66, 77, 73, 48, 56, 56, 0, 0, 30, 15, 0, 0, 240, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 71, 198, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 3, 0, 3, 0, 3, 0, 3, 0, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 255, 255, 4, 1, 2, 0, 3, 0, 3, 0, 239, 190, 239, 190, 239, 190, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], error_message='')`
+
+  </details>
+
 <hr>
 
 ## Available actions
@@ -778,13 +1228,32 @@ Each of the above filters have it's own parameters, following the naming convent
 
     ```
   - Before calling triggered calibration, user should set the following parameters:
+    - `safety_camera.safety_mode: 2` # switch to service mode
     - `depth_module.visual_preset: 1` # switch to visual preset #1 in depth module
     - `depth_module.emitter_enabled: true` # enable emitter in depth module
     - `depth_module.enable_auto_exposure: true` # enable AE in depth moudle
+    - `enable_color: false` # turn off color stream
     - `enable_depth: false` # turn off depth stream
     - `enable_infra1: false` # turn off infra1 stream
     - `enable_infra2: false` # turn off infra2 stream
+    - `enable_safety: false` # turn off safety stream
+    - `enable_labeled_point_cloud: false` # turn off labeled pointcloud stream
+    - `enable_occupancy: false` # turn off occupancy stream
   - To use from command line: `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}'` or even with an empty request `ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration ''` because the default behavior is already calib run.
+  ```
+  ros2 param set /camera/camera safety_camera.safety_mode 2
+  ros2 param set /camera/camera depth_module.visual_preset 1
+  ros2 param set /camera/camera depth_module.emitter_enabled true
+  ros2 param set /camera/camera depth_module.enable_auto_exposure true
+  ros2 param set /camera/camera enable_color false
+  ros2 param set /camera/camera enable_depth false
+  ros2 param set /camera/camera enable_infra1 false
+  ros2 param set /camera/camera enable_infra2 false
+  ros2 param set /camera/camera enable_safety false
+  ros2 param set /camera/camera enable_labeled_point_cloud false
+  ros2 param set /camera/camera enable_occupancy false
+  ros2 action send_goal /camera/camera/triggered_calibration realsense2_camera_msgs/action/TriggeredCalibration '{json: "{calib run}"}' --feedback
+  ```
   - The action gives an updated feedback about the progress (%) if the client asks for feedback. To do that, add `--feedback` to the end of the command.
   - If succeded, the action writes the new calibration table to the flash. It also returns the new calibration table as json string and the health as float32
   - If failed, it will return the error message inside the result. For example:
@@ -840,6 +1309,15 @@ The launch file accepts a parameter, `intra_process_comms`, controlling whether 
 ros2 launch realsense2_camera rs_intra_process_demo_launch.py intra_process_comms:=true
 ```
 
+<hr>
+
+## Logging
+For debugging purposes, users can control the ROS wrapper log level and also the SDK log level.
+* ROS wrapper log level - set the parameter `log_level` in the ros2 launch command or in the launch file itself
+  e.g. `ros2 launch realsense2_camera rs_launch.py log_level:=warn`
+* LibRealSense2 SDK log level - export the environment variable called `LRS_LOG_LEVEL` and set it to the desired log level.
+  e.g. `export LRS_LOG_LEVEL=debug`
+  
 </details>
 
 

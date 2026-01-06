@@ -1,4 +1,4 @@
-# Copyright 2023 Intel Corporation. All Rights Reserved.
+# Copyright 2023 RealSense, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,11 +48,11 @@ def yaml_to_dict(path_to_yaml):
 def set_configurable_parameters(local_params):
     return dict([(param['original_name'], LaunchConfiguration(param['name'])) for param in local_params])
 
-def duplicate_params(general_params, posix):
+def duplicate_params(general_params, suffix):
     local_params = copy.deepcopy(general_params)
     for param in local_params:
         param['original_name'] = param['name']
-        param['name'] += posix
+        param['name'] += suffix
     return local_params
 
 def launch_static_transform_publisher_node(context : LaunchContext):
