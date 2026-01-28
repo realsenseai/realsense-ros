@@ -2,15 +2,16 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_description</name>
-  <version>4.57.4</version>
+  <version>4.57.6</version>
   <description>RealSense description package for RealSense 3D D400 cameras</description>
-  <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
+  <maintainer email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense ROS Team</maintainer>
+  <maintainer email="nir.azkiel@realsenseai.com">Nir Azkiel</maintainer>
   <license>Apache License 2.0</license>
   
   <url type="website">http://www.ros.org/wiki/RealSense</url>
   <url type="bugtracker">https://github.com/intel-ros/realsense/issues</url>
 
-  <author email="librs.ros@intel.com">LibRealSense ROS Team</author>
+  <author email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense ROS Team</author>
  
   <buildtool_depend>ament_cmake</buildtool_depend>
 

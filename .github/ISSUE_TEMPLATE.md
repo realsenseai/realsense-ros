@@ -1,8 +1,8 @@
 * Before opening a new issue, we wanted to provide you with some useful suggestions (Click "Preview" above for a better view):
 
-    * Consider checking our ROS RealSense Wrapper documentation [README](https://github.com/IntelRealSense/realsense-ros/blob/ros2-master/README.md).
-    * Have you looked in our [Discussions](https://github.com/IntelRealSense/realsense-ros/discussions)?
-    * Try [searching our GitHub Issues](https://github.com/IntelRealSense/realsense-ros/issues) (open and closed) for a similar issue.
+    * Consider checking our ROS RealSense Wrapper documentation [README](https://github.com/realsenseai/realsense-ros/blob/ros2-master/README.md).
+    * Have you looked in our [Discussions](https://github.com/realsenseai/realsense-ros/discussions)?
+    * Try [searching our GitHub Issues](https://github.com/realsenseai/realsense-ros/issues) (open and closed) for a similar issue.
 
 * All users are welcomed to report bugs, ask questions, suggest or request enhancements and generally feel free to open new issue, even if they haven't followed any of the suggestions above :)
 

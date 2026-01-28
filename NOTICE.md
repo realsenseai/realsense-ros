@@ -5,7 +5,7 @@
 
 |Component|Home Page|License|copyright|
 | :- | :- | :- | :- |
-|librealsense2|<p><https://github.com/IntelRealSense/librealsense/></p><p></p>|Apache License 2.0|None|
+|librealsense2|<p><https://github.com/realsenseai/librealsense/></p><p></p>|Apache License 2.0|None|
 |Rclcpp|<p><https://github.com/ros2/rclcpp></p><p> </p>|Apache License 2.0|None|
 |rclcpp\_components|<p><https://github.com/ros2/rclcpp></p><p> </p>|Apache License 2.0|None|
 |builtin\_interfaces|<p><https://github.com/ros2/rcl_interfaces></p><p></p>|Apache License 2.0|None|

@@ -167,7 +167,7 @@ void RealSenseNodeFactory::getDevice(rs2::device_list list)
                     {
                         std::stringstream msg;
                         msg << "Error extracting usb port from device with physical ID: " << pn << std::endl
-                            << "Please report on github issue at https://github.com/IntelRealSense/realsense-ros";
+                            << "Please report on github issue at https://github.com/realsenseai/realsense-ros";
                         if (_usb_port_id.empty())
                         {
                             ROS_WARN_STREAM(msg.str());
