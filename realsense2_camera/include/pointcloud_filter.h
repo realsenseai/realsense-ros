@@ -30,7 +30,8 @@ namespace realsense2_camera
             PointcloudFilter(std::shared_ptr<rs2::filter> filter, RosNodeBase& node, std::shared_ptr<Parameters> parameters, rclcpp::Logger logger, bool is_enabled=false);
         
             void setPublisher();
-            void Publish(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset, const std::string& frame_id);
+            void MapTexture(const rs2::frame& color_frame);
+            void Publish(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset, const std::string& frame_id, const rs2::frame& cached_color_frame = rs2::frame());
 
         private:
             void setParameters();

@@ -605,6 +605,15 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
         rs2::video_frame original_color_frame = frameset.get_color_frame();
         rs2::video_frame original_infra2_frame = frameset.get_infrared_frame(2);
 
+        // Cache color frame for pointcloud texturing when frames arrive in separate framesets
+        if (original_color_frame) {
+            _cached_color_frame = original_color_frame;
+            // Map the color frame to the pointcloud filter for proper texture mapping
+            if (_pc_filter) {
+                _pc_filter->MapTexture(original_color_frame);
+            }
+        }
+
         ROS_DEBUG("num_filters: %d", static_cast<int>(_filters.size()));
         for (auto filter_it : _filters)
         {
@@ -924,7 +933,7 @@ void BaseRealSenseNode::SetBaseStream()
 void BaseRealSenseNode::publishPointCloud(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset)
 {
     std::string frame_id = OPTICAL_FRAME_ID(DEPTH);
-    _pc_filter->Publish(pc, t, frameset, frame_id);
+    _pc_filter->Publish(pc, t, frameset, frame_id, _cached_color_frame);
 }
 
 bool BaseRealSenseNode::shouldPublishCameraInfo(const stream_index_pair& sip)
