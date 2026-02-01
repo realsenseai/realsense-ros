@@ -95,8 +95,8 @@ class RosbagManager(object):
         return cls.instance
     def init(self):
         self.rosbag_files = {
-                "outdoors_1color.bag":"https://librealsense.intel.com/rs-tests/TestData/outdoors_1color.bag",
-                "D435i_Depth_and_IMU_Stands_still.bag":"https://librealsense.intel.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag"
+                "outdoors_1color.bag":"https://librealsense.realsenseai.com/rs-tests/TestData/outdoors_1color.bag",
+                "D435i_Depth_and_IMU_Stands_still.bag":"https://librealsense.realsenseai.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag"
                 }
         self.rosbag_location = os.getenv("HOME") + "/realsense_records/" 
         print(self.rosbag_location)

@@ -36,7 +36,7 @@ class MQTTBridgeNode(Node):
     MQTT <-> ROS brdige node.
 
     MQTTBridgeNode is a ROS Node that acts as a MQTT <-> ROS brdige for
-    Intel RealSense cameras. The node listens to pre-defined MQTT Broker
+    RealSense cameras. The node listens to pre-defined MQTT Broker
     messages, translates them into a ROS ones, handling these messages against
     the realsense2_camera node and then sending the response back to the
     MQTT Broker

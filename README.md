@@ -10,7 +10,7 @@
 
 <p align="center">
   ROS Wrapper for RealSense(TM) Cameras<br>
-  <a href="https://github.com/IntelRealSense/realsense-ros/releases">Latest release notes</a>
+  <a href="https://github.com/realsenseai/realsense-ros/releases">Latest release notes</a>
 </p>
 
 <hr>
@@ -26,11 +26,20 @@
 [![ubuntu22][ubuntu22-badge]][ubuntu22]
 [![ubuntu20][ubuntu20-badge]][ubuntu20]
 
-![GitHubWorkflowStatus](https://img.shields.io/github/actions/workflow/status/IntelRealSense/realsense-ros/main.yml?logo=github&style=flat-square)
-[![GitHubcontributors](https://img.shields.io/github/contributors/IntelRealSense/realsense-ros?style=flat-square)](CONTRIBUTING.md)
-[![License](https://img.shields.io/github/license/IntelRealSense/realsense-ros?style=flat-square)](LICENSE)
+![GitHubWorkflowStatus](https://img.shields.io/github/actions/workflow/status/realsenseai/realsense-ros/main.yml?logo=github&style=flat-square)
+[![GitHubcontributors](https://img.shields.io/github/contributors/realsenseai/realsense-ros?style=flat-square)](CONTRIBUTING.md)
+[![License](https://img.shields.io/github/license/realsenseai/realsense-ros?style=flat-square)](LICENSE)
 
 <hr>
+
+## Important Notice
+
+We are happy to announce that the RealSense GitHub repositories have been successfully migrated to the RealSenseAI organization.
+Please make sure to update your links to the new RealSenseAI organization for both cloning the repositories and accessing specific files within them.
+
+[https://github.com/**IntelRealSense**/realsense-ros](https://github.com/IntelRealSense/realsense-ros) --> [https://github.com/**realsenseai**/realsense-ros](https://github.com/realsenseai/realsense-ros)
+
+Note: A redirection from the previous name IntelRealSense is currently in place, but we cannot guarantee how long it will remain active. We recommend that all users update their references to point to the new GitHub location.
 
 ## Table of contents
   * [ROS1 and ROS2 legacy](#ros1-and-ros2-legacy)
@@ -66,12 +75,12 @@
     ROS1 Wrapper for RealSense™ cameras
   </summary>
     ROS1 Wrapper for RealSense™ cameras is not supported anymore, since our developers team are focusing on ROS2 distro.<br>
-    For ROS1 wrapper, go to <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros1-legacy">ros1-legacy</a> branch
+    For ROS1 wrapper, go to <a href="https://github.com/realsenseai/realsense-ros/tree/ros1-legacy">ros1-legacy</a> branch
 </details>
 
 <details>
    <summary>
-     Moving from <a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-legacy">ros2-legacy</a> to ros2-master
+     Moving from <a href="https://github.com/realsenseai/realsense-ros/tree/ros2-legacy">ros2-legacy</a> to ros2-master
   </summary>
 
 * Changed Parameters:
@@ -120,8 +129,8 @@
   **Please choose only one option from the 3 options below (in order to prevent multiple versions installation and workspace conflicts)**
 
 - #### Option 1: Install librealsense2 debian package from RealSense servers
-  - Jetson users - use the [Jetson Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_jetson.md)
-  - Otherwise, install from [Linux Debian Installation Guide](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md#installing-the-packages)
+  - Jetson users - use the [Jetson Installation Guide](https://github.com/realsenseai/librealsense/blob/master/doc/installation_jetson.md)
+  - Otherwise, install from [Linux Debian Installation Guide](https://github.com/realsenseai/librealsense/blob/master/doc/distribution_linux.md#installing-the-packages)
     - In this case treat yourself as a developer: make sure to follow the instructions to also install librealsense2-dev and librealsense2-dkms packages
   
 - #### Option 2: Install librealsense2 (without graphical tools and examples) debian package from ROS servers (Foxy EOL distro is not supported by this option):
@@ -130,8 +139,8 @@
     - For example, for Humble distro: ```sudo apt install ros-humble-librealsense2*```
 
 - #### Option 3: Build from source
-  - Download the latest [RealSense&trade; SDK 2.0](https://github.com/IntelRealSense/librealsense)
-  - Follow the instructions under [Linux Installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
+  - Download the latest [RealSense&trade; SDK 2.0](https://github.com/realsenseai/librealsense)
+  - Follow the instructions under [Linux Installation](https://github.com/realsenseai/librealsense/blob/master/doc/installation.md)
 
 </details>
   
@@ -153,9 +162,9 @@
       cd ~/ros2_ws/src/
       ```
   
-  - Clone the latest ROS Wrapper for RealSense&trade; cameras from [here](https://github.com/IntelRealSense/realsense-ros.git) into '~/ros2_ws/src/'
+  - Clone the latest ROS Wrapper for RealSense&trade; cameras from [here](https://github.com/realsenseai/realsense-ros.git) into '~/ros2_ws/src/'
       ```bashrc
-      git clone https://github.com/IntelRealSense/realsense-ros.git -b ros2-master
+      git clone https://github.com/realsenseai/realsense-ros.git -b ros2-master
       cd ~/ros2_ws
       ```
   
@@ -213,7 +222,7 @@
     Step 2: Download RealSense&trade; ROS2 Wrapper and RealSense&trade; SDK 2.0 source code from github:
   </summary>
   
-- Download ROS Wrapper for RealSense&trade; cameras source code from [ROS Wrapper for RealSense&trade; cameras releases](https://github.com/IntelRealSense/realsense-ros/releases)
+- Download ROS Wrapper for RealSense&trade; cameras source code from [ROS Wrapper for RealSense&trade; cameras releases](https://github.com/realsenseai/realsense-ros/releases)
 - Download the corresponding supported RealSense&trade; SDK 2.0 source code from the **"Supported RealSense SDK" section** of the specific release you chose from the link above
 - Place the librealsense folder inside the realsense-ros folder, to make the librealsense package set beside realsense2_camera, realsense2_camera_msgs and realsense2_description packages
 </details>
@@ -669,9 +678,9 @@ ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true a
 
 
 ## RViz2 Plugin  
-Custom Visualizations for Intel RealSense Camera RGBD Messages in RViz2
+Custom Visualizations for RealSense Camera RGBD Messages in RViz2
 
-This RViz2 plugin provides advanced and intuitive visualization of Intel RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
+This RViz2 plugin provides advanced and intuitive visualization of RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
 
 
 ### Features
@@ -766,7 +775,7 @@ The following post processing filters are available:
     - For in-depth review of the subject please read the accompanying [white paper](https://dev.realsenseai.com/docs/high-dynamic-range-with-stereoscopic-depth-cameras).
     - **Note**: Auto exposure functionality is not supported when HDR is enabled. i.e., Auto exposure will be auto-disabled if HDR is enabled.
 
-  - The following filters have detailed descriptions in : https://github.com/IntelRealSense/librealsense/blob/master/doc/post-processing-filters.md
+  - The following filters have detailed descriptions in : https://github.com/realsenseai/librealsense/blob/master/doc/post-processing-filters.md
     - ```disparity_filter``` - convert depth to disparity before applying other filters and back.
     - ```spatial_filter``` - filter the depth image spatially.
     - ```temporal_filter``` - filter the depth image temporally.
