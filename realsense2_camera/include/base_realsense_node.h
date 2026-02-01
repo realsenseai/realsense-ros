@@ -405,6 +405,7 @@ namespace realsense2_camera
         std::shared_ptr<PointcloudFilter> _pc_filter;
         std::vector<std::shared_ptr<NamedFilter>> _filters;
         std::vector<rs2::sensor> _dev_sensors;
+        rs2::frame _cached_color_frame;  // Cache most recent color frame for pointcloud texturing
         std::vector<std::unique_ptr<RosSensor>> _available_ros_sensors;
 
         std::map<rs2_stream, std::shared_ptr<rs2::align>> _align;

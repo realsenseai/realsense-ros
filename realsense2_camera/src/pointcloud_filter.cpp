@@ -79,6 +79,16 @@ void PointcloudFilter::setPublisher()
     }
 }
 
+void PointcloudFilter::MapTexture(const rs2::frame& color_frame)
+{
+    if (_filter && color_frame)
+    {
+        // Cast to rs2::pointcloud and call map_to
+        auto pc_filter = std::static_pointer_cast<rs2::pointcloud>(_filter);
+        pc_filter->map_to(color_frame);
+    }
+}
+
 void reverse_memcpy(unsigned char* dst, const unsigned char* src, size_t n)
 {
     size_t i;
@@ -88,11 +98,11 @@ void reverse_memcpy(unsigned char* dst, const unsigned char* src, size_t n)
 
 }
 
-void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset, const std::string& frame_id)
+void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset, const std::string& frame_id, const rs2::frame& cached_color_frame)
 {
     {
         std::lock_guard<std::mutex> lock_guard(_mutex_publisher);
-        if ((!_pointcloud_publisher) || (!(_pointcloud_publisher->get_subscription_count())))
+        if (!_pointcloud_publisher || !(_pointcloud_publisher->get_subscription_count()))
             return;
     }
     
@@ -101,7 +111,8 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
     static int warn_count(0);
     static const int DISPLAY_WARN_NUMBER(15);
     rs2::frameset::iterator texture_frame_itr = frameset.end();
-    
+    std::string texture_source_name = _filter->get_option_value_description(rs2_option::RS2_OPTION_STREAM_FILTER, static_cast<float>(texture_source_id));
+
     if (use_texture)
     {
         std::set<rs2_format> available_formats{ rs2_format::RS2_FORMAT_RGB8, rs2_format::RS2_FORMAT_Y8, rs2_format::RS2_FORMAT_Z16 };
@@ -109,21 +120,29 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
         texture_frame_itr = std::find_if(frameset.begin(), frameset.end(), [&texture_source_id, &available_formats] (rs2::frame f)
                                 {return (rs2_stream(f.get_profile().stream_type()) == texture_source_id) &&
                                             (available_formats.find(f.get_profile().format()) != available_formats.end()); });
+        
+        // If texture frame not found in frameset, try to use cached color frame
         if (texture_frame_itr == frameset.end())
         {
-            warn_count++;
-            std::string texture_source_name = _filter->get_option_value_description(rs2_option::RS2_OPTION_STREAM_FILTER, static_cast<float>(texture_source_id));
-            ROS_WARN_STREAM_COND(warn_count == DISPLAY_WARN_NUMBER, "No stream match for pointcloud chosen texture " << texture_source_name);
-            return;
+            // Try using cached color frame if texture source is Color
+            if (texture_source_id == RS2_STREAM_COLOR && cached_color_frame)
+            {
+                warn_count = 0;
+            }
+            else
+            {
+                warn_count++;
+                ROS_WARN_STREAM_COND(warn_count == DISPLAY_WARN_NUMBER, "No stream match for pointcloud chosen texture " << texture_source_name);
+                return;
+            }
         }
-        warn_count = 0;
+        else
+        {
+            warn_count = 0;
+        }
     } 
     else {
         warn_count++;
-        std::string texture_source_name = _filter->get_option_value_description(
-            rs2_option::RS2_OPTION_STREAM_FILTER,
-            static_cast<float>(texture_source_id)
-        );
         ROS_WARN_STREAM_COND(
             warn_count == DISPLAY_WARN_NUMBER,
             "No matching stream for texture '" << texture_source_name
@@ -155,7 +174,24 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
     size_t valid_count(0);
     if (use_texture)
     {
-        rs2::video_frame texture_frame = (*texture_frame_itr).as<rs2::video_frame>();
+        // Use cached color frame if not found in frameset, otherwise use frame from frameset
+        rs2::frame texture_frame_holder;
+        if (texture_frame_itr != frameset.end())
+        {
+            texture_frame_holder = (*texture_frame_itr);
+        }
+        else if (cached_color_frame && cached_color_frame.is<rs2::video_frame>())
+        {
+            texture_frame_holder = cached_color_frame;
+        }
+        
+        if (!texture_frame_holder || !texture_frame_holder.is<rs2::video_frame>())
+        {
+            // No texture frame available at all
+            return;
+        }
+        
+        rs2::video_frame texture_frame = texture_frame_holder.as<rs2::video_frame>();
         texture_width = texture_frame.get_width();
         texture_height = texture_frame.get_height();
         num_colors = texture_frame.get_bytes_per_pixel();
