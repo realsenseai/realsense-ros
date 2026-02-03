@@ -6,12 +6,12 @@
   <description>RealSense camera package allowing access to RealSense D400 3D cameras</description>
   <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
   <license>Apache License 2.0</license>
-  
+
   <url type="website">http://www.ros.org/wiki/RealSense</url>
   <url type="bugtracker">https://github.com/intel-ros/realsense/issues</url>
 
   <author email="librs.ros@intel.com">LibRealSense ROS Team</author>
- 
+
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>eigen</depend>
   <depend>builtin_interfaces</depend>
@@ -34,6 +34,7 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>diagnostic_updater</depend>
+  <depend>point_cloud_transport</depend>
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_gtest</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">launch_testing</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_pytest</test_depend>
@@ -45,7 +46,7 @@
   <test_depend condition="$ROS_DISTRO != foxy">python3-requests</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">tf2_ros_py</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">ros2topic</test_depend>
-  
+
   <exec_depend>launch_ros</exec_depend>
   <build_depend>ros_environment</build_depend>
 
