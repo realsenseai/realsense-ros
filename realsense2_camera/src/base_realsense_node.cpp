@@ -769,6 +769,9 @@ rclcpp::Time BaseRealSenseNode::frameSystemTimeSec(rs2::frame frame)
     {
         double elapsed_camera_ns = millisecondsToNanoseconds(timestamp_ms - _camera_time_base);
 
+        /*
+        Fixing deprecated-declarations compilation error for EOL distro (foxy)
+        */
 #if defined(FOXY)
         auto duration = rclcpp::Duration(elapsed_camera_ns);
 #else
