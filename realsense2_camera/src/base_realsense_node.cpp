@@ -780,6 +780,7 @@ rclcpp::Time BaseRealSenseNode::frameSystemTimeSec(rs2::frame frame)
 
         if ((_ros_time_base + duration).nanoseconds() < _ros_time_base.nanoseconds())
         {
+            ROS_WARN("Hardware clock reset detected. Resetting ROS time base.");
             _ros_time_base = _node.now();
             _camera_time_base = timestamp_ms;
             elapsed_camera_ns = millisecondsToNanoseconds(timestamp_ms - _camera_time_base);
