@@ -4,13 +4,13 @@
   <name>realsense2_camera</name>
   <version>4.57.0</version>
   <description>RealSense camera package allowing access to RealSense D400 3D cameras</description>
-  <maintainer email="librs.ros@intel.com">LibRealSense ROS Team</maintainer>
+  <maintainer email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense Team</maintainer>
   <license>Apache License 2.0</license>
   
   <url type="website">http://www.ros.org/wiki/RealSense</url>
   <url type="bugtracker">https://github.com/intel-ros/realsense/issues</url>
 
-  <author email="librs.ros@intel.com">LibRealSense ROS Team</author>
+  <author email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense Team</author>
  
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>eigen</depend>
