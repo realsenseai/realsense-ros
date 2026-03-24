@@ -24,6 +24,8 @@ jobs:
   build:
     name: Build on ROS2 ${{ matrix.ros_distro }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      ROS_DISTRO: ${{ matrix.ros_distro }}
     strategy:
       fail-fast: false
       matrix:
@@ -85,9 +87,13 @@ jobs:
         sudo make install
 
     - name: Build RealSense ROS2 Wrapper from source
+      shell: bash
       run: |
-        echo "source /opt/ros/${{ matrix.ros_distro }}/setup.bash" >> ${{github.workspace}}/.bashrc
-        source ${{github.workspace}}/.bashrc
+        set -e
+
+        # Source ROS environment
+        source /opt/ros/${ROS_DISTRO}/setup.bash
+        
         cd ${{github.workspace}}/ros2
         echo "================= ROSDEP UPDATE ====================="
         rosdep update --rosdistro ${{ matrix.ros_distro }} --include-eol-distros
@@ -97,7 +103,9 @@ jobs:
         # Enable 'BUILD_TOOLS' through cmake arguments. Since, this variable is available only in realsense2_camera package 
         # and not in  realsense2_camera_msgs and realsense2_description packages, to avoid warnings from these packages,
         # use '--no-warn-unused-cli'. Ref: https://cmake.org/cmake/help/v3.0/manual/cmake.1.html
-        colcon build  --cmake-args '-DBUILD_TOOLS=ON' --no-warn-unused-cli
+        # Set PYTHONPATH to ensure CMake-spawned Python processes can find ament_package
+        PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3/dist-packages:$PYTHONPATH \
+          colcon build --symlink-install --merge-install --cmake-args '-DBUILD_TOOLS=ON' --no-warn-unused-cli
 
     ## This step is commented out since we don't use rosbag files in "Run Tests" step below.
     ## Please uncomment when "Run Tests" step is fixed to run all tests.
@@ -128,8 +136,8 @@ jobs:
 
     - name: Run Tests
       run: |
+        source /opt/ros/${ROS_DISTRO}/setup.bash
         cd ${{github.workspace}}/ros2
-        source ${{github.workspace}}/.bashrc
         . install/local_setup.bash
         # sudo apt install -y ros-${{matrix.ros_distro}}-sensor-msgs-py
         source ../.venv/bin/activate
@@ -139,9 +147,9 @@ jobs:
     # TODO: check when we can run integration tests on rolling
     - name: Run integration tests
       run: |
+        source /opt/ros/${ROS_DISTRO}/setup.bash
         cd ${{github.workspace}}/ros2
-        source ${{github.workspace}}/.bashrc
         . install/local_setup.bash
         #export ROSBAG_FILE_PATH=${{github.workspace}}/ros2/records/
-        colcon test --packages-select realsense2_camera --event-handlers console_direct+
+        colcon test --merge-install --packages-select realsense2_camera --event-handlers console_direct+
         colcon test-result --all --test-result-base build/realsense2_camera/test_results/ --verbose
