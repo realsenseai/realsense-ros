@@ -2,8 +2,8 @@
 Changelog for package realsense2_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.7 (2026-03-24)
+-------------------
 * add release noted
 * Update package.xml
 * PR `#3485 <https://github.com/IntelRealSense/realsense-ros/issues/3485>`_ from Nir-Az: Fix GHA flow

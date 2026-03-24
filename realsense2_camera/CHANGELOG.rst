@@ -2,8 +2,8 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.57.7 (2026-03-24)
+-------------------
 * add release noted
 * Update package.xml
 * Update package.xml
