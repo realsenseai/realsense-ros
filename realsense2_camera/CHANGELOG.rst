@@ -2,6 +2,36 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update package.xml
+* Update package.xml
+* Update constants.h
+* PR `#3485 <https://github.com/IntelRealSense/realsense-ros/issues/3485>`_ from Nir-Az: Fix GHA flow
+* install missing packages
+* PR `#3475 <https://github.com/IntelRealSense/realsense-ros/issues/3475>`_ from remibettan: find package set to last major release version
+* find package set to lrs prev major version 2
+* PR `#3474 <https://github.com/IntelRealSense/realsense-ros/issues/3474>`_ from remibettan: find package set to lrs prev major version
+* find package set to lrs prev major version
+* PR `#3462 <https://github.com/IntelRealSense/realsense-ros/issues/3462>`_ from remibettan: intel removed and github user changed
+* undoing the change in copyright, fixing bagfiles links
+* PR `#3468 <https://github.com/IntelRealSense/realsense-ros/issues/3468>`_ from remibettan: using legacy libraries for foxy
+* using legacy libraries for foxy
+* code review corrections
+* many intel removed and github user changed
+* PR `#3450 <https://github.com/IntelRealSense/realsense-ros/issues/3450>`_ from Nir-Az: update to realsenseai
+* update to realsenseai
+* PR `#3448 <https://github.com/IntelRealSense/realsense-ros/issues/3448>`_ from OhadMeir: Add motion_fps to launch file
+* Add motion_fps to launch file
+* PR `#3442 <https://github.com/IntelRealSense/realsense-ros/issues/3442>`_ from remibettan/restore-minor-version-to-0: minor versions back to 0
+* minor back to 0 - leftovers
+* minor back to 0
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* PR `#3437 <https://github.com/IntelRealSense/realsense-ros/issues/3437>`_ from Gilaadb: bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
+* bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
+* Contributors: Gilad Bretter, Nir Azkiel, OhadMeir, Remi Bettan, remibettan
+
 4.57.3 (2025-09-15)
 -------------------
 * PR `#3430 <https://github.com/realsenseai/realsense-ros/issues/3430>`_ from Gilaadb: Create a singleton wrapper to rs2::context
