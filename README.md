@@ -55,6 +55,7 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
      * [Extrinsics from sensor A to sensor B](#extrinsics-from-sensor-a-to-sensor-b)
      * [Topics](#published-topics)
      * [RGBD Topic](#rgbd-topic)
+     * [Diagnostics Topic](#diagnostics-topic)
      * [RViz2 Plugin](#rviz2-plugin)
      * [Metadata Topic](#metadata-topic)
      * [Post-Processing Filters](#post-processing-filters)
@@ -677,7 +678,81 @@ ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true a
 ```
 
 
-## RViz2 Plugin  
+## Diagnostics Topic
+
+The `/diagnostics` topic provides real-time health monitoring of the camera, including hardware temperatures and stream frequency status. It uses the standard ROS 2 [`diagnostic_msgs/msg/DiagnosticArray`](https://docs.ros2.org/latest/api/diagnostic_msgs/msg/DiagnosticArray.html) message type.
+
+### Enabling Diagnostics
+
+Diagnostics are **disabled by default**. To enable them, set the `diagnostics_period` parameter to a positive value (in seconds), which controls how often the diagnostics message is published.
+
+The `diagnostics_period` parameter is applied **only at node startup** and is not dynamically reconfigurable at runtime.
+
+Via launch file:
+```
+ros2 launch realsense2_camera rs_launch.py diagnostics_period:=1.0
+```
+
+You can also set `diagnostics_period` in a parameters YAML file that is loaded when starting the node. Changing this parameter while the node is running (e.g. using `ros2 param set`) will have no effect; you must restart the node for a new value to take effect.
+
+Setting `diagnostics_period` to `0` (default) or a negative value disables diagnostics publishing.
+
+### Diagnostics Content
+
+The `/diagnostics` topic publishes two categories of information:
+
+**1. Temperatures**
+
+Reports the camera's hardware temperatures, queried from the device sensors:
+- **Asic Temperature** - the temperature of the camera's ASIC chip
+- **Projector Temperature** - the temperature of the IR projector
+
+These are published under a diagnostic entry named `"Temperatures"` with the device serial number as the hardware ID.
+
+> **Note:** The temperature diagnostic status level is always reported as **OK**. There are currently no threshold checks — the status will not change to WARN or ERROR based on temperature values.
+
+**2. Stream Frequency**
+
+For each enabled stream (e.g. depth, color, infra, gyro, accel), a frequency diagnostic entry is registered that monitors whether the stream is publishing at its expected frame rate. Each entry reports:
+- The expected frequency (based on the stream's configured FPS)
+- The actual measured frequency
+- A status level: **OK**, **WARN**, or **ERROR** depending on how much the actual frequency deviates from the expected value
+
+This is useful for detecting dropped frames or degraded camera performance.
+
+### Example Output
+
+```
+ros2 topic echo /diagnostics
+```
+
+```yaml
+header:
+  stamp:
+    sec: 1234567890
+    nanosec: 123456789
+status:
+- name: "camera: Temperatures"
+  hardware_id: "1234567890"
+  level: 0          # OK
+  message: "OK"
+  values:
+  - key: "Asic Temperature"
+    value: "56.0"
+  - key: "Projector Temperature"
+    value: "52.5"
+- name: "camera: depth"
+  hardware_id: "1234567890"
+  level: 0          # OK
+  message: "Frequency within tolerance"
+  values:
+  - key: "Frequency (Hz)"
+    value: "30.0"
+```
+
+<hr>
+
+## RViz2 Plugin
 Custom Visualizations for RealSense Camera RGBD Messages in RViz2
 
 This RViz2 plugin provides advanced and intuitive visualization of RealSense camera RGBD data streams. It allows developers, researchers, and robotics engineers to easily inspect, debug, and present both RGB and depth information directly within RViz2.
