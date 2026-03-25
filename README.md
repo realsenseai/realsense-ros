@@ -686,15 +686,14 @@ The `/diagnostics` topic provides real-time health monitoring of the camera, inc
 
 Diagnostics are **disabled by default**. To enable them, set the `diagnostics_period` parameter to a positive value (in seconds), which controls how often the diagnostics message is published.
 
+The `diagnostics_period` parameter is applied **only at node startup** and is not dynamically reconfigurable at runtime.
+
 Via launch file:
 ```
 ros2 launch realsense2_camera rs_launch.py diagnostics_period:=1.0
 ```
 
-Via command line parameter:
-```
-ros2 param set /camera/camera diagnostics_period 1.0
-```
+You can also set `diagnostics_period` in a parameters YAML file that is loaded when starting the node. Changing this parameter while the node is running (e.g. using `ros2 param set`) will have no effect; you must restart the node for a new value to take effect.
 
 Setting `diagnostics_period` to `0` (default) or a negative value disables diagnostics publishing.
 
@@ -705,7 +704,7 @@ The `/diagnostics` topic publishes two categories of information:
 **1. Temperatures**
 
 Reports the camera's hardware temperatures, queried from the device sensors:
-- **ASIC Temperature** - the temperature of the camera's ASIC chip
+- **Asic Temperature** - the temperature of the camera's ASIC chip
 - **Projector Temperature** - the temperature of the IR projector
 
 These are published under a diagnostic entry named `"Temperatures"` with the device serial number as the hardware ID.
@@ -735,15 +734,16 @@ header:
 status:
 - name: "camera: Temperatures"
   hardware_id: "1234567890"
-  level: "\0"       # OK
+  level: 0          # OK
   message: "OK"
   values:
   - key: "Asic Temperature"
     value: "56.0"
   - key: "Projector Temperature"
     value: "52.5"
-- name: "camera: Depth"
-  level: "\0"       # OK
+- name: "camera: depth"
+  hardware_id: "1234567890"
+  level: 0          # OK
   message: "Frequency within tolerance"
   values:
   - key: "Frequency (Hz)"
