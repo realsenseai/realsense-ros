@@ -300,6 +300,7 @@ namespace realsense2_camera
         std::map<stream_index_pair, sensor_msgs::CameraInfo> _camera_info;
         std::atomic_bool _is_initialized_time_base;
         double _camera_time_base;
+        double _previous_frame_time;
         std::map<stream_index_pair, std::vector<rs2::stream_profile>> _enabled_profiles;
 
         ros::Publisher _pointcloud_publisher;
