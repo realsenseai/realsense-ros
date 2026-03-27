@@ -2,6 +2,9 @@
 Changelog for package realsense2_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 4.57.7 (2026-03-24)
 -------------------
 * add release noted

@@ -2,6 +2,12 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update package.xml fix co pilot comment
+* Update package.xml to include missing depends
+* Contributors: Nir Azkiel
+
 4.57.7 (2026-03-24)
 -------------------
 * add release noted
