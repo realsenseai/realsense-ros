@@ -50,12 +50,17 @@ for pkg_xml in $(find "$SRC_DIR" -name "package.xml" -not -path "*/build/*" -not
     fi
 
     # Check 2: find_package() calls should have matching package.xml entries
+    # Uses rosdep to distinguish ROS packages (must be declared) from system libraries (skip)
     find_pkgs=$(sed -n 's/.*find_package(\s*\([A-Za-z0-9_-]*\).*/\1/p' "$cmake_file" | sort -u)
     for dep in $find_pkgs; do
+        # Skip buildtool dependencies (declared as <buildtool_depend>)
         case "$dep" in
-            ament_cmake*|rosidl_default_generators|PkgConfig|Python3|Threads|Boost|OpenCV|OpenMP|OpenGL|PCL|Eigen3|Qt5|realsense2|realsense2-gl)
-                continue ;;
+            ament_cmake*|rosidl_default_generators) continue ;;
         esac
+        # Skip packages not known to rosdep (system/CMake libraries like OpenCV, Qt5, Eigen3)
+        if ! rosdep resolve "$dep" >/dev/null 2>&1; then
+            continue
+        fi
         if ! echo "$declared_deps" | grep -qx "$dep"; then
             error "$pkg_name: find_package($dep) but missing <build_depend>$dep</build_depend> in package.xml"
         fi
