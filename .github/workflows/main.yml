@@ -68,6 +68,12 @@ jobs:
         cd $GITHUB_WORKSPACE/ros2/src/realsense-ros/scripts
         ./pr_check.sh
 
+    - name: Check package.xml dependency completeness
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/ros2/src/realsense-ros/scripts
+        ./check_package_deps.sh $GITHUB_WORKSPACE/ros2/src/realsense-ros
+
     - name: Build librealsense2 from development branch
       run: |
         cd /tmp

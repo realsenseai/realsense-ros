@@ -25,6 +25,7 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>lifecycle_msgs</depend>
 
+  <depend>rclcpp_action</depend>
   <depend>rclcpp_components</depend>
   <depend>realsense2_camera_msgs</depend>
   <depend>sensor_msgs</depend>
