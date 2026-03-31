@@ -24,6 +24,8 @@ jobs:
   build:
     name: Build on ROS2 ${{ matrix.ros_distro }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    container:
+      image: ros:${{ matrix.ros_distro }}-ros-core
     env:
       ROS_DISTRO: ${{ matrix.ros_distro }}
     strategy:
@@ -44,6 +46,14 @@ jobs:
 
     steps:
 
+    - name: Install build tools
+      run: |
+        apt-get update
+        apt-get install -y python3-rosdep python3-colcon-common-extensions \
+          git cmake build-essential libusb-1.0-0-dev sudo
+        rosdep init || true
+        rosdep update --rosdistro ${{ matrix.ros_distro }} --include-eol-distros
+
     - name: Setup ROS2 Workspace
       run: |
         mkdir -p ${{github.workspace}}/ros2/src
@@ -56,35 +66,26 @@ jobs:
       shell: bash
       run: |
         cd ${{github.workspace}}/ros2/src/realsense-ros/scripts
-        ./pr_check.sh 
+        ./pr_check.sh
 
-    - name: build ROS2 for humble/iron/rolling/jazzy/kilted
-      uses: ros-tooling/setup-ros@2b7b7e10fd30ff131dfb33248ddd71c5ba31dd30 #v0.7.15
-      with:
-        required-ros-distributions: ${{ matrix.ros_distro }}
-
-    - name: Checkout librealsense/development
-      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
-      with:
-        repository: realsenseai/librealsense
-        path: librealsense
-        ref: development
-
-    - name: Build RealSense SDK 2.0 (development branch) from source
+    - name: Build librealsense2 from development branch
       run: |
+        cd /tmp
+        git clone --depth 1 --branch development https://github.com/realsenseai/librealsense.git
+        cd librealsense
+        mkdir build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=false -DBUILD_GRAPHICAL_EXAMPLES=false
+        make -j$(nproc)
+        make install
+        ldconfig
 
-        # libusb-1.0-0-dev is needed for librealsense build in ubuntu 20.04
-        # This apt install command will be ignored in ubuntu 22.04 as libusb-1.0-0-dev already installed there
-        sudo apt install -y libusb-1.0-0-dev
-        
-        cd ${{github.workspace}}/librealsense
-        sudo mkdir build
-        cd build
-        sudo cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=false -DBUILD_GRAPHICAL_EXAMPLES=false
-        sudo make uninstall
-        sudo make clean
-        sudo make -j10
-        sudo make install
+    - name: Install declared dependencies only (strict, like build farm)
+      shell: bash
+      run: |
+        source /opt/ros/${ROS_DISTRO}/setup.bash
+        cd ${{github.workspace}}/ros2
+        echo "================= ROSDEP INSTALL ===================="
+        rosdep install -i --reinstall --from-path src --rosdistro ${{ matrix.ros_distro }} --skip-keys=librealsense2 -y
 
     - name: Build RealSense ROS2 Wrapper from source
       shell: bash
@@ -93,14 +94,10 @@ jobs:
 
         # Source ROS environment
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        
+
         cd ${{github.workspace}}/ros2
-        echo "================= ROSDEP UPDATE ====================="
-        rosdep update --rosdistro ${{ matrix.ros_distro }} --include-eol-distros
-        echo "================= ROSDEP INSTALL ===================="
-        rosdep install -i --reinstall --from-path src --rosdistro ${{ matrix.ros_distro }} --skip-keys=librealsense2 -y
         echo "================== COLCON BUILD ======================"
-        # Enable 'BUILD_TOOLS' through cmake arguments. Since, this variable is available only in realsense2_camera package 
+        # Enable 'BUILD_TOOLS' through cmake arguments. Since, this variable is available only in realsense2_camera package
         # and not in  realsense2_camera_msgs and realsense2_description packages, to avoid warnings from these packages,
         # use '--no-warn-unused-cli'. Ref: https://cmake.org/cmake/help/v3.0/manual/cmake.1.html
         # Set PYTHONPATH to ensure CMake-spawned Python processes can find ament_package
@@ -121,12 +118,12 @@ jobs:
 
     - name: Install Packages For Humble/Iron/Rolling/Jazzy/Kilted Tests
       run: |
+        apt-get install -y python3-pip python3-venv
         # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
         # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
         python3 -m venv .venv
         # Activate the virtual env such that following python related commands run within it.
         source .venv/bin/activate
-        sudo apt-get install python3-pip
         # numpy-quaternion needs numpy<2.0.0. Chose 1.26.4 as it is the lowest working version for ubuntu 24.04.
         pip3 install --force-reinstall numpy==1.26.4
         pip3 install numpy-quaternion tqdm pyyaml
@@ -135,17 +132,18 @@ jobs:
         pip install lark-parser
 
     - name: Run Tests
+      shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
         cd ${{github.workspace}}/ros2
         . install/local_setup.bash
-        # sudo apt install -y ros-${{matrix.ros_distro}}-sensor-msgs-py
-        source ../.venv/bin/activate
+        source ${{github.workspace}}/.venv/bin/activate
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
 
     # tf_ros_py are not avaialble
     # TODO: check when we can run integration tests on rolling
     - name: Run integration tests
+      shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
         cd ${{github.workspace}}/ros2
