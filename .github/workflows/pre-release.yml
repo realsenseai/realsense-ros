@@ -48,7 +48,6 @@ jobs:
     env:
       ROS_DISTRO: ${{ matrix.ros_distro }}
       PRERELEASE: true
-      NO_TEST: true
       BASEDIR: ${{ github.workspace }}/.work
 
     steps:
