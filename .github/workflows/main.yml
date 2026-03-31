@@ -117,6 +117,7 @@ jobs:
     #    sudo apt install ros-${{ matrix.ros_distro}}-launch-pytest
 
     - name: Install Packages For Humble/Iron/Rolling/Jazzy/Kilted Tests
+      shell: bash
       run: |
         apt-get install -y python3-pip python3-venv
         # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
