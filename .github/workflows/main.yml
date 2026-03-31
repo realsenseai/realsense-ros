@@ -56,7 +56,7 @@ jobs:
 
     - name: Setup ROS2 Workspace
       run: |
-        mkdir -p ${{github.workspace}}/ros2/src
+        mkdir -p $GITHUB_WORKSPACE/ros2/src
 
     - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       with:
@@ -65,7 +65,7 @@ jobs:
     - name: Check Copyright & Line-Endings
       shell: bash
       run: |
-        cd ${{github.workspace}}/ros2/src/realsense-ros/scripts
+        cd $GITHUB_WORKSPACE/ros2/src/realsense-ros/scripts
         ./pr_check.sh
 
     - name: Build librealsense2 from development branch
@@ -83,7 +83,7 @@ jobs:
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        cd ${{github.workspace}}/ros2
+        cd $GITHUB_WORKSPACE/ros2
         echo "================= ROSDEP INSTALL ===================="
         rosdep install -i --reinstall --from-path src --rosdistro ${{ matrix.ros_distro }} --skip-keys=librealsense2 -y
 
@@ -95,7 +95,7 @@ jobs:
         # Source ROS environment
         source /opt/ros/${ROS_DISTRO}/setup.bash
 
-        cd ${{github.workspace}}/ros2
+        cd $GITHUB_WORKSPACE/ros2
         echo "================== COLCON BUILD ======================"
         # Enable 'BUILD_TOOLS' through cmake arguments. Since, this variable is available only in realsense2_camera package
         # and not in  realsense2_camera_msgs and realsense2_description packages, to avoid warnings from these packages,
@@ -109,7 +109,7 @@ jobs:
     #- name: Download Data For Tests
     #  if: ${{ matrix.ros_distro != 'rolling'}}
     #  run: |
-    #    cd ${{github.workspace}}/ros2
+    #    cd $GITHUB_WORKSPACE/ros2
     #    bag_filename="https://realsenseai.com/rs-tests/TestData/outdoors_1color.bag";
     #    wget $bag_filename -P "records/"
     #    bag_filename="https://realsenseai.com/rs-tests/D435i_Depth_and_IMU_Stands_still.bag";
@@ -135,9 +135,9 @@ jobs:
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        cd ${{github.workspace}}/ros2
+        cd $GITHUB_WORKSPACE/ros2
         . install/local_setup.bash
-        source ${{github.workspace}}/.venv/bin/activate
+        source $GITHUB_WORKSPACE/.venv/bin/activate
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
 
     # tf_ros_py are not avaialble
@@ -146,8 +146,8 @@ jobs:
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        cd ${{github.workspace}}/ros2
+        cd $GITHUB_WORKSPACE/ros2
         . install/local_setup.bash
-        #export ROSBAG_FILE_PATH=${{github.workspace}}/ros2/records/
+        #export ROSBAG_FILE_PATH=$GITHUB_WORKSPACE/ros2/records/
         colcon test --merge-install --packages-select realsense2_camera --event-handlers console_direct+
         colcon test-result --all --test-result-base build/realsense2_camera/test_results/ --verbose
