@@ -53,14 +53,4 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       - name: industrial_ci
-        id: ci
         uses: ros-industrial/industrial_ci@0f4bd2d1b926eac95fd6bc5bd1fcb3051a6e927d #master as of 2026-03-31
-        continue-on-error: true
-      - name: Report result
-        if: always()
-        run: |
-          if [ "${{ steps.ci.outcome }}" = "failure" ]; then
-            echo "::warning::Pre-release build failed for ROS2 ${{ matrix.ros_distro }}. This is informational — the build farm may reject this package."
-          else
-            echo "Pre-release build passed for ROS2 ${{ matrix.ros_distro }}."
-          fi
