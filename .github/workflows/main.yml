@@ -50,7 +50,7 @@ jobs:
       run: |
         apt-get update
         apt-get install -y python3-rosdep python3-colcon-common-extensions \
-          git cmake build-essential libusb-1.0-0-dev sudo
+          git cmake build-essential libusb-1.0-0-dev sudo file
         rosdep init || true
         rosdep update --rosdistro ${{ matrix.ros_distro }} --include-eol-distros
 
