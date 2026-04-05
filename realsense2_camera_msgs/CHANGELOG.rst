@@ -2,6 +2,41 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.57.8 (2026-03-27)
+-------------------
+* Update package.xml fix co pilot comment
+* Update package.xml to include missing depends
+* Contributors: Nir Azkiel
+
+4.57.7 (2026-03-24)
+-------------------
+* add release noted
+* Update package.xml
+* PR `#3485 <https://github.com/IntelRealSense/realsense-ros/issues/3485>`_ from Nir-Az: Fix GHA flow
+* install missing packages
+* PR `#3462 <https://github.com/IntelRealSense/realsense-ros/issues/3462>`_ from remibettan: intel removed and github user changed
+* many intel removed and github user changed
+* PR `#3447 <https://github.com/IntelRealSense/realsense-ros/issues/3447>`_ from Nir-Az: Update maintainers before Realsense migration
+* update maintainers list
+* PR `#3442 <https://github.com/IntelRealSense/realsense-ros/issues/3442>`_ from remibettan/restore-minor-version-to-0: minor versions back to 0
+* minor back to 0
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* Contributors: Nir Azkiel, Remi Bettan, remibettan
+
+* Update package.xml
+* PR `#3485 <https://github.com/IntelRealSense/realsense-ros/issues/3485>`_ from Nir-Az: Fix GHA flow
+* install missing packages
+* PR `#3462 <https://github.com/IntelRealSense/realsense-ros/issues/3462>`_ from remibettan: intel removed and github user changed
+* many intel removed and github user changed
+* PR `#3447 <https://github.com/IntelRealSense/realsense-ros/issues/3447>`_ from Nir-Az: Update maintainers before Realsense migration
+* update maintainers list
+* PR `#3442 <https://github.com/IntelRealSense/realsense-ros/issues/3442>`_ from remibettan/restore-minor-version-to-0: minor versions back to 0
+* minor back to 0
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* Contributors: Nir Azkiel, Remi Bettan, remibettan
+
 4.57.3 (2025-09-15)
 -------------------
 * PR `#3417 <https://github.com/realsenseai/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final
