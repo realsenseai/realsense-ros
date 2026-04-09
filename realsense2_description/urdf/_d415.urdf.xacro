@@ -68,7 +68,7 @@ aluminum peripherial evaluation case.
         <xacro:if value="${use_mesh}">
           <origin xyz="${d415_cam_mount_from_center_offset} ${-d415_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
           <geometry>
-            <mesh filename="package://realsense2_description/meshes/d415.stl" />
+            <mesh filename="package://realsense2_description/meshes/d415_simplified.stl" />
           </geometry>
           <material name="aluminum"/>
         </xacro:if>
