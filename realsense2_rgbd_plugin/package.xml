@@ -12,6 +12,7 @@
 
     <buildtool_depend>ament_cmake</buildtool_depend>
 
+    <depend>cv_bridge</depend>
     <depend>rclcpp</depend>
     <depend>sensor_msgs</depend>
     <depend>realsense2_camera_msgs</depend>

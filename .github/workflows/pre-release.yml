@@ -6,6 +6,10 @@
 # These builds run on Github machines, but in the same environment and using the same flow as actual ROS
 # distro build farm releases, hence "pre-release".
 #
+# NOTE: This workflow is informational only — do not add to required branch protection checks.
+# It may fail due to outdated librealsense2 on the ROS package servers.
+# The main CI workflow (main.yml) is the authoritative build check.
+#
 # This config uses industrial_ci (https://github.com/ros-industrial/industrial_ci.git).
 # For troubleshooting, see readme (https://github.com/ros-industrial/industrial_ci/blob/master/README.rst)
 
@@ -40,7 +44,7 @@ jobs:
           os: ubuntu-24.04
         - ros_distro: 'humble'
           os: ubuntu-22.04
-          
+
     env:
       ROS_DISTRO: ${{ matrix.ros_distro }}
       PRERELEASE: true
@@ -49,4 +53,4 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       - name: industrial_ci
-        uses: ros-industrial/industrial_ci@e3d16c224caf4832cf68e74093eb70f3a979b4cc #Replace reference to 'master' with the latest commit hash
+        uses: ros-industrial/industrial_ci@0f4bd2d1b926eac95fd6bc5bd1fcb3051a6e927d #master as of 2026-03-31
