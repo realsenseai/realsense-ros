@@ -78,7 +78,7 @@ aluminum peripherial evaluation case.
         <origin xyz="${d455_zero_depth_to_glass + d455_glass_to_front} ${-d455_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
         <geometry>
           <!-- <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/> -->
-	        <mesh filename="package://realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001" />
+	        <mesh filename="package://realsense2_description/meshes/d455_simplified.stl" scale="0.001 0.001 0.001" />
         </geometry>
         <material name="aluminum"/>
       </visual>
