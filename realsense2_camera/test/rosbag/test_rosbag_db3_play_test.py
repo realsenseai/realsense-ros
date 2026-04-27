@@ -48,9 +48,9 @@ def test_ros2_bag_play_db3(tmp_path):
     rs_help = subprocess.run([rs_convert, "--help"], capture_output=True).stdout.decode()
     if "output-db3" not in rs_help:
         pytest.skip(f"{rs_convert} predates --output-db3; rebuild librealsense from source")
-    assert subprocess.run(["ros2", "bag", "--help"],
+    assert subprocess.run(["ros2", "bag", "play", "--help"],
                           capture_output=True).returncode == 0, \
-        "ros2 bag CLI not available (install ros-${ROS_DISTRO}-ros2bag)"
+        "ros2 bag play not available (install ros-${ROS_DISTRO}-ros2bag)"
     bag = get_rosbag_file_path("outdoors_1color.bag")
     db3 = str(tmp_path / "out.db3")
     subprocess.run([rs_convert, "-i", bag, "-D", db3],
