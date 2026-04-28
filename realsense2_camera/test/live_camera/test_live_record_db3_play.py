@@ -25,7 +25,7 @@ from sensor_msgs.msg import Image
 
 # Topics librealsense's writer produces for the streams we record below,
 # mapped to the rs.stream they correspond to. D4xx devices put stereo on
-# sensor 0 and RGB on sensor 1.
+# sensor 0 and RGB on sensor 1; this test's markers cover only those.
 TOPICS = {
     "/device_0/sensor_0/Depth_0/image/data": rs.stream.depth,
     "/device_0/sensor_1/Color_0/image/data": rs.stream.color,
@@ -52,27 +52,42 @@ def _record_live(db3, duration_s=5.0):
 
 
 def _replay_frames(db3):
-    # Ground truth: replay through librealsense's reader. Anything missing
-    # on both sides of the comparison would be a librealsense write-side
-    # bug — out of scope for this test.
+    # Ground truth: replay at sensor level (no rs.pipeline syncer in the
+    # way) so every frame written to the bag is delivered. Anything
+    # missing here that ros2 bag play delivers would be a librealsense
+    # write-side bug — out of scope here.
     frames = {t: [] for t in TOPICS}
     stream_to_topic = {s: t for t, s in TOPICS.items()}
-    pipe = rs.pipeline()
-    cfg = rs.config()
-    cfg.enable_device_from_file(db3, repeat_playback=False)
-    profile = pipe.start(cfg)
-    profile.get_device().as_playback().set_real_time(False)
+    handles = []
+    ctx = rs.context()
+    dev = ctx.load_device(db3)
+    playback = dev.as_playback()
+    for sensor in dev.query_sensors():
+        profs = [p for p in sensor.get_stream_profiles()
+                 if p.stream_type() in stream_to_topic]
+        if not profs:
+            continue
+        # keep_frames=True so the queue buffers everything until we drain
+        # it after playback ends, instead of dropping on overflow.
+        q = rs.frame_queue(2000, keep_frames=True)
+        sensor.open(profs)
+        sensor.start(q)
+        handles.append((sensor, q))
     try:
-        while True:
-            ok, fs = pipe.try_wait_for_frames(2000)
-            if not ok:
-                break
-            for f in fs:
-                t = stream_to_topic.get(f.profile.stream_type())
-                if t:
-                    frames[t].append(bytes(f.get_data()))
+        time.sleep(playback.get_duration().total_seconds() + 1.0)
     finally:
-        pipe.stop()
+        for sensor, _ in handles:
+            sensor.stop()
+            sensor.close()
+    for _, q in handles:
+        while True:
+            f = q.poll_for_frame()
+            if not f:
+                break
+            t = stream_to_topic.get(f.profile.stream_type())
+            if t:
+                frames[t].append(bytes(f.get_data()))
+    ctx.unload_device(db3)
     return frames
 
 
