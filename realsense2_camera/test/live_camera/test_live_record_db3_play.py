@@ -46,7 +46,7 @@ def _record_live(db3, duration_s=5.0):
     try:
         deadline = time.time() + duration_s
         while time.time() < deadline:
-            pipe.wait_for_frames(2000)
+            pipe.wait_for_frames()
     finally:
         pipe.stop()
 
