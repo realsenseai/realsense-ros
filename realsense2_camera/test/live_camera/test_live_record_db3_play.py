@@ -96,8 +96,7 @@ def _replay_frames(db3):
 @pytest.mark.d455
 def test_live_record_db3_play(tmp_path):
     devs = rs.context().query_devices()
-    if not list(devs):
-        pytest.skip("no RealSense device connected")
+    assert list(devs), "no RealSense device connected"
     # Reset the device; prior tests in this pytest run can leave the depth
     # sensor in a state where pipeline.start() opens but no frames arrive.
     devs[0].hardware_reset()
