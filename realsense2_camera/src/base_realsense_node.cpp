@@ -353,7 +353,6 @@ template <typename T> T lerp(const T &a, const T &b, const double t) {
 
 void BaseRealSenseNode::FillImuData_LinearInterpolation(const CimuData imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs)
 {
-    static std::deque<CimuData> _imu_history;
     _imu_history.push_back(imu_data);
     stream_index_pair type(imu_data.m_type);
     imu_msgs.clear();
@@ -400,16 +399,16 @@ void BaseRealSenseNode::FillImuData_Copy(const CimuData imu_data, std::deque<sen
 {
     stream_index_pair type(imu_data.m_type);
 
-    static CimuData _accel_data(ACCEL, {0,0,0}, -1.0);
     if (ACCEL == type)
     {
-        _accel_data = imu_data;
+        _imu_history.clear();
+        _imu_history.push_back(imu_data);
         return;
     }
-    if (!_accel_data.is_set())
+    if (_imu_history.empty())
         return;
 
-    imu_msgs.push_back(CreateUnitedMessage(_accel_data, imu_data));
+    imu_msgs.push_back(CreateUnitedMessage(_imu_history.back(), imu_data));
 }
 
 void BaseRealSenseNode::ImuMessage_AddDefaultValues(sensor_msgs::msg::Imu& imu_msg)

@@ -398,6 +398,7 @@ namespace realsense2_camera
         bool _is_gyro_enabled;
         bool _pointcloud;
         imu_sync_method _imu_sync_method;
+        std::deque<CimuData> _imu_history;
         stream_index_pair _pointcloud_texture;
         PipelineSyncer _syncer;
         rs2::asynchronous_syncer _asyncer;
