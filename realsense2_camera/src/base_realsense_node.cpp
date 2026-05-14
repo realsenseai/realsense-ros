@@ -426,9 +426,7 @@ void BaseRealSenseNode::ImuMessage_AddDefaultValues(sensor_msgs::msg::Imu& imu_m
 
 void BaseRealSenseNode::imu_callback_sync(rs2::frame frame, imu_sync_method sync_method)
 {
-    static std::mutex m_mutex;
-
-    m_mutex.lock();
+    std::lock_guard<std::mutex> lock(_imu_callback_mutex);
 
     auto stream = frame.get_profile().stream_type();
     auto stream_index = (stream == GYRO.first)?GYRO:ACCEL;
@@ -467,7 +465,6 @@ void BaseRealSenseNode::imu_callback_sync(rs2::frame frame, imu_sync_method sync
             imu_msgs.pop_front();
          }
     }
-    m_mutex.unlock();
 }
 
 void BaseRealSenseNode::imu_callback(rs2::frame frame)

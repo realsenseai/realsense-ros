@@ -399,6 +399,7 @@ namespace realsense2_camera
         bool _pointcloud;
         imu_sync_method _imu_sync_method;
         std::deque<CimuData> _imu_history;
+        std::mutex _imu_callback_mutex;
         stream_index_pair _pointcloud_texture;
         PipelineSyncer _syncer;
         rs2::asynchronous_syncer _asyncer;
