@@ -260,7 +260,6 @@ namespace realsense2_camera
         void setupPublishers();
         void enable_devices();
         void setupFilters();
-        bool setBaseTime(double frame_time, rs2_timestamp_domain time_domain);
         uint64_t millisecondsToNanoseconds(double timestamp_ms);
         rclcpp::Time frameSystemTimeSec(rs2::frame frame);
         cv::Mat& fix_depth_scale(const cv::Mat& from_image, cv::Mat& to_image);
@@ -385,7 +384,7 @@ namespace realsense2_camera
         std::map<rs2_format, int> _rs_format_to_cv_format;
 
         std::map<stream_index_pair, sensor_msgs::msg::CameraInfo> _camera_info;
-        std::atomic_bool _is_initialized_time_base;
+        bool _is_initialized_time_base;
         double _camera_time_base;
         double _previous_frame_time;
 
@@ -400,6 +399,7 @@ namespace realsense2_camera
         imu_sync_method _imu_sync_method;
         std::deque<CimuData> _imu_history;
         std::mutex _imu_callback_mutex;
+        std::mutex _time_base_mutex;
         stream_index_pair _pointcloud_texture;
         PipelineSyncer _syncer;
         rs2::asynchronous_syncer _asyncer;

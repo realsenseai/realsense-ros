@@ -430,13 +430,6 @@ void BaseRealSenseNode::imu_callback_sync(rs2::frame frame, imu_sync_method sync
 
     auto stream = frame.get_profile().stream_type();
     auto stream_index = (stream == GYRO.first)?GYRO:ACCEL;
-    double frame_time = frame.get_timestamp();
-
-    bool placeholder_false(false);
-    if (_is_initialized_time_base.compare_exchange_strong(placeholder_false, true) )
-    {
-        _is_initialized_time_base = setBaseTime(frame_time, frame.get_frame_timestamp_domain());
-    }
 
     if (_synced_imu_publisher && (0 != _synced_imu_publisher->getNumSubscribers()))
     {
@@ -470,12 +463,6 @@ void BaseRealSenseNode::imu_callback_sync(rs2::frame frame, imu_sync_method sync
 void BaseRealSenseNode::imu_callback(rs2::frame frame)
 {
     auto stream = frame.get_profile().stream_type();
-    double frame_time = frame.get_timestamp();
-    bool placeholder_false(false);
-    if (_is_initialized_time_base.compare_exchange_strong(placeholder_false, true) )
-    {
-        _is_initialized_time_base = setBaseTime(frame_time, frame.get_frame_timestamp_domain());
-    }
 
     ROS_DEBUG("Frame arrived: stream: %s ; index: %d ; Timestamp Domain: %s",
                 ros_stream_to_string(frame.get_profile().stream_type()).c_str(),
@@ -564,15 +551,6 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
     if (_synced_imu_publisher)
         _synced_imu_publisher->Pause();
     double frame_time = frame.get_timestamp();
-
-    // We compute a ROS timestamp which is based on an initial ROS time at point of first frame,
-    // and the incremental timestamp from the camera.
-    // In sync mode the timestamp is based on ROS time
-    bool placeholder_false(false);
-    if (_is_initialized_time_base.compare_exchange_strong(placeholder_false, true) )
-    {
-        _is_initialized_time_base = setBaseTime(frame_time, frame.get_frame_timestamp_domain());
-    }
 
     rclcpp::Time t(frameSystemTimeSec(frame));
     if (frame.is<rs2::frameset>())
@@ -727,23 +705,6 @@ void BaseRealSenseNode::multiple_message_callback(rs2::frame frame, imu_sync_met
     }
 }
 
-bool BaseRealSenseNode::setBaseTime(double frame_time, rs2_timestamp_domain time_domain)
-{
-    if (time_domain == RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME)
-    {
-        ROS_WARN_ONCE("Frame metadata isn't available! (frame_timestamp_domain = RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME)");
-    }
-
-    if (time_domain == RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK)
-    {
-        ROS_WARN("frame's time domain is HARDWARE_CLOCK. Timestamps may reset periodically.");
-        _ros_time_base = _node.now();
-        _camera_time_base = frame_time;
-        _previous_frame_time = frame_time;
-        return true;
-    }
-    return false;
-}
 
 uint64_t BaseRealSenseNode::millisecondsToNanoseconds(double timestamp_ms)
 {
@@ -764,7 +725,16 @@ rclcpp::Time BaseRealSenseNode::frameSystemTimeSec(rs2::frame frame)
     double timestamp_ms = frame.get_timestamp();
     if (frame.get_frame_timestamp_domain() == RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK)
     {
-        if (_previous_frame_time > timestamp_ms)
+        std::lock_guard<std::mutex> lock(_time_base_mutex);
+        if (!_is_initialized_time_base)
+        {
+            ROS_WARN("frame's time domain is HARDWARE_CLOCK. Timestamps may reset periodically.");
+            _ros_time_base = _node.now();
+            _camera_time_base = timestamp_ms;
+            _previous_frame_time = timestamp_ms;
+            _is_initialized_time_base = true;
+        }
+        else if (_previous_frame_time > timestamp_ms)
         {
             ROS_WARN("Hardware clock reset detected. Resetting ROS time base.");
             _ros_time_base = _node.now();
@@ -787,6 +757,8 @@ rclcpp::Time BaseRealSenseNode::frameSystemTimeSec(rs2::frame frame)
     }
     else
     {
+        if (frame.get_frame_timestamp_domain() == RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME)
+            ROS_WARN_ONCE("Frame metadata isn't available! (frame_timestamp_domain = RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME)");
         return rclcpp::Time(millisecondsToNanoseconds(timestamp_ms));
     }
 }
