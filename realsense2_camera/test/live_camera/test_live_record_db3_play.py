@@ -100,7 +100,7 @@ def test_live_record_db3_play(tmp_path):
     # Reset the device; prior tests in this pytest run can leave the depth
     # sensor in a state where pipeline.start() opens but no frames arrive.
     devs[0].hardware_reset()
-    time.sleep(10)  # USB re-enum + FW boot
+    time.sleep(5)  # USB re-enum + FW boot
     assert subprocess.run(["ros2", "bag", "play", "--help"],
                           capture_output=True).returncode == 0, \
         "ros2 bag play not available (declare ros2bag as <test_depend>)"
