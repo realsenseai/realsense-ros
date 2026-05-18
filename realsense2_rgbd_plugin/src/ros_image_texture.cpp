@@ -17,7 +17,11 @@
 #include <iostream>
 
 #include <sensor_msgs/image_encodings.hpp>
+#if defined(CV_BRDIGE_HAS_HPP)
+#include <cv_bridge/cv_bridge.hpp>
+#else
 #include <cv_bridge/cv_bridge.h>
+#endif
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <OgreTextureManager.h>
