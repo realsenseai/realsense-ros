@@ -68,6 +68,12 @@ if(RVIZ_RGBD_PLUGIN)
   target_compile_definitions(realsense_rviz_plugin PRIVATE "RVIZ_DEFAULT_PLUGINS_BUILDING_LIBRARY")
   target_compile_definitions(realsense_rviz_plugin PRIVATE RVIZ_RGBD_PLUGIN)
 
+  # The header 'cv_bridge/cv_bridge.hpp' was added in version 3.3.0. For older
+  # cv_bridge versions, we have to use the header 'cv_bridge/cv_bridge.h'.
+  if(${cv_bridge_VERSION} VERSION_GREATER_EQUAL "3.3.0")
+    target_compile_definitions(realsense_rviz_plugin PRIVATE CV_BRDIGE_HAS_HPP)
+  endif()
+
   # --- Modern CMake: link all dependencies explicitly ---
   # NOTE: Use ROS 2 typesupport targets for message packages.
   target_link_libraries(realsense_rviz_plugin
