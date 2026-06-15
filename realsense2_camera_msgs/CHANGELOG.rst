@@ -37,6 +37,50 @@ Changelog for package realsense2_camera_msgs
 * Merge tag '4.57.3' into ros2-development
 * Contributors: Nir Azkiel, Remi Bettan, remibettan
 
+Forthcoming
+-----------
+* Update package.xml to 4.58.2
+* PR `#3507 <https://github.com/IntelRealSense/realsense-ros/issues/3507>`_ from Nir-Az: align ros2-development to r/4.57.7
+* versions fix
+* Merge remote-tracking branch 'origin/r/4.57.7' into ros2-development
+  # Conflicts:
+  #	realsense2_camera/package.xml
+* Revert "TEST: Remove action_msgs to verify CI catches it"
+  This reverts commit 10c0aa79dae72aa366d3c387308620a905e2f9bd.
+* TEST: Remove action_msgs to verify CI catches it
+  This commit should cause CI to fail. Revert after verification.
+  Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+* Revert "TEST: Remove action_msgs dependency to verify CI catches it"
+  This reverts commit 386560cee21b615ff722ca9faea55fcbdb99432f.
+* TEST: Remove action_msgs dependency to verify CI catches it
+  This commit intentionally removes the action_msgs dependency from
+  realsense2_camera_msgs/package.xml to verify that the ros-core based
+  CI detects missing dependency declarations. This commit should be
+  reverted after verification.
+  Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+* 4.57.8
+* add release notes
+* Update package.xml fix co pilot comment
+* PR `#3503 <https://github.com/IntelRealSense/realsense-ros/issues/3503>`_ from realsenseai: Update package.xml to incude missing depends
+* Update package.xml fix co pilot comments
+* Update package.xml to incude missing depends
+* Update package.xml to include missing depends
+* 4.57.7
+* add change log
+* add release noted
+* Update package.xml
+* PR `#3485 <https://github.com/IntelRealSense/realsense-ros/issues/3485>`_ from Nir-Az: Fix GHA flow
+* install missing packages
+* PR `#3462 <https://github.com/IntelRealSense/realsense-ros/issues/3462>`_ from remibettan: intel removed and github user changed
+* many intel removed and github user changed
+* PR `#3447 <https://github.com/IntelRealSense/realsense-ros/issues/3447>`_ from Nir-Az: Update maintainers before Realsense migration
+* update maintainers list
+* PR `#3442 <https://github.com/IntelRealSense/realsense-ros/issues/3442>`_ from remibettan/restore-minor-version-to-0: minor versions back to 0
+* minor back to 0
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* Contributors: Nir Azkiel, Remi Bettan, remibettan
+
 4.57.3 (2025-09-15)
 -------------------
 * PR `#3417 <https://github.com/realsenseai/realsense-ros/issues/3417>`_ from remibettan: Merging ros2 hkr to ros2 dev final
