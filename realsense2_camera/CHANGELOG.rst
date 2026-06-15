@@ -64,8 +64,8 @@ Changelog for package realsense2_camera
 * bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
 * Contributors: Gilad Bretter, Nir Azkiel, OhadMeir, Remi Bettan, remibettan
 
-Forthcoming
------------
+4.58.2 (2026-06-15)
+-------------------
 * Update CMakeLists.txt to 4.58.2
 * Update package.xml to 4.58.2
 * Update constants.h to 4.58.2

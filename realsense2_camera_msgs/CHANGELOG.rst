@@ -37,8 +37,8 @@ Changelog for package realsense2_camera_msgs
 * Merge tag '4.57.3' into ros2-development
 * Contributors: Nir Azkiel, Remi Bettan, remibettan
 
-Forthcoming
------------
+4.58.2 (2026-06-15)
+-------------------
 * Update package.xml to 4.58.2
 * PR `#3507 <https://github.com/IntelRealSense/realsense-ros/issues/3507>`_ from Nir-Az: align ros2-development to r/4.57.7
 * versions fix
