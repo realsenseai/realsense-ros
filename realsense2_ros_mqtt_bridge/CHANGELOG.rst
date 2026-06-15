@@ -2,12 +2,23 @@
 Changelog for package realsense2_ros_mqtt_bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-4.57.4 (2025-11-02)
--------------------
-* Update realsense2__ros_mqtt_bridge package.xml to .57.4
+Forthcoming
+-----------
+* Update package.xml
+* PR `#3462 <https://github.com/IntelRealSense/realsense-ros/issues/3462>`_ from remibettan: intel removed and github user changed
+* code review corrections 2
+* code review corrections
+* many intel removed and github user changed
+* PR `#3450 <https://github.com/IntelRealSense/realsense-ros/issues/3450>`_ from Nir-Az: update to realsenseai
+* update to realsenseai
+* PR `#3447 <https://github.com/IntelRealSense/realsense-ros/issues/3447>`_ from Nir-Az: Update maintainers before Realsense migration
+* update maintainers list
+* PR `#3442 <https://github.com/IntelRealSense/realsense-ros/issues/3442>`_ from remibettan/restore-minor-version-to-0: minor versions back to 0
+* minor back to 0 - leftovers
+* minor back to 0
 * PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
 * Merge tag '4.57.3' into ros2-development
-* Contributors: Remi Bettan
+* Contributors: Nir Azkiel, Remi Bettan, remibettan
 
 4.57.3 (2025-09-15)
 -------------------

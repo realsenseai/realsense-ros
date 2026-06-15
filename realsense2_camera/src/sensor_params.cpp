@@ -236,6 +236,12 @@ void SensorParams::registerDynamicOptions(rs2::options sensor, const std::string
         {
             continue;
         }
+        // Skip RS2_OPTION_REGION_OF_INTEREST as it's handled separately via registerAutoExposureROIOptions()
+        // This option cannot be read using get_option() API - it requires specialized rect handling
+        if (i == RS2_OPTION_REGION_OF_INTEREST)
+        {
+            continue;
+        }
         if (is_checkbox(sensor, option))
         {
             set_parameter<bool>(sensor, option, module_name);
