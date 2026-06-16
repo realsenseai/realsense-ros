@@ -2,9 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>realsense2_camera</name>
-  <version>4.57.7</version>
+  <version>4.58.2</version>
   <description>RealSense camera package allowing access to RealSense D400 3D cameras</description>
-  <maintainer email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense Team</maintainer>
+  <maintainer email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense ROS Team</maintainer>
   <maintainer email="nir.azkiel@realsenseai.com">Nir Azkiel</maintainer>
   <license>Apache License 2.0</license>
   
@@ -25,6 +25,7 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>lifecycle_msgs</depend>
 
+  <depend>rclcpp_action</depend>
   <depend>rclcpp_components</depend>
   <depend>realsense2_camera_msgs</depend>
   <depend>sensor_msgs</depend>
@@ -46,6 +47,8 @@
   <test_depend condition="$ROS_DISTRO != foxy">python3-requests</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">tf2_ros_py</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">ros2topic</test_depend>
+  <test_depend condition="$ROS_DISTRO != foxy">ros2bag</test_depend>
+  <test_depend condition="$ROS_DISTRO != foxy">rosbag2_storage_default_plugins</test_depend>
   
   <exec_depend>launch_ros</exec_depend>
   <build_depend>ros_environment</build_depend>
