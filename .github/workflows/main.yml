@@ -34,7 +34,7 @@ jobs:
         ros_distro: [rolling, humble, jazzy, kilted]
         include:
         - ros_distro: 'rolling'
-          os: ubuntu-24.04
+          os: ubuntu-26.04
         - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
