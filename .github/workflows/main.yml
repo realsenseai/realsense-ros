@@ -73,9 +73,14 @@ jobs:
       if: ${{ matrix.use_ros2_testing }}
       shell: bash
       run: |
+        echo "--- /etc/apt/sources.list.d/ ---"
+        ls -la /etc/apt/sources.list.d/ || true
+        echo "--- dpkg -L ros2-apt-source ---"
+        dpkg -L ros2-apt-source 2>/dev/null || true
+        echo "---"
         set -euo pipefail
-        src=$(ls /etc/apt/sources.list.d/ros2.sources /etc/apt/sources.list.d/ros2.list 2>/dev/null | head -n1)
-        [ -n "$src" ] || { echo "ERROR: no existing ros2 apt source file found"; ls -la /etc/apt/sources.list.d/; exit 1; }
+        src=$(find /etc/apt/sources.list.d -maxdepth 1 -type f \( -name 'ros2*.sources' -o -name 'ros2*.list' \) | head -n1)
+        [ -n "$src" ] || { echo "ERROR: no existing ros2 apt source file found"; exit 1; }
         ext="${src##*.}"
         dst="/etc/apt/sources.list.d/ros2-testing.${ext}"
         cp "$src" "$dst"
