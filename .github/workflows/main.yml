@@ -31,7 +31,12 @@ jobs:
       # image: ros:${{ matrix.ros_distro }}-ros-core
       image: ${{ matrix.container_image || format('ros:{0}-ros-core', matrix.ros_distro) }}
     env:
-      ROS_DISTRO: ${{ matrix.ros_distro }}
+      # Restore this line (and drop matrix.ros_distro_runtime) when
+      # `/opt/ros/rolling/` ships in the container that hosts ROS Rolling on
+      # Resolute (currently only `/opt/ros/lyrical/` exists in
+      # ros:lyrical-ros-core-resolute).
+      # ROS_DISTRO: ${{ matrix.ros_distro }}
+      ROS_DISTRO: ${{ matrix.ros_distro_runtime || matrix.ros_distro }}
     strategy:
       fail-fast: false
       matrix:
@@ -43,6 +48,12 @@ jobs:
           # Rolling has migrated off Noble; lyrical-ros-core-resolute matches
           # the new Rolling-on-Resolute platform until OSRF rebuilds the image.
           container_image: ros:lyrical-ros-core-resolute
+          # The lyrical container only ships /opt/ros/lyrical/ (Rolling content
+          # under its Lyrical name). Source that until /opt/ros/rolling/ exists.
+          ros_distro_runtime: lyrical
+          # ros-rolling-* debs for resolute live in ros2-testing until the
+          # next stable sync; install that apt source on this row only.
+          use_ros2_testing: true
         - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
@@ -51,6 +62,24 @@ jobs:
           os: ubuntu-22.04
 
     steps:
+
+    - name: Add ros2-testing apt source
+      # Restore: remove this step when ros-rolling-* are published in the
+      # stable resolute apt index (packages.ros.org/ros2/dists/resolute).
+      if: ${{ matrix.use_ros2_testing }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        apt-get update
+        apt-get install -y --no-install-recommends curl ca-certificates
+        VERSION=$(curl -fsSLI -o /dev/null -w '%{url_effective}' --retry 5 --retry-delay 5 --retry-all-errors \
+          https://github.com/ros-infrastructure/ros-apt-source/releases/latest | sed 's|.*/||')
+        [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+)+$ ]] || { echo "ERROR: could not resolve ros-apt-source version (got: '${VERSION}')"; exit 1; }
+        codename=$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+        curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o /tmp/ros2-testing-apt-source.deb \
+          "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${VERSION}/ros2-testing-apt-source_${VERSION}.${codename}_all.deb"
+        dpkg -i /tmp/ros2-testing-apt-source.deb
+        apt-get update
 
     - name: Install build tools
       run: |
