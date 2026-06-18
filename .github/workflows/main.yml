@@ -25,7 +25,11 @@ jobs:
     name: Build on ROS2 ${{ matrix.ros_distro }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     container:
-      image: ros:${{ matrix.ros_distro }}-ros-core
+      # Restore this line (and drop matrix.container_image) when
+      # `ros:rolling-ros-core` is rebuilt on Resolute upstream
+      # (docker-library/official-images repoints it from noble/ to resolute/).
+      # image: ros:${{ matrix.ros_distro }}-ros-core
+      image: ${{ matrix.container_image || format('ros:{0}-ros-core', matrix.ros_distro) }}
     env:
       ROS_DISTRO: ${{ matrix.ros_distro }}
     strategy:
@@ -35,6 +39,10 @@ jobs:
         include:
         - ros_distro: 'rolling'
           os: ubuntu-26.04
+          # `ros:rolling-ros-core` is still Noble-based upstream while ROS
+          # Rolling has migrated off Noble; lyrical-ros-core-resolute matches
+          # the new Rolling-on-Resolute platform until OSRF rebuilds the image.
+          container_image: ros:lyrical-ros-core-resolute
         - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
