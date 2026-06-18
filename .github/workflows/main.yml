@@ -207,8 +207,12 @@ jobs:
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
 
     # tf_ros_py are not avaialble
-    # TODO: check when we can run integration tests on rolling
+    # Integration tests time out on rolling (topics never publish data; build
+    # and unit tests pass). Likely related to upstream rclcpp/image_transport/
+    # rosbag2 churn during the Rolling-on-Resolute transition. Skip until the
+    # platform stabilises.
     - name: Run integration tests
+      if: ${{ matrix.ros_distro != 'rolling' }}
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
