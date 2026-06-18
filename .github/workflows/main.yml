@@ -146,6 +146,15 @@ jobs:
 
         # Source ROS environment
         source /opt/ros/${ROS_DISTRO}/setup.bash
+        # Overlay matrix.ros_distro prefix when it differs from the runtime
+        # distro: the rolling row runs in the lyrical container but rosdep
+        # installs ros-rolling-* into /opt/ros/rolling/, so CMake needs both
+        # prefixes on AMENT_PREFIX_PATH to find tf2_ros, cv_bridge, etc.
+        # Restore this step to a single source line when /opt/ros/rolling/
+        # ships in the container for ROS Rolling on Resolute.
+        if [ "${ROS_DISTRO}" != "${{ matrix.ros_distro }}" ] && [ -f "/opt/ros/${{ matrix.ros_distro }}/setup.bash" ]; then
+          source "/opt/ros/${{ matrix.ros_distro }}/setup.bash"
+        fi
 
         cd $GITHUB_WORKSPACE/ros2
         echo "================== COLCON BUILD ======================"
@@ -188,6 +197,10 @@ jobs:
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
+        # Overlay matrix.ros_distro prefix on the rolling row (see notes above).
+        if [ "${ROS_DISTRO}" != "${{ matrix.ros_distro }}" ] && [ -f "/opt/ros/${{ matrix.ros_distro }}/setup.bash" ]; then
+          source "/opt/ros/${{ matrix.ros_distro }}/setup.bash"
+        fi
         cd $GITHUB_WORKSPACE/ros2
         . install/local_setup.bash
         source $GITHUB_WORKSPACE/.venv/bin/activate
@@ -199,6 +212,10 @@ jobs:
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
+        # Overlay matrix.ros_distro prefix on the rolling row (see notes above).
+        if [ "${ROS_DISTRO}" != "${{ matrix.ros_distro }}" ] && [ -f "/opt/ros/${{ matrix.ros_distro }}/setup.bash" ]; then
+          source "/opt/ros/${{ matrix.ros_distro }}/setup.bash"
+        fi
         cd $GITHUB_WORKSPACE/ros2
         . install/local_setup.bash
         #export ROSBAG_FILE_PATH=$GITHUB_WORKSPACE/ros2/records/
