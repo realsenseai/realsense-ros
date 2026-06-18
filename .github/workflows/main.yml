@@ -66,19 +66,22 @@ jobs:
     - name: Add ros2-testing apt source
       # Restore: remove this step when ros-rolling-* are published in the
       # stable resolute apt index (packages.ros.org/ros2/dists/resolute).
+      # The ros2-testing-apt-source deb declares Conflicts: ros2-apt-source,
+      # so we can't install it alongside the stable source already present in
+      # the ros:* container. Instead, clone the existing apt-source file and
+      # repoint its URI at ros2-testing so both repos are available in parallel.
       if: ${{ matrix.use_ros2_testing }}
       shell: bash
       run: |
         set -euo pipefail
-        apt-get update
-        apt-get install -y --no-install-recommends curl ca-certificates
-        VERSION=$(curl -fsSLI -o /dev/null -w '%{url_effective}' --retry 5 --retry-delay 5 --retry-all-errors \
-          https://github.com/ros-infrastructure/ros-apt-source/releases/latest | sed 's|.*/||')
-        [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+)+$ ]] || { echo "ERROR: could not resolve ros-apt-source version (got: '${VERSION}')"; exit 1; }
-        codename=$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-        curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o /tmp/ros2-testing-apt-source.deb \
-          "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${VERSION}/ros2-testing-apt-source_${VERSION}.${codename}_all.deb"
-        dpkg -i /tmp/ros2-testing-apt-source.deb
+        src=$(ls /etc/apt/sources.list.d/ros2.sources /etc/apt/sources.list.d/ros2.list 2>/dev/null | head -n1)
+        [ -n "$src" ] || { echo "ERROR: no existing ros2 apt source file found"; ls -la /etc/apt/sources.list.d/; exit 1; }
+        ext="${src##*.}"
+        dst="/etc/apt/sources.list.d/ros2-testing.${ext}"
+        cp "$src" "$dst"
+        sed -i 's|/ros2/ubuntu|/ros2-testing/ubuntu|g' "$dst"
+        echo "--- $dst ---"
+        cat "$dst"
         apt-get update
 
     - name: Install build tools
