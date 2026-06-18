@@ -79,7 +79,10 @@ jobs:
         dpkg -L ros2-apt-source 2>/dev/null || true
         echo "---"
         set -euo pipefail
-        src=$(find /etc/apt/sources.list.d -maxdepth 1 -type f \( -name 'ros2*.sources' -o -name 'ros2*.list' \) | head -n1)
+        # -L follows symlinks: ros:lyrical-ros-core-resolute ships
+        # /etc/apt/sources.list.d/ros2.sources as a symlink to
+        # /usr/share/ros-apt-source/ros2.sources, which plain -type f rejects.
+        src=$(find -L /etc/apt/sources.list.d -maxdepth 1 -type f \( -name 'ros2*.sources' -o -name 'ros2*.list' \) | head -n1)
         [ -n "$src" ] || { echo "ERROR: no existing ros2 apt source file found"; exit 1; }
         ext="${src##*.}"
         dst="/etc/apt/sources.list.d/ros2-testing.${ext}"
