@@ -448,12 +448,14 @@ void RealSenseNodeFactory::startDevice()
     if (_realSenseNode) _realSenseNode.reset();
     std::string device_name(_device.get_info(RS2_CAMERA_INFO_NAME));
     std::string pid_str(_device.get_info(RS2_CAMERA_INFO_PRODUCT_ID));
+    std::string connection_type(_device.supports(RS2_CAMERA_INFO_CONNECTION_TYPE) ?
+                                _device.get_info(RS2_CAMERA_INFO_CONNECTION_TYPE) : "");
     uint16_t pid;
 
-    if (device_name == "Intel RealSense D555")
+    if (connection_type == "DDS" && device_name.find("D555") != std::string::npos)
     {
-        // currently the PID of DDS devices is hardcoded as "DDS"
-        // need to be fixed in librealsense
+        // DDS devices don't expose a real USB PID (PRODUCT_ID is hardcoded as "DDS"
+        // in librealsense), so resolve the model by name instead.
         pid = RS555_PID;
     }
     else
