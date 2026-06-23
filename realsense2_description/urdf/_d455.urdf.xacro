@@ -26,7 +26,7 @@ aluminum peripherial evaluation case.
   <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
   <xacro:include filename="$(find realsense2_description)/urdf/_usb_plug.urdf.xacro" />
 
-  <xacro:macro name="sensor_d455" params="parent *origin name:=camera use_nominal_extrinsics:=false">
+  <xacro:macro name="sensor_d455" params="parent *origin name:=camera use_nominal_extrinsics:=false use_mesh:=true">
     <xacro:arg name="add_plug" default="false" />
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
@@ -75,12 +75,19 @@ aluminum peripherial evaluation case.
       <visual>
         <!-- the mesh origin is at front plate in between the two infrared camera axes -->
         <!-- <origin xyz="${d455_zero_depth_to_glass-d455_cam_depth/2} ${-d455_cam_depth_py} 0" rpy="0 0 0"/> -->
-        <origin xyz="${d455_zero_depth_to_glass + d455_glass_to_front} ${-d455_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
-        <geometry>
-          <!-- <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/> -->
-	        <mesh filename="package://realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001" />
-        </geometry>
-        <material name="aluminum"/>
+        <xacro:if value="${use_mesh}">
+          <origin xyz="${d455_zero_depth_to_glass + d455_glass_to_front} ${-d455_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+          <geometry>
+	          <mesh filename="package://realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001" />
+          </geometry>
+        </xacro:if>
+        <xacro:unless value="${use_mesh}">
+          <origin xyz="0 ${-d455_cam_depth_py} 0" rpy="0 0 0"/>
+          <geometry>
+            <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/>
+          </geometry>
+          <material name="aluminum"/>
+        </xacro:unless>     
       </visual>
       <collision>
         <origin xyz="${d455_zero_depth_to_glass-d455_cam_depth/2} ${-d455_cam_depth_py} 0" rpy="0 0 0"/>
