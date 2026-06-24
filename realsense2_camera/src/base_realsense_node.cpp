@@ -863,7 +863,7 @@ void BaseRealSenseNode::updateExtrinsicsCalibData(const rs2::video_stream_profil
     float fx = _camera_info[right].k.at(0);
     float fy = _camera_info[right].k.at(4);
     const auto& ex = right_video_profile.get_extrinsics_to(left_video_profile);
-    _camera_info[right].header.frame_id = OPTICAL_FRAME_ID(left);
+    _camera_info[right].header.frame_id = OPTICAL_FRAME_ID(right);
     _camera_info[right].p.at(3) = -fx * ex.translation[0] + 0.0; // Tx - avoid -0.0 values.
     _camera_info[right].p.at(7) = -fy * ex.translation[1] + 0.0; // Ty - avoid -0.0 values.
 }
