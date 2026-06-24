@@ -171,10 +171,15 @@ def find_devices_run_tests():
     try:
         os.makedirs(logdir, exist_ok=True)
 
-        # Let rspy own the YKUSH hub: it discovers the hub, resets it and
-        # enumerates the connected devices (resolving each device's port).
+        # Let rspy own the YKUSH hub: discover it, enumerate the connected
+        # devices and resolve each device's port. Skip the hub reset on the first
+        # attempt -- the 'ykushcmd --reset' it runs prints 'cannot claim
+        # interface' to the console while the board re-enumerates. Only reset as a
+        # recovery step if the first enumeration comes up empty.
+        first_attempt = True
         while max_retry and not devices._device_by_sn:
-            devices.query(hub_reset=True)
+            devices.query(hub_reset=not first_attempt)
+            first_attempt = False
             max_retry -= 1
 
         if not devices._device_by_sn:
