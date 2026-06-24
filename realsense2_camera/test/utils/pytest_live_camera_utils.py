@@ -122,6 +122,7 @@ def get_color_profiles(long_data, start_index, end_index):
     return cap
 
 NAME_LINE_INDEX = 1
+NAME_LINE_VALUE_OFFSET = 2  # tokens after the "Name :" prefix
 SERIAL_NO_LINE_INDEX = 2
 SERIAL_NO_VALUE_OFFSET = 3
 def parse_device_info(long_data, start_index, end_index, device_type, serial_no):
@@ -134,7 +135,7 @@ def parse_device_info(long_data, start_index, end_index, device_type, serial_no)
     # Name value tokens follow the "Name :" prefix. The model token (e.g.
     # "D455") is present whether or not a vendor prefix is shown, so match
     # on it directly.
-    name_value_tokens = name_line[2:]
+    name_value_tokens = name_line[NAME_LINE_VALUE_OFFSET:]
     if device_type not in name_value_tokens:
         debug_print("device not matching:" + " ".join(name_value_tokens))
         return None
