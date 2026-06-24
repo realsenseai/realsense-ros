@@ -121,33 +121,28 @@ def junit_xml_parsing(xml_file):
         new_xml = xml_file.split('.')[0]
         tree.write(f'{logdir}/{new_xml}_refined.xml')
 
-def build_device_port_mapping(possible_ports):
+def build_device_port_mapping():
     """
-    Build a mapping of devices to YKUSH hub ports by enabling each port and querying connected devices.
+    Map device-name -> YKUSH hub port using rspy's enumeration.
+
+    rspy resolves each device's hub port from its USB location during a single
+    query(), so there is no need to power-cycle the ports one at a time. The old
+    per-port toggle + query(hub_reset=True) approach raced with USB
+    re-enumeration: it printed 'cannot claim interface' / 'Unable to open device'
+    to the console, and because query() re-enables all ports it mismapped every
+    device onto the first port.
     """
     from rspy import devices
+    devices.query(monitor_changes=False)
     mapping = {}
-
-    # Turn off all ports first
-    for port in possible_ports:
-        subprocess.run(f'ykushcmd ykush3 -d {port}', shell=True)
-    time.sleep(2.5)
-
-    for port in possible_ports:
-        log.i(f"Checking YKUSH port {port}...")
-
-        subprocess.run(f'ykushcmd ykush3 -u {port}', shell=True)
-        time.sleep(5.0)
-
-        devices.query(hub_reset=True)
-
-        for device in devices._device_by_sn.values():
-            key = device.name.upper()
-            if key not in mapping:
-                mapping[key] = port
-                log.i(f"Detected device: {device.name} ({device._sn}) on port {port}")
-
-        subprocess.run(f'ykushcmd ykush3 -d {port}', shell=True)
+    for device in devices._device_by_sn.values():
+        if device.port is None:
+            log.w(f"Could not resolve YKUSH port for {device.name} ({device._sn})")
+            continue
+        key = device.name.upper()
+        if key not in mapping:
+            mapping[key] = device.port
+            log.i(f"Detected device: {device.name} ({device._sn}) on port {device.port}")
 
     return mapping
 
@@ -178,9 +173,7 @@ def run_tests_for_device(device, testname):
     Run tests for a specific device by enabling its port and executing the test command.
     """
     
-    # Define which ports are connected to YKUSH (e.g., 1, 2, 3...)
-    possible_ports = [1, 2, 3]
-    device_port_mapping = build_device_port_mapping(possible_ports)
+    device_port_mapping = build_device_port_mapping()
     log.i("Device to port mapping:", device_port_mapping)
     
     disable_all_ports()  # Disable all ports first
