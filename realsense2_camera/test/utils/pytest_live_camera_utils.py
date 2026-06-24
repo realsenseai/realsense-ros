@@ -122,7 +122,6 @@ def get_color_profiles(long_data, start_index, end_index):
     return cap
 
 NAME_LINE_INDEX = 1
-NAME_LINE_NAME_OFFSET = 4
 SERIAL_NO_LINE_INDEX = 2
 SERIAL_NO_VALUE_OFFSET = 3
 def parse_device_info(long_data, start_index, end_index, device_type, serial_no):
@@ -132,10 +131,14 @@ def parse_device_info(long_data, start_index, end_index, device_type, serial_no)
     name_line = long_data[start_index+NAME_LINE_INDEX].split()
     if name_line[0] != "Name":
         assert False, "rs-enumerate-devices output format changed"
-    if name_line[4] != device_type:
-        debug_print("device not matching:" + name_line[NAME_LINE_NAME_OFFSET])
+    # Name value tokens follow the "Name :" prefix. The model token (e.g.
+    # "D455") is present whether or not a vendor prefix is shown
+    # ("Intel RealSense D455" vs "RealSense D455"), so match on it directly.
+    name_value_tokens = name_line[2:]
+    if device_type not in name_value_tokens:
+        debug_print("device not matching:" + " ".join(name_value_tokens))
         return None
-    debug_print("device matched:" + name_line[NAME_LINE_NAME_OFFSET])
+    debug_print("device matched:" + device_type)
     if serial_no != None:
         #next line after nameline should have the serial_no
         serial_no_line = long_data[start_index+SERIAL_NO_LINE_INDEX].split()
@@ -193,15 +196,17 @@ def get_camera_capabilities_short(device_type, serial_no=None):
 def check_if_camera_connected(device_type, serial_no=None):
     long_data = os.popen("rs-enumerate-devices -s").read().splitlines()
     debug_print(serial_no)
-    index = 0
-    for index in range(len(long_data)):
-        name_line = long_data[index].split()
-        if name_line[0] != "Intel":
-            continue
-        if name_line[2].casefold() != device_type.casefold():
-            continue
-        if serial_no is None or serial_no == name_line[3]:
-            return True
+    for line in long_data:
+        tokens = line.split()
+        # The camera visible name may or may not carry a vendor prefix
+        # (e.g. "Intel RealSense D455" or "RealSense D455"), so match the
+        # model token directly instead of relying on a fixed column index.
+        for i, token in enumerate(tokens):
+            if token.casefold() != device_type.casefold():
+                continue
+            # The serial number is the token right after the model name.
+            if serial_no is None or (i + 1 < len(tokens) and serial_no == tokens[i + 1]):
+                return True
 
     return False
 
