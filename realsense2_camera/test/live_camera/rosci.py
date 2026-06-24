@@ -35,7 +35,6 @@ dir_live_tests = os.path.dirname(__file__)
 
 from rspy import log, file
 regex = None
-hub_reset = False
 handle = None
 test_ran = False
 device_set = list()
@@ -123,17 +122,14 @@ def junit_xml_parsing(xml_file):
 
 def build_device_port_mapping():
     """
-    Map device-name -> YKUSH hub port using rspy's enumeration.
+    Map device-name -> YKUSH hub port from rspy's current enumeration.
 
-    rspy resolves each device's hub port from its USB location during a single
-    query(), so there is no need to power-cycle the ports one at a time. The old
-    per-port toggle + query(hub_reset=True) approach raced with USB
-    re-enumeration: it printed 'cannot claim interface' / 'Unable to open device'
-    to the console, and because query() re-enables all ports it mismapped every
-    device onto the first port.
+    rspy resolves each device's hub port from its USB location during query()
+    (done in find_devices_run_tests), so the mapping is read straight from the
+    enumerated devices -- no need to power-cycle ports one at a time, and no
+    direct ykushcmd calls.
     """
     from rspy import devices
-    devices.query(monitor_changes=False)
     mapping = {}
     for device in devices._device_by_sn.values():
         if device.port is None:
@@ -147,39 +143,18 @@ def build_device_port_mapping():
     return mapping
 
 
-def disable_all_ports():
+def run_tests_for_device(device, port, testname):
     """
-    Disable all ports on the YKUSH hub.
+    Enable only the target device's YKUSH port (through rspy's hub) and run its
+    tests. rspy owns the hub, so there are no direct ykushcmd calls.
     """
-    log.i("Disabling all ports...")
-    subprocess.run(f'ykushcmd ykush3 -d a', shell=True)
-    time.sleep(2.5)  # Wait for the system to unregister devices
-
-
-def enable_port_for_device(device, port):
-    """
-    Enable the port for the specified device.
-    """
-    if port:
-        log.i(f"Enabling port {port} for device {device.upper()}")
-        subprocess.run(f'ykushcmd ykush3 -u {port}', shell=True)
-        time.sleep(5.0)  # Wait for re-enumeration
-    else:
+    from rspy import devices
+    if port is None:
         log.e(f"No port mapping found for device {device.upper()}")
+        return
 
-
-def run_tests_for_device(device, testname):
-    """
-    Run tests for a specific device by enabling its port and executing the test command.
-    """
-    
-    device_port_mapping = build_device_port_mapping()
-    log.i("Device to port mapping:", device_port_mapping)
-    
-    disable_all_ports()  # Disable all ports first
-    
-    port = device_port_mapping.get(device.upper())
-    enable_port_for_device(device, port)  # Enable the port for the target device
+    if devices.hub:
+        devices.hub.enable_ports([port], disable_other_ports=True, sleep_on_change=5)
 
     cmd = command(device.lower(), testname)
     run_test(cmd, testname, device, stdout=logdir, append=False)
@@ -196,18 +171,19 @@ def find_devices_run_tests():
     try:
         os.makedirs(logdir, exist_ok=True)
 
-        # Update dict '_device_by_sn' from devices module of rspy
+        # Let rspy own the YKUSH hub: it discovers the hub, resets it and
+        # enumerates the connected devices (resolving each device's port).
         while max_retry and not devices._device_by_sn:
-            subprocess.run('ykushcmd ykush3 --reset', shell=True)
-            time.sleep(2.0)
-            devices.query(hub_reset=hub_reset)
+            devices.query(hub_reset=True)
             max_retry -= 1
 
         if not devices._device_by_sn:
             assert False, 'No Camera device detected!'
-        else:
-            connected_devices = [device.name for device in devices._device_by_sn.values()]
-            log.i('Connected devices:', connected_devices)
+
+        connected_devices = [device.name for device in devices._device_by_sn.values()]
+        log.i('Connected devices:', connected_devices)
+        device_port_mapping = build_device_port_mapping()
+        log.i('Device to port mapping:', device_port_mapping)
 
         testname = regex if regex else None
 
@@ -215,9 +191,10 @@ def find_devices_run_tests():
             # Loop through user-specified devices and run tests only on them
             devices_not_found = []
             for device in device_set:
-                if device.upper() in connected_devices:
+                port = device_port_mapping.get(device.upper())
+                if port is not None:
                     log.i('Running tests on device:', device)
-                    run_tests_for_device(device, testname)
+                    run_tests_for_device(device, port, testname)
                 else:
                     log.e('Skipping test run on device:', device, ', -- NOT found')
                     devices_not_found.append(device)
@@ -226,7 +203,7 @@ def find_devices_run_tests():
             # Loop through all connected devices and run all tests
             for device in connected_devices:
                 log.i('Running tests on device:', device)
-                run_tests_for_device(device, testname)
+                run_tests_for_device(device, device_port_mapping.get(device.upper()), testname)
     finally:
         if devices.hub and devices.hub.is_connected():
             devices.hub.disable_ports()
