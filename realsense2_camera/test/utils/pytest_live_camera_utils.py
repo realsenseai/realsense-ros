@@ -132,8 +132,8 @@ def parse_device_info(long_data, start_index, end_index, device_type, serial_no)
     if name_line[0] != "Name":
         assert False, "rs-enumerate-devices output format changed"
     # Name value tokens follow the "Name :" prefix. The model token (e.g.
-    # "D455") is present whether or not a vendor prefix is shown
-    # ("Intel RealSense D455" vs "RealSense D455"), so match on it directly.
+    # "D455") is present whether or not a vendor prefix is shown, so match
+    # on it directly.
     name_value_tokens = name_line[2:]
     if device_type not in name_value_tokens:
         debug_print("device not matching:" + " ".join(name_value_tokens))
@@ -198,9 +198,9 @@ def check_if_camera_connected(device_type, serial_no=None):
     debug_print(serial_no)
     for line in long_data:
         tokens = line.split()
-        # The camera visible name may or may not carry a vendor prefix
-        # (e.g. "Intel RealSense D455" or "RealSense D455"), so match the
-        # model token directly instead of relying on a fixed column index.
+        # The camera visible name may or may not carry a vendor prefix, so
+        # match the model token directly instead of relying on a fixed
+        # column index.
         for i, token in enumerate(tokens):
             if token.casefold() != device_type.casefold():
                 continue
