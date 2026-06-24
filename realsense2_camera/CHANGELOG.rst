@@ -64,6 +64,117 @@ Changelog for package realsense2_camera
 * bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
 * Contributors: Gilad Bretter, Nir Azkiel, OhadMeir, Remi Bettan, remibettan
 
+4.58.2 (2026-06-15)
+-------------------
+* Update CMakeLists.txt to 4.58.2
+* Update package.xml to 4.58.2
+* Update constants.h to 4.58.2
+* PR `#3517 <https://github.com/IntelRealSense/realsense-ros/issues/3517>`_ from Gilaadb: Imu handling in component
+* Fix _imu_history state corruption on unite_imu_method change
+  When switching between COPY and LINEAR_INTERPOLATION at runtime via the
+  'unite_imu_method' parameter, _imu_history may contain stale entries from
+  the previous mode. Clear it under _imu_callback_mutex to prevent corrupt
+  IMU messages (e.g. a GYRO sample being used as accel data in COPY mode).
+* PR `#3516 <https://github.com/IntelRealSense/realsense-ros/issues/3516>`_ from AviaAv: Reset device at start of test_live_record_db3_play
+* Shorten post-reset wait from 10s to 5s
+* Fix race on time base variables in components (composable nodes)
+  When using components, different sensor threads (video, IMU) can call
+  frameSystemTimeSec concurrently on the same instance. The time base
+  fields (_ros_time_base, _camera_time_base, _previous_frame_time) had
+  no protection, so concurrent init or hardware clock reset could produce
+  torn reads and inconsistent timestamp pairs.
+  Folded the time base init and reset logic into frameSystemTimeSec
+  behind a per-instance mutex, making it the single place that reads and
+  writes the time base fields. Removed setBaseTime and the CAS-based
+  init blocks in the callbacks, which had a publication window where one
+  thread could read uninitialized values after another won the CAS but
+  before it had finished writing. Converted _is_initialized_time_base
+  from std::atomic_bool to bool since all accesses are now under the
+  mutex and the atomic is no longer needed.
+* Fix shared IMU callback mutex in components (composable nodes)
+  When using components, different realsense cameras are part of the same
+  process. The mutex guarding imu_callback_sync was a function-local
+  static, so it was shared between all camera components and serialized
+  unrelated callbacks across cameras.
+  Moved the mutex to an instance member so each component has its own,
+  and switched to std::lock_guard which is cleaner and better if an
+  exception is ever thrown while the lock is held.
+* Fix IMU message pollution in components (composable nodes)
+  When using components, different realsense cameras are part of the same
+  process. When using a static variable like was done in both unite
+  methods, these variables are shared between the different camera
+  components and all of them write to the same structure. It caused the
+  published IMU messages to have the wrong data because it came from
+  different camera sources.
+  Moved the buffer to an instance member so each component has its own.
+* Fail test_live_record_db3_play if no device, don't skip
+* Reset device at start of test_live_record_db3_play
+* PR `#3513 <https://github.com/IntelRealSense/realsense-ros/issues/3513>`_ from AviaAv: Bump wait_for_frames timeout in live db3 test
+* Bump wait_for_frames timeout
+* PR `#3511 <https://github.com/IntelRealSense/realsense-ros/issues/3511>`_ from AviaAv: Add rosbag2 ROS2 playback test
+* Drain live-replay frame queue with keep_frames=True
+* Add live db3 record/play test and tweak play check
+* Add rosbag2 (.db3) ROS2 playback test
+* PR `#3505 <https://github.com/IntelRealSense/realsense-ros/issues/3505>`_ from remibettan: Skip RS2_OPTION_REGION_OF_INTEREST in registerDynamicOptions
+* PR `#3504 <https://github.com/IntelRealSense/realsense-ros/issues/3504>`_ from Nir-Az: Switch CI to ros-core containers for strict dep checking
+* needs a development version to be able to work with development branch
+* PR `#3507 <https://github.com/IntelRealSense/realsense-ros/issues/3507>`_ from Nir-Az: align ros2-development to r/4.57.7
+* versions fix
+* Merge remote-tracking branch 'origin/r/4.57.7' into ros2-development
+  # Conflicts:
+  #	realsense2_camera/package.xml
+* Add dependency completeness check and fix missing deps
+  Add scripts/check_package_deps.sh that validates package.xml declares
+  all required dependencies. This catches issues the build farm catches
+  but rosdep+apt misses (transitive deps mask missing declarations):
+  - .action files require action_msgs in build_depend
+  - find_package() calls need matching package.xml entries
+  - rosidl_generate_interfaces DEPENDENCIES need matching entries
+  The script immediately found two real missing dependencies:
+  - realsense2_camera: missing rclcpp_action
+  - realsense2_rviz_plugin: missing cv_bridge
+  Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+* Skip RS2_OPTION_REGION_OF_INTEREST in registerDynamicOptions
+* 4.57.8
+* add release notes
+* PR `#3498 <https://github.com/IntelRealSense/realsense-ros/issues/3498>`_ from SimbeRobotics: Detect and handle hardware timestamp reset
+* 4.57.7
+* add change log
+* add release noted
+* changes
+* Update package.xml
+* Update package.xml
+* Update package.xml mail
+* log
+* bring back comment
+* Detect and handle hardware timestamp reset
+* Update package.xml
+* Update constants.h
+* PR `#3485 <https://github.com/IntelRealSense/realsense-ros/issues/3485>`_ from Nir-Az: Fix GHA flow
+* install missing packages
+* PR `#3475 <https://github.com/IntelRealSense/realsense-ros/issues/3475>`_ from remibettan: find package set to last major release version
+* find package set to lrs prev major version 2
+* PR `#3474 <https://github.com/IntelRealSense/realsense-ros/issues/3474>`_ from remibettan: find package set to lrs prev major version
+* find package set to lrs prev major version
+* PR `#3462 <https://github.com/IntelRealSense/realsense-ros/issues/3462>`_ from remibettan: intel removed and github user changed
+* undoing the change in copyright, fixing bagfiles links
+* PR `#3468 <https://github.com/IntelRealSense/realsense-ros/issues/3468>`_ from remibettan: using legacy libraries for foxy
+* using legacy libraries for foxy
+* code review corrections
+* many intel removed and github user changed
+* PR `#3450 <https://github.com/IntelRealSense/realsense-ros/issues/3450>`_ from Nir-Az: update to realsenseai
+* update to realsenseai
+* PR `#3448 <https://github.com/IntelRealSense/realsense-ros/issues/3448>`_ from OhadMeir: Add motion_fps to launch file
+* Add motion_fps to launch file
+* PR `#3442 <https://github.com/IntelRealSense/realsense-ros/issues/3442>`_ from remibettan/restore-minor-version-to-0: minor versions back to 0
+* minor back to 0 - leftovers
+* minor back to 0
+* PR `#3441 <https://github.com/IntelRealSense/realsense-ros/issues/3441>`_ from remibettan/ros2-development: merging 4.57.3 to ros2-development
+* Merge tag '4.57.3' into ros2-development
+* PR `#3437 <https://github.com/IntelRealSense/realsense-ros/issues/3437>`_ from Gilaadb: bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
+* bug fix(rs_node_setup): Fix topic names that were improperly marked as rect (rectified)
+* Contributors: Avia Avraham, Gilad Bretter, Nandini, Nandini Thakur, Nir Azkiel, OhadMeir, Remi Bettan, remibettan
+
 4.57.3 (2025-09-15)
 -------------------
 * PR `#3430 <https://github.com/realsenseai/realsense-ros/issues/3430>`_ from Gilaadb: Create a singleton wrapper to rs2::context
