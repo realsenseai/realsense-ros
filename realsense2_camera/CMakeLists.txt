@@ -351,10 +351,26 @@ target_link_libraries(${PROJECT_NAME}
   ${targets}
 )
 
+# Workaround: librealsense built with bundled DDS exports its own fastcdr
+# symbols from librealsense2.so, clashing at runtime with ROS 2's fastdds.
+# rclcpp_components dlopens the plugin .so with RTLD_LOCAL, so we must link
+# libfastdds into the executable itself to put it in the global namespace
+# before librealsense loads. Linux-only.
+if(UNIX AND NOT APPLE)
+  find_library(FASTDDS_LIBRARY NAMES fastdds)
+endif()
+function(_rs_link_fastdds_workaround target)
+  if(FASTDDS_LIBRARY)
+    target_link_libraries(${target}
+      "-Wl,--no-as-needed" ${FASTDDS_LIBRARY} "-Wl,--as-needed")
+  endif()
+endfunction()
+
 rclcpp_components_register_node(${PROJECT_NAME}
   PLUGIN "realsense2_camera::RealSenseNodeFactory"
   EXECUTABLE realsense2_camera_node
 )
+_rs_link_fastdds_workaround(realsense2_camera_node)
 
 if(BUILD_TOOLS)
 
@@ -362,6 +378,7 @@ if(BUILD_TOOLS)
   PLUGIN "rs2_ros::tools::frame_latency::FrameLatencyNode"
   EXECUTABLE realsense2_frame_latency_node
   )
+  _rs_link_fastdds_workaround(realsense2_frame_latency_node)
 
 endif()
 

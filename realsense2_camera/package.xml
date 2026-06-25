@@ -36,6 +36,12 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>diagnostic_updater</depend>
+
+  <!-- Pulls in libfastdds.so. Required at build time so CMake links it into
+       the executables (fastcdr load-order workaround, see CMakeLists.txt),
+       and at runtime so the NEEDED entry resolves. -->
+  <depend>rmw_fastrtps_cpp</depend>
+
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_gtest</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">launch_testing</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_pytest</test_depend>
