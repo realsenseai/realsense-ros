@@ -63,7 +63,6 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
      * [Logging](#logging)
-  * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
 
