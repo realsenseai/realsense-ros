@@ -25,35 +25,14 @@ jobs:
     name: Build on ROS2 ${{ matrix.ros_distro }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     container:
-      # Restore this line (and drop matrix.container_image) when
-      # `ros:rolling-ros-core` is rebuilt on Resolute upstream
-      # (docker-library/official-images repoints it from noble/ to resolute/).
-      # image: ros:${{ matrix.ros_distro }}-ros-core
-      image: ${{ matrix.container_image || format('ros:{0}-ros-core', matrix.ros_distro) }}
+      image: ros:${{ matrix.ros_distro }}-ros-core
     env:
-      # Restore this line (and drop matrix.ros_distro_runtime) when
-      # `/opt/ros/rolling/` ships in the container that hosts ROS Rolling on
-      # Resolute (currently only `/opt/ros/lyrical/` exists in
-      # ros:lyrical-ros-core-resolute).
-      # ROS_DISTRO: ${{ matrix.ros_distro }}
-      ROS_DISTRO: ${{ matrix.ros_distro_runtime || matrix.ros_distro }}
+      ROS_DISTRO: ${{ matrix.ros_distro }}
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [rolling, humble, jazzy, kilted]
+        ros_distro: [humble, jazzy, kilted]
         include:
-        - ros_distro: 'rolling'
-          os: ubuntu-26.04
-          # `ros:rolling-ros-core` is still Noble-based upstream while ROS
-          # Rolling has migrated off Noble; lyrical-ros-core-resolute matches
-          # the new Rolling-on-Resolute platform until OSRF rebuilds the image.
-          container_image: ros:lyrical-ros-core-resolute
-          # The lyrical container only ships /opt/ros/lyrical/ (Rolling content
-          # under its Lyrical name). Source that until /opt/ros/rolling/ exists.
-          ros_distro_runtime: lyrical
-          # ros-rolling-* debs for resolute live in ros2-testing until the
-          # next stable sync; install that apt source on this row only.
-          use_ros2_testing: true
         - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
@@ -62,35 +41,6 @@ jobs:
           os: ubuntu-22.04
 
     steps:
-
-    - name: Add ros2-testing apt source
-      # Restore: remove this step when ros-rolling-* are published in the
-      # stable resolute apt index (packages.ros.org/ros2/dists/resolute).
-      # The ros2-testing-apt-source deb declares Conflicts: ros2-apt-source,
-      # so we can't install it alongside the stable source already present in
-      # the ros:* container. Instead, clone the existing apt-source file and
-      # repoint its URI at ros2-testing so both repos are available in parallel.
-      if: ${{ matrix.use_ros2_testing }}
-      shell: bash
-      run: |
-        echo "--- /etc/apt/sources.list.d/ ---"
-        ls -la /etc/apt/sources.list.d/ || true
-        echo "--- dpkg -L ros2-apt-source ---"
-        dpkg -L ros2-apt-source 2>/dev/null || true
-        echo "---"
-        set -euo pipefail
-        # -L follows symlinks: ros:lyrical-ros-core-resolute ships
-        # /etc/apt/sources.list.d/ros2.sources as a symlink to
-        # /usr/share/ros-apt-source/ros2.sources, which plain -type f rejects.
-        src=$(find -L /etc/apt/sources.list.d -maxdepth 1 -type f \( -name 'ros2*.sources' -o -name 'ros2*.list' \) | head -n1)
-        [ -n "$src" ] || { echo "ERROR: no existing ros2 apt source file found"; exit 1; }
-        ext="${src##*.}"
-        dst="/etc/apt/sources.list.d/ros2-testing.${ext}"
-        cp "$src" "$dst"
-        sed -i 's|/ros2/ubuntu|/ros2-testing/ubuntu|g' "$dst"
-        echo "--- $dst ---"
-        cat "$dst"
-        apt-get update
 
     - name: Install build tools
       run: |
@@ -146,15 +96,6 @@ jobs:
 
         # Source ROS environment
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        # Overlay matrix.ros_distro prefix when it differs from the runtime
-        # distro: the rolling row runs in the lyrical container but rosdep
-        # installs ros-rolling-* into /opt/ros/rolling/, so CMake needs both
-        # prefixes on AMENT_PREFIX_PATH to find tf2_ros, cv_bridge, etc.
-        # Restore this step to a single source line when /opt/ros/rolling/
-        # ships in the container for ROS Rolling on Resolute.
-        if [ "${ROS_DISTRO}" != "${{ matrix.ros_distro }}" ] && [ -f "/opt/ros/${{ matrix.ros_distro }}/setup.bash" ]; then
-          source "/opt/ros/${{ matrix.ros_distro }}/setup.bash"
-        fi
 
         cd $GITHUB_WORKSPACE/ros2
         echo "================== COLCON BUILD ======================"
@@ -177,7 +118,7 @@ jobs:
     #    wget $bag_filename -P "records/"
     #    sudo apt install ros-${{ matrix.ros_distro}}-launch-pytest
 
-    - name: Install Packages For Humble/Rolling/Jazzy/Kilted Tests
+    - name: Install Packages For Humble/Jazzy/Kilted Tests
       shell: bash
       run: |
         apt-get install -y python3-pip python3-venv
@@ -197,29 +138,17 @@ jobs:
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        # Overlay matrix.ros_distro prefix on the rolling row (see notes above).
-        if [ "${ROS_DISTRO}" != "${{ matrix.ros_distro }}" ] && [ -f "/opt/ros/${{ matrix.ros_distro }}/setup.bash" ]; then
-          source "/opt/ros/${{ matrix.ros_distro }}/setup.bash"
-        fi
         cd $GITHUB_WORKSPACE/ros2
         . install/local_setup.bash
         source $GITHUB_WORKSPACE/.venv/bin/activate
         python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
 
     # tf_ros_py are not avaialble
-    # Integration tests time out on rolling (topics never publish data; build
-    # and unit tests pass). Likely related to upstream rclcpp/image_transport/
-    # rosbag2 churn during the Rolling-on-Resolute transition. Skip until the
-    # platform stabilises.
+    # TODO: check when we can run integration tests on rolling
     - name: Run integration tests
-      if: ${{ matrix.ros_distro != 'rolling' }}
       shell: bash
       run: |
         source /opt/ros/${ROS_DISTRO}/setup.bash
-        # Overlay matrix.ros_distro prefix on the rolling row (see notes above).
-        if [ "${ROS_DISTRO}" != "${{ matrix.ros_distro }}" ] && [ -f "/opt/ros/${{ matrix.ros_distro }}/setup.bash" ]; then
-          source "/opt/ros/${{ matrix.ros_distro }}/setup.bash"
-        fi
         cd $GITHUB_WORKSPACE/ros2
         . install/local_setup.bash
         #export ROSBAG_FILE_PATH=$GITHUB_WORKSPACE/ros2/records/
