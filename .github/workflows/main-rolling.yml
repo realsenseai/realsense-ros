@@ -37,7 +37,8 @@ on:
       - ros2-master
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   build_rolling:
@@ -91,6 +92,7 @@ jobs:
     - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       with:
         path: 'ros2/src/realsense-ros'
+        persist-credentials: false
 
     - name: Check Copyright & Line-Endings
       shell: bash
