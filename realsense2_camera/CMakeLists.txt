@@ -356,7 +356,15 @@ target_link_libraries(${PROJECT_NAME}
 # rclcpp_components dlopens the plugin .so with RTLD_LOCAL, so we must link
 # libfastdds into the executable itself to put it in the global namespace
 # before librealsense loads. Linux-only.
-if(UNIX AND NOT APPLE)
+#
+# Only applies when librealsense was built with bundled DDS (BUILD_WITH_DDS=ON
+# upstream). In that case its installed realsense2Config.cmake transitively
+# calls `find_dependency(fastcdr CONFIG REQUIRED)`, which sets fastcdr_FOUND
+# after find_package(realsense2) above. Plain (non-DDS) librealsense doesn't
+# pull fastcdr in, fastcdr_FOUND stays unset, and we skip the link so users
+# on Cyclone DDS / RMW Zenoh don't end up with a FastDDS NEEDED entry on
+# the wrapper executable.
+if(fastcdr_FOUND AND UNIX AND NOT APPLE)
   find_library(FASTDDS_LIBRARY NAMES fastdds)
 endif()
 function(_rs_link_fastdds_workaround target)
