@@ -726,21 +726,28 @@ rclcpp::Time BaseRealSenseNode::frameSystemTimeSec(rs2::frame frame)
     if (frame.get_frame_timestamp_domain() == RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK)
     {
         std::lock_guard<std::mutex> lock(_time_base_mutex);
+        const int stream_uid = frame.get_profile().unique_id();
         if (!_is_initialized_time_base)
         {
             ROS_WARN("frame's time domain is HARDWARE_CLOCK. Timestamps may reset periodically.");
             _ros_time_base = _node.now();
             _camera_time_base = timestamp_ms;
-            _previous_frame_time = timestamp_ms;
             _is_initialized_time_base = true;
         }
-        else if (_previous_frame_time > timestamp_ms)
+        else
         {
-            ROS_WARN("Hardware clock reset detected. Resetting ROS time base.");
-            _ros_time_base = _node.now();
-            _camera_time_base = timestamp_ms;
+            auto it = _previous_frame_time.find(stream_uid);
+            if (it != _previous_frame_time.end() && it->second > timestamp_ms)
+            {
+                ROS_WARN("Hardware clock reset detected. Resetting ROS time base.");
+                _ros_time_base = _node.now();
+                _camera_time_base = timestamp_ms;
+                // Other streams' previous timestamps are stale w.r.t. the new
+                // time base; drop them so they re-seed silently on next frame.
+                _previous_frame_time.clear();
+            }
         }
-        _previous_frame_time = timestamp_ms;
+        _previous_frame_time[stream_uid] = timestamp_ms;
 
         double elapsed_camera_ns = millisecondsToNanoseconds(timestamp_ms - _camera_time_base);
 
