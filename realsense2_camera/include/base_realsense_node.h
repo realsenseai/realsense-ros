@@ -386,7 +386,10 @@ namespace realsense2_camera
         std::map<stream_index_pair, sensor_msgs::msg::CameraInfo> _camera_info;
         bool _is_initialized_time_base;
         double _camera_time_base;
-        double _previous_frame_time;
+        // Keyed by rs2::stream_profile::unique_id(). Tracking per-stream avoids
+        // false "clock reset" detections when frames from streams running at
+        // different rates interleave out of order on the shared HW clock.
+        std::map<int, double> _previous_frame_time;
 
         rclcpp::Time _ros_time_base;
         bool _sync_frames;
