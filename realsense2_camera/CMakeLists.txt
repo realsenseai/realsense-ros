@@ -364,11 +364,29 @@ target_link_libraries(${PROJECT_NAME}
 # pull fastcdr in, fastcdr_FOUND stays unset, and we skip the link so users
 # on Cyclone DDS / RMW Zenoh don't end up with a FastDDS NEEDED entry on
 # the wrapper executable.
+#
+# We intentionally do NOT declare rmw_fastrtps_cpp / FastDDS in package.xml:
+# the bundled-DDS workaround is only needed when librealsense itself is built
+# with DDS, in which case its own package's transitive dependencies are
+# expected to make libfastdds/libfastrtps available. If neither is found at
+# configure time, find_library returns NOTFOUND and the workaround silently
+# no-ops — users on Cyclone/Zenoh with a non-DDS librealsense (the common
+# case) aren't forced to install FastDDS via rosdep.
 if(fastcdr_FOUND AND UNIX AND NOT APPLE)
-  find_library(FASTDDS_LIBRARY NAMES fastdds)
+  # Humble and Jazzy still ship the library as libfastrtps.so; it was renamed
+  # to libfastdds.so in Kilted. find_library returns the first match, so
+  # try fastdds first (Kilted/Lyrical/Rolling), fall through to fastrtps
+  # (Humble/Jazzy).
+  find_library(FASTDDS_LIBRARY NAMES fastdds fastrtps)
 endif()
 function(_rs_link_fastdds_workaround target)
   if(FASTDDS_LIBRARY)
+    # -Wl,--no-as-needed forces a NEEDED entry on the executable so the .so
+    # loads at process start (before librealsense). This is a load-order fix
+    # only: libfastdds/libfastrtps is inert without a DomainParticipant, so
+    # users on Cyclone DDS / RMW Zenoh get the .so in their address space
+    # but no FastDDS threads or participants are created. ROS only spins
+    # FastDDS up when RMW_IMPLEMENTATION selects rmw_fastrtps_cpp.
     target_link_libraries(${target}
       "-Wl,--no-as-needed" ${FASTDDS_LIBRARY} "-Wl,--as-needed")
   endif()
