@@ -448,52 +448,16 @@ void RealSenseNodeFactory::startDevice()
     if (_realSenseNode) _realSenseNode.reset();
     std::string device_name(_device.get_info(RS2_CAMERA_INFO_NAME));
     std::string pid_str(_device.get_info(RS2_CAMERA_INFO_PRODUCT_ID));
-    std::string connection_type(_device.supports(RS2_CAMERA_INFO_CONNECTION_TYPE) ?
-                                _device.get_info(RS2_CAMERA_INFO_CONNECTION_TYPE) : "");
-    uint16_t pid;
+    // No PID whitelist: librealsense's context (see query_devices() in the
+    // query thread) only ever enumerates RealSense hardware, so any device that
+    // reaches this point is already supported by the installed librealsense2 and
+    // is enabled. This lets newly released cameras work without having to add
+    // their PID to the wrapper first.
+    ROS_INFO_STREAM("Starting device " << device_name << " (Product ID: 0x" << pid_str << ")");
 
-    if (connection_type == "DDS" && device_name.find("D555") != std::string::npos)
-    {
-        // DDS devices don't expose a real USB PID (PRODUCT_ID is hardcoded as "DDS"
-        // in librealsense), so resolve the model by name instead.
-        pid = RS555_PID;
-    }
-    else
-    {
-        pid = std::stoi(pid_str, 0, 16);
-    }
     try
     {
-        switch(pid)
-        {
-        case RS400_PID:
-        case RS405_PID:
-        case RS410_PID:
-        case RS460_PID:
-        case RS415_PID:
-        case RS420_PID:
-        case RS421_PID:
-        case RS420_MM_PID:
-        case RS430_PID:
-        case RS430i_PID:
-        case RS430_MM_PID:
-        case RS430_MM_RGB_PID:
-        case RS435_RGB_PID:
-        case RS435i_RGB_PID:
-        case RS455_PID:
-        case RS457_PID:
-        case RS555_PID:
-        case RS436_PID:
-        case RS_USB2_PID:
-        case RS_D585_PID:
-        case RS_D585S_PID:
-            _realSenseNode = std::unique_ptr<BaseRealSenseNode>(new BaseRealSenseNode(*this, _device, _parameters, this->get_node_options().use_intra_process_comms()));
-            break;
-        default:
-            ROS_FATAL_STREAM("Unsupported device!" << " Product ID: 0x" << pid_str);
-            rclcpp::shutdown();
-            exit(1);
-        }
+        _realSenseNode = std::unique_ptr<BaseRealSenseNode>(new BaseRealSenseNode(*this, _device, _parameters, this->get_node_options().use_intra_process_comms()));
         _realSenseNode->publishTopics();
     }
     catch(const rs2::backend_error& e)
