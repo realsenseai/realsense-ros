@@ -45,7 +45,7 @@ Frames:
     <!-- Physical module dimensions (D421 Datasheet v1.1) -->
     <xacro:property name="d421_cam_width"  value="0.095"/>   <!-- Y: along the stereo baseline -->
     <xacro:property name="d421_cam_height" value="0.032"/>   <!-- Z: vertical -->
-    <xacro:property name="d421_cam_depth"  value="0.0102"/>  <!-- X: board thickness, front-to-back -->
+    <xacro:property name="d421_cam_depth"  value="0.01018"/> <!-- X: board thickness, front-to-back (mechanical drawing) -->
 
     <!-- 50 mm stereo baseline. The depth origin is the centre of the left
          (infra1) imager, so infra1 offset is 0 and infra2 sits one baseline to
