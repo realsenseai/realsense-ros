@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+
+<!--
+# Copyright 2023 RealSense, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+
+<!--
+This is the URDF model for the RealSense Depth Module D421.
+
+Unlike the cased D4xx cameras, the D421 is a bare single-board module: no
+enclosure, no cover glass and no tripod/bottom mounting screw. It therefore
+does not reuse the cased-camera terms (glass offset, screw-mount offset).
+
+Mounting reference (model origin): the centre of the back panel, on its back
+surface. A module is fastened flat against the user's rig, so that surface is
+the natural, physically-locatable attachment point.
+
+Frames:
+  <name>_mount_frame  - model origin, centre of the back panel (attach here)
+  <name>_link         - camera_link, at the depth origin = centre of the left
+                        (infra1) imager on the front face
+-->
+
+<robot name="sensor_d421" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Includes -->
+  <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
+  <xacro:include filename="$(find realsense2_description)/urdf/_usb_plug.urdf.xacro" />
+
+  <xacro:macro name="sensor_d421" params="parent *origin name:=camera use_nominal_extrinsics:=false">
+    <xacro:arg name="add_plug" default="false" />
+    <xacro:property name="M_PI" value="3.1415926535897931" />
+
+    <!-- Physical module dimensions (D421 Datasheet v1.1) -->
+    <xacro:property name="d421_cam_width"  value="0.095"/>   <!-- Y: along the stereo baseline -->
+    <xacro:property name="d421_cam_height" value="0.032"/>   <!-- Z: vertical -->
+    <xacro:property name="d421_cam_depth"  value="0.01018"/> <!-- X: board thickness, front-to-back (mechanical drawing) -->
+
+    <!-- 50 mm stereo baseline. The depth origin is the centre of the left
+         (infra1) imager, so infra1 offset is 0 and infra2 sits one baseline to
+         the right (-Y). These are approximate; the camera node publishes the
+         calibrated extrinsics at runtime. -->
+    <xacro:property name="d421_baseline" value="0.050"/>
+    <xacro:property name="d421_cam_depth_to_infra1_offset" value="0.0"/>
+    <xacro:property name="d421_cam_depth_to_infra2_offset" value="${-d421_baseline}"/>
+
+    <!-- Model origin: centre of the back panel (back surface) -->
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${name}_mount_frame" />
+    </joint>
+    <link name="${name}_mount_frame"/>
+
+    <!-- camera_link at the depth origin (left imager, front face): forward from
+         the back-panel centre by the board thickness, and left by half the baseline -->
+    <joint name="${name}_link_joint" type="fixed">
+      <origin xyz="${d421_cam_depth} ${d421_baseline/2} 0" rpy="0 0 0"/>
+      <parent link="${name}_mount_frame"/>
+      <child link="${name}_link" />
+    </joint>
+
+    <link name="${name}_link">
+      <visual>
+        <!-- the mesh origin is the midpoint between the two imagers, on the front face -->
+        <origin xyz="0 ${-d421_baseline/2} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+        <geometry>
+	        <mesh filename="package://realsense2_description/meshes/d421.stl" scale="0.001 0.001 0.001" />
+        </geometry>
+        <material name="aluminum"/>
+      </visual>
+      <collision>
+        <!-- board bounding box: centred half the thickness behind the front face -->
+        <origin xyz="${-d421_cam_depth/2} ${-d421_baseline/2} 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${d421_cam_depth} ${d421_cam_width} ${d421_cam_height}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <!-- The following are not reliable values, and should not be used for modeling -->
+        <mass value="0.0375" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257" />
+      </inertial>
+    </link>
+
+    <!-- Use the nominal extrinsics between camera frames if the calibrated extrinsics aren't being published. e.g. running the device in simulation  -->
+    <xacro:if value="${use_nominal_extrinsics}">
+      <!-- camera depth joints and links -->
+      <joint name="${name}_depth_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="${name}_link"/>
+        <child link="${name}_depth_frame" />
+      </joint>
+      <link name="${name}_depth_frame"/>
+
+      <joint name="${name}_depth_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_depth_frame" />
+        <child link="${name}_depth_optical_frame" />
+      </joint>
+      <link name="${name}_depth_optical_frame"/>
+
+      <!-- camera left IR joints and links -->
+      <joint name="${name}_infra1_joint" type="fixed">
+        <origin xyz="0 ${d421_cam_depth_to_infra1_offset} 0" rpy="0 0 0" />
+        <parent link="${name}_link" />
+        <child link="${name}_infra1_frame" />
+      </joint>
+      <link name="${name}_infra1_frame"/>
+
+      <joint name="${name}_infra1_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_infra1_frame" />
+        <child link="${name}_infra1_optical_frame" />
+      </joint>
+      <link name="${name}_infra1_optical_frame"/>
+
+      <!-- camera right IR joints and links -->
+      <joint name="${name}_infra2_joint" type="fixed">
+        <origin xyz="0 ${d421_cam_depth_to_infra2_offset} 0" rpy="0 0 0" />
+        <parent link="${name}_link" />
+        <child link="${name}_infra2_frame" />
+      </joint>
+      <link name="${name}_infra2_frame"/>
+
+      <joint name="${name}_infra2_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_infra2_frame" />
+        <child link="${name}_infra2_optical_frame" />
+      </joint>
+      <link name="${name}_infra2_optical_frame"/>
+    </xacro:if>
+
+    <xacro:if value="$(arg add_plug)">
+      <!-- USB-C connector on the bottom edge, board-centred -->
+      <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
+        <origin xyz="${-d421_cam_depth/2} ${-d421_baseline/2} ${-d421_cam_height/2}" rpy="${M_PI/2} 0 0"/>
+      </xacro:usb_plug>
+    </xacro:if>
+  </xacro:macro>
+</robot>
