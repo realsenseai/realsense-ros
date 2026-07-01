@@ -17,9 +17,20 @@
 -->
 
 <!--
-This is the URDF model for the RealSense Depth Module D421, a single-board
-stereo depth module (dual IR imagers + IR projector, no RGB, no IMU).
-See D421 Datasheet v1.1.
+This is the URDF model for the RealSense Depth Module D421.
+
+Unlike the cased D4xx cameras, the D421 is a bare single-board module: no
+enclosure, no cover glass and no tripod/bottom mounting screw. It therefore
+does not reuse the cased-camera terms (glass offset, screw-mount offset).
+
+Mounting reference (model origin): the centre of the back panel, on its back
+surface. A module is fastened flat against the user's rig, so that surface is
+the natural, physically-locatable attachment point.
+
+Frames:
+  <name>_mount_frame  - model origin, centre of the back panel (attach here)
+  <name>_link         - camera_link, at the depth origin = centre of the left
+                        (infra1) imager on the front face
 -->
 
 <robot name="sensor_d421" xmlns:xacro="http://ros.org/wiki/xacro">
@@ -31,59 +42,47 @@ See D421 Datasheet v1.1.
     <xacro:arg name="add_plug" default="false" />
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
-    <!-- The following values are approximate, and the camera node
-     publishing TF values with actual calibrated camera extrinsic values -->
-    <!-- Depth origin is the centre of the left (infra1) imager; baseline is 50 mm -->
+    <!-- Physical module dimensions (D421 Datasheet v1.1) -->
+    <xacro:property name="d421_cam_width"  value="0.095"/>   <!-- Y: along the stereo baseline -->
+    <xacro:property name="d421_cam_height" value="0.032"/>   <!-- Z: vertical -->
+    <xacro:property name="d421_cam_depth"  value="0.0102"/>  <!-- X: board thickness, front-to-back -->
+
+    <!-- 50 mm stereo baseline. The depth origin is the centre of the left
+         (infra1) imager, so infra1 offset is 0 and infra2 sits one baseline to
+         the right (-Y). These are approximate; the camera node publishes the
+         calibrated extrinsics at runtime. -->
+    <xacro:property name="d421_baseline" value="0.050"/>
     <xacro:property name="d421_cam_depth_to_infra1_offset" value="0.0"/>
-    <xacro:property name="d421_cam_depth_to_infra2_offset" value="-0.050"/>
+    <xacro:property name="d421_cam_depth_to_infra2_offset" value="${-d421_baseline}"/>
 
-    <!-- The following values model the D421 single-board module. The module has
-        no tripod mount, so the module datum (bottom_screw_frame) is taken at the
-        board's geometric centre, which is horizontally centred between the two
-        imagers. Per the datasheet the depth ground-zero is the left imager
-        centre, and the left centre mounting hole sits 18.5 mm from it. -->
-    <xacro:property name="d421_cam_width" value="0.095"/>
-    <xacro:property name="d421_cam_height" value="0.032"/>
-    <xacro:property name="d421_cam_depth" value="0.0102"/>
-    <!-- module datum at board centre, so the front face is half the board depth forward -->
-    <xacro:property name="d421_cam_mount_from_center_offset" value="0.0051"/>
-    <!-- glass cover is 0.1 mm inwards from front plate -->
-    <xacro:property name="d421_glass_to_front" value="0.1e-3"/>
-    <!-- approximate distance from depth ground-zero to front glass (update from mechanical drawing) -->
-    <xacro:property name="d421_zero_depth_to_glass" value="4.2e-3"/>
-    <!-- convenience precomputation to avoid clutter-->
-    <xacro:property name="d421_mesh_x_offset" value="${d421_cam_mount_from_center_offset-d421_glass_to_front-d421_zero_depth_to_glass}"/>
-
-    <!-- The following offset is relative to the module datum (board centre) -->
-    <xacro:property name="d421_cam_depth_px" value="${d421_cam_mount_from_center_offset}"/>
-    <xacro:property name="d421_cam_depth_py" value="0.025"/>
-    <xacro:property name="d421_cam_depth_pz" value="0.0"/>
-
-    <!-- camera body, with origin at module datum (board centre) -->
+    <!-- Model origin: centre of the back panel (back surface) -->
     <joint name="${name}_joint" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
-      <child link="${name}_bottom_screw_frame" />
+      <child link="${name}_mount_frame" />
     </joint>
-    <link name="${name}_bottom_screw_frame"/>
+    <link name="${name}_mount_frame"/>
 
+    <!-- camera_link at the depth origin (left imager, front face): forward from
+         the back-panel centre by the board thickness, and left by half the baseline -->
     <joint name="${name}_link_joint" type="fixed">
-      <origin xyz="${d421_mesh_x_offset} ${d421_cam_depth_py} ${d421_cam_depth_pz}" rpy="0 0 0"/>
-      <parent link="${name}_bottom_screw_frame"/>
+      <origin xyz="${d421_cam_depth} ${d421_baseline/2} 0" rpy="0 0 0"/>
+      <parent link="${name}_mount_frame"/>
       <child link="${name}_link" />
     </joint>
 
     <link name="${name}_link">
       <visual>
-        <!-- the mesh origin is at front plate in between the two infrared camera axes -->
-        <origin xyz="${d421_zero_depth_to_glass + d421_glass_to_front} ${-d421_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+        <!-- the mesh origin is the midpoint between the two imagers, on the front face -->
+        <origin xyz="0 ${-d421_baseline/2} 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
         <geometry>
 	        <mesh filename="package://realsense2_description/meshes/d421.stl" scale="0.001 0.001 0.001" />
         </geometry>
         <material name="aluminum"/>
       </visual>
       <collision>
-        <origin xyz="${d421_zero_depth_to_glass-d421_cam_depth/2} ${-d421_cam_depth_py} 0" rpy="0 0 0"/>
+        <!-- board bounding box: centred half the thickness behind the front face -->
+        <origin xyz="${-d421_cam_depth/2} ${-d421_baseline/2} 0" rpy="0 0 0"/>
         <geometry>
           <box size="${d421_cam_depth} ${d421_cam_width} ${d421_cam_height}"/>
         </geometry>
@@ -145,9 +144,9 @@ See D421 Datasheet v1.1.
     </xacro:if>
 
     <xacro:if value="$(arg add_plug)">
-      <!-- USB-C connector on the bottom edge, approximately board-centred -->
+      <!-- USB-C connector on the bottom edge, board-centred -->
       <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
-        <origin xyz="${-d421_cam_depth_px} ${-d421_cam_depth_py} ${-d421_cam_height/2}" rpy="${M_PI/2} 0 0"/>
+        <origin xyz="${-d421_cam_depth/2} ${-d421_baseline/2} ${-d421_cam_height/2}" rpy="${M_PI/2} 0 0"/>
       </xacro:usb_plug>
     </xacro:if>
   </xacro:macro>
