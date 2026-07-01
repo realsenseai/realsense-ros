@@ -41,8 +41,17 @@ image_transport_publisher::image_transport_publisher( rclcpp::Node & node,
                                                       const std::string & topic_name,
                                                       const rmw_qos_profile_t & qos )
 {
+#if defined( LYRICAL ) || defined( ROLLING )
+    // On Rolling/Lyrical, image_transport::create_publisher deduces NodeT
+    // from a Node reference (it then calls node.get_node_base_interface()),
+    // and the QoS argument is rclcpp::QoS rather than rmw_qos_profile_t.
+    rclcpp::QoS rclcpp_qos( rclcpp::QoSInitialization::from_rmw( qos ), qos );
+    image_publisher_impl = std::make_shared< image_transport::Publisher >(
+        image_transport::create_publisher( node, topic_name, rclcpp_qos ) );
+#else
     image_publisher_impl = std::make_shared< image_transport::Publisher >(
         image_transport::create_publisher( &node, topic_name, qos ) );
+#endif
 }
 void image_transport_publisher::publish( sensor_msgs::msg::Image::UniquePtr image_ptr )
 {

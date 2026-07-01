@@ -31,10 +31,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [rolling, humble, jazzy, kilted]
+        ros_distro: [humble, jazzy, kilted]
         include:
-        - ros_distro: 'rolling'
-          os: ubuntu-24.04
         - ros_distro: 'kilted'
           os: ubuntu-24.04
         - ros_distro: 'jazzy'
@@ -120,7 +118,7 @@ jobs:
     #    wget $bag_filename -P "records/"
     #    sudo apt install ros-${{ matrix.ros_distro}}-launch-pytest
 
-    - name: Install Packages For Humble/Rolling/Jazzy/Kilted Tests
+    - name: Install Packages For Humble/Jazzy/Kilted Tests
       shell: bash
       run: |
         apt-get install -y python3-pip python3-venv

@@ -217,6 +217,10 @@ elseif("$ENV{ROS_DISTRO}" STREQUAL "kilted")
   message(STATUS "Build for ROS2 Kilted")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DKILTED")
   set(SOURCES "${SOURCES}" src/ros_param_backend.cpp)
+elseif("$ENV{ROS_DISTRO}" STREQUAL "lyrical")
+  message(STATUS "Build for ROS2 Lyrical")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLYRICAL")
+  set(SOURCES "${SOURCES}" src/ros_param_backend.cpp)
 else()
   message(FATAL_ERROR "Unsupported ROS Distribution: " "$ENV{ROS_DISTRO}")
 endif()
@@ -347,10 +351,52 @@ target_link_libraries(${PROJECT_NAME}
   ${targets}
 )
 
+# Workaround: librealsense built with bundled DDS exports its own fastcdr
+# symbols from librealsense2.so, clashing at runtime with ROS 2's fastdds.
+# rclcpp_components dlopens the plugin .so with RTLD_LOCAL, so we must link
+# libfastdds into the executable itself to put it in the global namespace
+# before librealsense loads. Linux-only.
+#
+# Only applies when librealsense was built with bundled DDS (BUILD_WITH_DDS=ON
+# upstream). In that case its installed realsense2Config.cmake transitively
+# calls `find_dependency(fastcdr CONFIG REQUIRED)`, which sets fastcdr_FOUND
+# after find_package(realsense2) above. Plain (non-DDS) librealsense doesn't
+# pull fastcdr in, fastcdr_FOUND stays unset, and we skip the link so users
+# on Cyclone DDS / RMW Zenoh don't end up with a FastDDS NEEDED entry on
+# the wrapper executable.
+#
+# We intentionally do NOT declare rmw_fastrtps_cpp / FastDDS in package.xml:
+# the bundled-DDS workaround is only needed when librealsense itself is built
+# with DDS, in which case its own package's transitive dependencies are
+# expected to make libfastdds/libfastrtps available. If neither is found at
+# configure time, find_library returns NOTFOUND and the workaround silently
+# no-ops — users on Cyclone/Zenoh with a non-DDS librealsense (the common
+# case) aren't forced to install FastDDS via rosdep.
+if(fastcdr_FOUND AND UNIX AND NOT APPLE)
+  # Humble and Jazzy still ship the library as libfastrtps.so; it was renamed
+  # to libfastdds.so in Kilted. find_library returns the first match, so
+  # try fastdds first (Kilted/Lyrical/Rolling), fall through to fastrtps
+  # (Humble/Jazzy).
+  find_library(FASTDDS_LIBRARY NAMES fastdds fastrtps)
+endif()
+function(_rs_link_fastdds_workaround target)
+  if(FASTDDS_LIBRARY)
+    # -Wl,--no-as-needed forces a NEEDED entry on the executable so the .so
+    # loads at process start (before librealsense). This is a load-order fix
+    # only: libfastdds/libfastrtps is inert without a DomainParticipant, so
+    # users on Cyclone DDS / RMW Zenoh get the .so in their address space
+    # but no FastDDS threads or participants are created. ROS only spins
+    # FastDDS up when RMW_IMPLEMENTATION selects rmw_fastrtps_cpp.
+    target_link_libraries(${target}
+      "-Wl,--no-as-needed" ${FASTDDS_LIBRARY} "-Wl,--as-needed")
+  endif()
+endfunction()
+
 rclcpp_components_register_node(${PROJECT_NAME}
   PLUGIN "realsense2_camera::RealSenseNodeFactory"
   EXECUTABLE realsense2_camera_node
 )
+_rs_link_fastdds_workaround(realsense2_camera_node)
 
 if(BUILD_TOOLS)
 
@@ -358,6 +404,7 @@ if(BUILD_TOOLS)
   PLUGIN "rs2_ros::tools::frame_latency::FrameLatencyNode"
   EXECUTABLE realsense2_frame_latency_node
   )
+  _rs_link_fastdds_workaround(realsense2_frame_latency_node)
 
 endif()
 

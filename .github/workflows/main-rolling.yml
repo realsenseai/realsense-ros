@@ -1,0 +1,182 @@
+name: CI - Rolling
+
+# ROS 2 Rolling CI for realsense2_camera (Ubuntu 26.04 Resolute) — split from
+# the main matrix in main.yml because Rolling currently needs a chain of
+# transitional workarounds that don't apply to the stable distros
+# (Humble/Iron/Jazzy/Kilted).
+#
+# Workarounds carried here (each will be reverted when its upstream gap closes;
+# see RSDSO-21626):
+#   - Container override: ros:rolling-ros-core is still pinned to a Noble
+#     Dockerfile in docker-library/official-images. Use lyrical-ros-core-resolute
+#     instead, which IS Resolute-based.
+#   - ROS_DISTRO=lyrical at runtime: the lyrical container ships
+#     /opt/ros/lyrical/ (not /opt/ros/rolling/), so the initial source has to
+#     target the prefix that actually exists.
+#   - ros2-testing apt source: ros-rolling-* debs for resolute are only in
+#     packages.ros.org/ros2-testing until the next stable sync.
+#   - /opt/ros/rolling overlay: rosdep installs ros-rolling-* into
+#     /opt/ros/rolling/; the build sources /opt/ros/lyrical/ AND overlays
+#     /opt/ros/rolling/ so CMake finds tf2_ros, cv_bridge, etc.
+#   - Integration tests skipped: topics time out under the chimera setup
+#     (build/unit tests pass, integration tests don't); revisit when the
+#     above gaps close.
+#
+# Fold back into main.yml (and delete this file) once ros:rolling-ros-core
+# is rebuilt on Resolute AND ros-rolling-* lands in the stable resolute apt
+# index AND rolling integration tests pass green here.
+
+on:
+  push:
+    branches:
+      - ros2-development
+      - ros2-master
+  pull_request:
+    branches:
+      - ros2-development
+      - ros2-master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build_rolling:
+    name: Build on ROS2 rolling (ubuntu-26.04, lyrical-ros-core-resolute)
+    runs-on: ubuntu-26.04
+    container:
+      image: ros:lyrical-ros-core-resolute
+    env:
+      # Source /opt/ros/lyrical/ (the only ROS install present in the
+      # lyrical-ros-core-resolute container). rosdep below installs
+      # ros-rolling-* into /opt/ros/rolling/, which we overlay-source
+      # in the build/test steps.
+      ROS_DISTRO: lyrical
+
+    steps:
+
+    - name: Add ros2-testing apt source
+      # ros-rolling-* debs for `resolute` are only in packages.ros.org/ros2-testing
+      # until the next stable sync — see RSDSO-21626 gate B. The
+      # ros2-testing-apt-source deb declares Conflicts: ros2-apt-source,
+      # so we can't install it alongside the stable source already present in
+      # the ros:* container. Instead, clone the existing apt-source file and
+      # repoint its URI at ros2-testing so both repos are available in parallel.
+      shell: bash
+      run: |
+        set -euo pipefail
+        # -L follows symlinks: ros:lyrical-ros-core-resolute ships
+        # /etc/apt/sources.list.d/ros2.sources as a symlink to
+        # /usr/share/ros-apt-source/ros2.sources, which plain -type f rejects.
+        src=$(find -L /etc/apt/sources.list.d -maxdepth 1 -type f \( -name 'ros2*.sources' -o -name 'ros2*.list' \) | head -n1)
+        [ -n "$src" ] || { echo "ERROR: no existing ros2 apt source file found"; exit 1; }
+        ext="${src##*.}"
+        dst="/etc/apt/sources.list.d/ros2-testing.${ext}"
+        cp "$src" "$dst"
+        sed -i 's|/ros2/ubuntu|/ros2-testing/ubuntu|g' "$dst"
+        cat "$dst"
+        apt-get update
+
+    - name: Install build tools
+      run: |
+        apt-get update
+        apt-get install -y python3-rosdep python3-colcon-common-extensions \
+          git cmake build-essential libusb-1.0-0-dev sudo file
+        rosdep init || true
+        rosdep update --rosdistro rolling --include-eol-distros
+
+    - name: Setup ROS2 Workspace
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/ros2/src
+
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
+      with:
+        path: 'ros2/src/realsense-ros'
+        persist-credentials: false
+
+    - name: Check Copyright & Line-Endings
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/ros2/src/realsense-ros/scripts
+        ./pr_check.sh
+
+    - name: Check package.xml dependency completeness
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/ros2/src/realsense-ros/scripts
+        ./check_package_deps.sh $GITHUB_WORKSPACE/ros2/src/realsense-ros
+
+    - name: Build librealsense2 from development branch
+      run: |
+        cd /tmp
+        git clone --depth 1 --branch development https://github.com/realsenseai/librealsense.git
+        cd librealsense
+        mkdir build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=false -DBUILD_GRAPHICAL_EXAMPLES=false
+        make -j$(nproc)
+        make install
+        ldconfig
+
+    - name: Install declared dependencies only (strict, like build farm)
+      shell: bash
+      run: |
+        source /opt/ros/${ROS_DISTRO}/setup.bash
+        cd $GITHUB_WORKSPACE/ros2
+        echo "================= ROSDEP INSTALL ===================="
+        rosdep install -i --reinstall --from-path src --rosdistro rolling --skip-keys=librealsense2 -y
+
+    - name: Build RealSense ROS2 Wrapper from source
+      shell: bash
+      run: |
+        set -e
+
+        # Source ROS environment (lyrical is what the container ships)
+        source /opt/ros/${ROS_DISTRO}/setup.bash
+        # Overlay /opt/ros/rolling/ — rosdep installed ros-rolling-* there.
+        # Restore this step to a single source line when /opt/ros/rolling/
+        # ships in the container for ROS Rolling on Resolute.
+        if [ -f "/opt/ros/rolling/setup.bash" ]; then
+          source "/opt/ros/rolling/setup.bash"
+        fi
+
+        cd $GITHUB_WORKSPACE/ros2
+        echo "================== COLCON BUILD ======================"
+        # Enable 'BUILD_TOOLS' through cmake arguments. Since, this variable is available only in realsense2_camera package
+        # and not in  realsense2_camera_msgs and realsense2_description packages, to avoid warnings from these packages,
+        # use '--no-warn-unused-cli'. Ref: https://cmake.org/cmake/help/v3.0/manual/cmake.1.html
+        # Set PYTHONPATH to ensure CMake-spawned Python processes can find ament_package
+        PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3/dist-packages:$PYTHONPATH \
+          colcon build --symlink-install --merge-install --cmake-args '-DBUILD_TOOLS=ON' --no-warn-unused-cli
+
+    - name: Install Packages For Tests
+      shell: bash
+      run: |
+        apt-get install -y python3-pip python3-venv
+        # To avoid mixing of 'apt' provided packages and 'pip' provided packages, one way is to create virtual env
+        # and manage python packages within it. Ref: https://peps.python.org/pep-0668/
+        python3 -m venv .venv
+        # Activate the virtual env such that following python related commands run within it.
+        source .venv/bin/activate
+        pip3 install --force-reinstall numpy==1.26.4
+        pip3 install numpy-quaternion tqdm pyyaml
+        pip3 install typing_extensions
+        pip3 install empy
+        pip install lark-parser
+
+    - name: Run Tests
+      shell: bash
+      run: |
+        source /opt/ros/${ROS_DISTRO}/setup.bash
+        if [ -f "/opt/ros/rolling/setup.bash" ]; then
+          source "/opt/ros/rolling/setup.bash"
+        fi
+        cd $GITHUB_WORKSPACE/ros2
+        . install/local_setup.bash
+        source $GITHUB_WORKSPACE/.venv/bin/activate
+        python3 src/realsense-ros/realsense2_camera/scripts/rs2_test.py non_existent_file
+
+    # Integration tests are intentionally not run here: under the chimera
+    # rolling-on-lyrical-container setup they time out (topics never publish
+    # data; build and unit tests pass). Likely caused by upstream rclcpp /
+    # image_transport / rosbag2 churn during the Rolling-on-Resolute transition.
+    # Re-enable once those settle and ros:rolling-ros-core-resolute is published.
