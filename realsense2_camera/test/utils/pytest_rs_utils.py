@@ -1005,7 +1005,7 @@ class RsTestBaseClass():
         # /tf_static is latched and the node resets its static broadcaster when
         # (re)publishing, so the first message received can be incomplete.
         # Aggregate the transforms from ALL received messages before checking,
-        # to avoid a flaky race (RSDSO/LRS-1181).
+        # to avoid a flaky race.
         coupled_frame_ids = [xx for xx in itertools.combinations(frame_ids, 2)]
         tfBuffer = tf2_ros.Buffer()
         while self.node.get_num_chunks(topic) > 0:
