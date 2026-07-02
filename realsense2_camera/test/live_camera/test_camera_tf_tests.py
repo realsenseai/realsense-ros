@@ -206,8 +206,7 @@ class TestCamera_TestTF_DYN(pytest_rs_utils.RsTestBaseClass):
         frame_ids = [self.params['camera_name']+'_link', 
             self.params['camera_name']+'_depth_frame', 
             self.params['camera_name']+'_color_frame']
-        data = self.node.pop_first_chunk('/tf_static')
-        ret = self.check_transform_data(data, frame_ids, True)
+        ret = self.check_static_transform_data('/tf_static', frame_ids)
         assert ret[0], ret[1]
         data = self.node.pop_first_chunk('/tf')
         ret = self.check_transform_data(data, frame_ids)
@@ -275,11 +274,9 @@ class TestCamera_TestTF_Prefix(pytest_rs_utils.RsTestBaseClass):
             prefix + self.params['camera_name']+'_depth_frame', 
             prefix + self.params['camera_name']+'_color_frame'
         ]
-        data = self.node.pop_first_chunk('/tf_static')
-        print(data)
-        ret = self.check_transform_data(data, frame_ids, True)
+        ret = self.check_static_transform_data('/tf_static', frame_ids)
         assert ret[0], ret[1]
-        
+
         # Check dynamic transforms
         for _ in range(3):  # We expect 3 chunks as per expected_data_chunks
             data = self.node.pop_first_chunk('/tf')
