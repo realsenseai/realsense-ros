@@ -36,10 +36,8 @@ Frames:
 <robot name="sensor_d421" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Includes -->
   <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
-  <xacro:include filename="$(find realsense2_description)/urdf/_usb_plug.urdf.xacro" />
 
   <xacro:macro name="sensor_d421" params="parent *origin name:=camera use_nominal_extrinsics:=false">
-    <xacro:arg name="add_plug" default="false" />
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
     <!-- Physical module dimensions (D421 Datasheet v1.1) -->
@@ -141,13 +139,6 @@ Frames:
         <child link="${name}_infra2_optical_frame" />
       </joint>
       <link name="${name}_infra2_optical_frame"/>
-    </xacro:if>
-
-    <xacro:if value="$(arg add_plug)">
-      <!-- USB-C connector on the bottom edge, board-centred -->
-      <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
-        <origin xyz="${-d421_cam_depth/2} ${-d421_baseline/2} ${-d421_cam_height/2}" rpy="${M_PI/2} 0 0"/>
-      </xacro:usb_plug>
     </xacro:if>
   </xacro:macro>
 </robot>
