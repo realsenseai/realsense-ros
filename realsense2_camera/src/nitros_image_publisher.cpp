@@ -21,6 +21,7 @@
 #include <isaac_ros_nitros_image_type/nitros_image_builder.hpp>
 
 #include <cuda_runtime.h>
+#include <exception>
 #include <utility>
 
 namespace realsense2_camera
