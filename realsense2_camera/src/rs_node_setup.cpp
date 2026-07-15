@@ -300,6 +300,30 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                 }
                 #endif
 
+#ifdef BUILD_WITH_NITROS
+                // Additive NITROS-native GPU zero-copy publisher for the color stream.
+                if (_enable_color_nitros && profile.stream_type() == RS2_STREAM_COLOR)
+                {
+                    std::string nitros_format, encoding;
+                    unsigned int bpp = 0;
+                    if (getNitrosImageFormat(profile.format(), nitros_format, encoding, bpp))
+                    {
+                        std::stringstream nitros_topic;
+                        nitros_topic << "~/" << stream_name << "/nitros_image";
+                        _nitros_image_publishers[sip] =
+                            std::make_shared<NitrosImagePublisher>(&_node, nitros_topic.str(), nitros_format);
+                        ROS_INFO_STREAM("NITROS color publisher created on topic " << nitros_topic.str()
+                                        << " (format " << nitros_format << ")");
+                    }
+                    else
+                    {
+                        ROS_WARN_STREAM("NITROS color publishing requested but format "
+                                        << rs2_format_to_string(profile.format())
+                                        << " is not supported; skipping NITROS for this stream.");
+                    }
+                }
+#endif
+
                 // create cameraInfo publishers only for non-SC streams
                 if(shouldPublishCameraInfo(sip))
                 {

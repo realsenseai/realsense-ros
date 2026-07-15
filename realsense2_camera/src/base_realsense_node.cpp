@@ -1252,6 +1252,12 @@ void BaseRealSenseNode::publishFrame(
         return;
     }
 
+#ifdef BUILD_WITH_NITROS
+    // Additive: hand the color frame's GPU device pointer straight to NITROS (no CPU copy).
+    // Independent of the sensor_msgs publishers below, which keep working unchanged.
+    publishNitrosFrame(f, t, stream, width, height, stream_format);
+#endif
+
     // Publish stream image
     if (image_publishers.find(stream) != image_publishers.end())
     {
@@ -1345,6 +1351,62 @@ void BaseRealSenseNode::publishFrame(
         publishMetadata(f, t, OPTICAL_FRAME_ID(stream));
     }
 }
+
+#ifdef BUILD_WITH_NITROS
+bool BaseRealSenseNode::getNitrosImageFormat(
+    const rs2_format& format, std::string& nitros_format, std::string& encoding, unsigned int& bpp)
+{
+    // Only the common color formats for now (color-only first cut). NITROS supported-type
+    // name (used by ManagedNitrosPublisher / negotiation) + matching sensor_msgs encoding + bpp.
+    switch (format)
+    {
+        case RS2_FORMAT_RGB8:  nitros_format = "nitros_image_rgb8";  encoding = sensor_msgs::image_encodings::RGB8;  bpp = 3; return true;
+        case RS2_FORMAT_BGR8:  nitros_format = "nitros_image_bgr8";  encoding = sensor_msgs::image_encodings::BGR8;  bpp = 3; return true;
+        case RS2_FORMAT_RGBA8: nitros_format = "nitros_image_rgba8"; encoding = sensor_msgs::image_encodings::RGBA8; bpp = 4; return true;
+        case RS2_FORMAT_BGRA8: nitros_format = "nitros_image_bgra8"; encoding = sensor_msgs::image_encodings::BGRA8; bpp = 4; return true;
+        default: return false;
+    }
+}
+
+void BaseRealSenseNode::publishNitrosFrame(
+    rs2::frame f, const rclcpp::Time& t, const stream_index_pair& stream,
+    unsigned int width, unsigned int height, const rs2_format& stream_format)
+{
+    auto it = _nitros_image_publishers.find(stream);
+    if (it == _nitros_image_publishers.end())
+        return;
+
+    std::string nitros_format, encoding;
+    unsigned int bpp = 0;
+    if (!getNitrosImageFormat(stream_format, nitros_format, encoding, bpp))
+        return;
+
+    // Get a CUDA device pointer for the frame. On a librealsense built with
+    // BUILD_WITH_CUDA_ZEROCOPY running on an integrated GPU (Jetson), this aliases the
+    // GPU-mapped frame buffer with no host->device copy (copied=false). Otherwise the SDK
+    // uploads (copied=true) so the path still works; either way we get a device pointer.
+    bool copied = false;
+    const void* gpu_ptr = f.get_gpu_data_or_upload(&copied);
+    if (!gpu_ptr)
+    {
+        ROS_WARN_STREAM_ONCE("NITROS: no GPU pointer available for " << STREAM_NAME(stream)
+                             << " (librealsense not built with CUDA?). Skipping NITROS publish.");
+        return;
+    }
+
+    std_msgs::msg::Header header;
+    header.stamp = t;
+    header.frame_id = OPTICAL_FRAME_ID(stream);
+
+    // The publisher D2D-copies the pixels into a GXF-owned buffer synchronously, so `f` (and the
+    // frame-pool buffer gpu_ptr aliases) only needs to stay alive for the duration of this call.
+    const size_t size_bytes = static_cast<size_t>(width) * height * bpp;
+    it->second->publish(gpu_ptr, width, height, size_bytes, encoding, header);
+
+    ROS_DEBUG_STREAM("NITROS " << STREAM_NAME(stream) << " published ("
+                     << (copied ? "UPLOAD (host->device copy)" : "ZERO-COPY source") << ")");
+}
+#endif
 
 
 void BaseRealSenseNode::publishRGBD(
