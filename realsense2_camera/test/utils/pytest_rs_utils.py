@@ -17,6 +17,7 @@ import time
 from collections import deque
 import functools
 import itertools
+import shutil
 import subprocess
 
 import pytest
@@ -122,6 +123,42 @@ def get_rosbag_file_path(filename):
     assert path, "No rosbag file found :"+filename 
     return path
 get_rosbag_file_path.rosbagMgr = None
+
+@functools.lru_cache(maxsize=1)
+def db3_playback_supported():
+    '''
+    True if the installed librealsense can convert a legacy .bag to a ROS2 .db3
+    and load a .db3 as a playback device. Both need librealsense built with
+    BUILD_ROSBAG2, which is what exposes rs-convert's --output-db3. rosdistro's
+    released librealsense2 may predate it, so the .db3 tests skip in that case.
+    '''
+    rs_convert = shutil.which("rs-convert")
+    if not rs_convert:
+        return False
+    try:
+        out = subprocess.run([rs_convert, "--help"], capture_output=True,
+                             timeout=30).stdout.decode(errors="replace")
+    except Exception:
+        return False
+    return "output-db3" in out
+
+def get_db3_file_path(bag_filename):
+    '''
+    Return a cached ROS2 .db3 converted from the given legacy .bag via rs-convert.
+    The node's rosbag_filename plays this through the librealsense pipeline, but
+    importRosbag (ground-truth extraction) still reads the original .bag.
+    Caller must guard with db3_playback_supported().
+    '''
+    bag = get_rosbag_file_path(bag_filename)
+    db3 = os.path.splitext(bag)[0] + ".db3"
+    if not os.path.isfile(db3):
+        # Convert to a temp .db3 then rename, so an interrupted conversion never
+        # leaves a partial file that a later run would treat as a valid cache.
+        partial = os.path.splitext(bag)[0] + ".partial.db3"
+        subprocess.run(["rs-convert", "-i", bag, "-D", partial],
+                       check=True, capture_output=True, timeout=180)
+        os.replace(partial, db3)
+    return db3
 
 def CameraInfoGetData(rec_filename, topic):
     data = importRosbag(rec_filename, importTopics=[topic], log='ERROR', disable_bar=True)[topic]

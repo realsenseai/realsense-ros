@@ -78,6 +78,11 @@ class TestBasicAlignDepthEnable(pytest_rs_utils.RsTestBaseClass):
             initialize, run and check the data 
             '''
             self.init_test('RsTest'+params['camera_name'])
+            # Wait for the node before subscribing: creating the subscriptions
+            # before the node's publishers exist races the best-effort QoS match
+            # and can yield zero frames for the whole window (the intermittent
+            # flake). Every live_camera test already gates on this.
+            self.wait_for_node(params['camera_name'])
             ret = self.run_test(themes)
             assert ret[0], ret[1]
             assert self.process_data(themes)
