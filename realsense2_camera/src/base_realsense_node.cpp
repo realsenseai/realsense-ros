@@ -2713,13 +2713,16 @@ void BaseRealSenseNode::nomagicMuxerCallback(rs2::frame frame,
     nomagic_latest_frame_buffer[stream_index] = frameset;
   }
 
-  // No new depth frame means we're done here.
-  if (missing_streams.find(DEPTH) != missing_streams.end()) {
+  // The muxer is driven by depth frames; with depth disabled, color drives
+  // instead so color-only setups still publish. No new frame from the driving
+  // stream means we're done here.
+  const stream_index_pair driving_stream = _enable[DEPTH] ? DEPTH : COLOR;
+  if (missing_streams.find(driving_stream) != missing_streams.end()) {
     return;
   }
 
-  // On every depth-positive frameset build a synthetic frameset based on the
-  // latest frames from the buffer.
+  // On every frameset containing the driving stream build a synthetic
+  // frameset based on the latest frames from the buffer.
   std::vector<rs2::frame> frames_vec;
   for (auto &&stream_index : nomagic_expected_streams) {
     if (nomagic_latest_frame_buffer.find(stream_index) ==
@@ -2745,8 +2748,8 @@ void BaseRealSenseNode::nomagicMuxerCallback(rs2::frame frame,
     return;
   }
 
-  // At this point we know that we have a frameset with a fresh depth frame
-  // and (possibly historical) other streams.
+  // At this point we know that we have a frameset with a fresh frame from the
+  // driving stream and (possibly historical) other streams.
   for (auto &&image_publisher : _depth_aligned_image_publishers) {
     if (missing_streams.find(image_publisher.first) != missing_streams.end()) {
       // If we find (color/infra) stream in missing, we know that we did not
