@@ -1869,6 +1869,23 @@ void BaseRealSenseNode::setupStreams()
         {
             std::string module_name = sensor_profile.first;
             rs2::sensor sensor = active_sensors[module_name];
+            if (sensor.supports(RS2_OPTION_INTER_CAM_SYNC_MODE))
+            {
+                int sync_mode = 0;
+                _pnh.param("inter_cam_sync_mode", sync_mode, 0);
+                try
+                {
+                    sensor.set_option(RS2_OPTION_INTER_CAM_SYNC_MODE,
+                                      static_cast<float>(sync_mode));
+                    ROS_INFO_STREAM("Set inter_cam_sync_mode = " << sync_mode
+                                    << " on sensor " << module_name);
+                }
+                catch (const rs2::error& e)
+                {
+                    ROS_WARN_STREAM("Failed to set inter_cam_sync_mode on "
+                                    << module_name << ": " << e.what());
+                }
+            }
             sensor.open(sensor_profile.second);
             sensor.start(_sensors_callback[module_name]);
             if (sensor.is<rs2::depth_sensor>())

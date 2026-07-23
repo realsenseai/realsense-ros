@@ -100,6 +100,7 @@
   <arg name="stereo_module/exposure/2" default="1"/>
   <arg name="stereo_module/gain/2"     default="16"/>
 
+  <arg name="inter_cam_sync_mode"      default="0"/>
   <arg name="filters"                  default=""/>
   <arg name="clip_distance"            default="-1"/>
   <arg name="linear_accel_cov"         default="0.01"/>
@@ -205,6 +206,7 @@
     <param name="stereo_module/gain/1"     type="int"  value="$(arg stereo_module/gain/1)"/>
     <param name="stereo_module/exposure/2" type="int"  value="$(arg stereo_module/exposure/2)"/>
     <param name="stereo_module/gain/2"     type="int"  value="$(arg stereo_module/gain/2)"/>
+    <param name="inter_cam_sync_mode"      type="int"  value="$(arg inter_cam_sync_mode)"/>
 
     <param name="filters"                  type="str"    value="$(arg filters)"/>
     <param name="clip_distance"            type="double" value="$(arg clip_distance)"/>
