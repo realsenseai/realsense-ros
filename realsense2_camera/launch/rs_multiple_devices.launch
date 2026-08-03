@@ -10,6 +10,7 @@
   <arg name="tf_prefix_camera3"         default="$(arg camera3)"/>
   <arg name="initial_reset"             default="false"/>
   <arg name="reconnect_timeout"         default="6.0"/>
+  <arg name="inter_cam_sync_mode"       default="0"/>
 
   <group ns="$(arg camera1)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
@@ -17,6 +18,7 @@
       <arg name="tf_prefix"         		value="$(arg tf_prefix_camera1)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
       <arg name="reconnect_timeout"     value="$(arg reconnect_timeout)"/>
+      <arg name="inter_cam_sync_mode"   value="$(arg inter_cam_sync_mode)"/>
     </include>
   </group>
 
@@ -26,6 +28,7 @@
       <arg name="tf_prefix"		          value="$(arg tf_prefix_camera2)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
       <arg name="reconnect_timeout"     value="$(arg reconnect_timeout)"/>
+      <arg name="inter_cam_sync_mode"   value="$(arg inter_cam_sync_mode)"/>
     </include>
   </group>
 
@@ -35,6 +38,7 @@
       <arg name="tf_prefix"		          value="$(arg tf_prefix_camera3)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
       <arg name="reconnect_timeout"     value="$(arg reconnect_timeout)"/>
+      <arg name="inter_cam_sync_mode"   value="$(arg inter_cam_sync_mode)"/>
     </include>
   </group>
 </launch>

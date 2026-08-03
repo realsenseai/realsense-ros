@@ -70,6 +70,8 @@
   <arg name="stereo_module/gain/1"      default="16"/>
   <arg name="stereo_module/exposure/2"  default="1"/>
   <arg name="stereo_module/gain/2"      default="16"/>
+
+  <arg name="inter_cam_sync_mode"       default="0" />
   
   
 
@@ -144,6 +146,8 @@
 
       <arg name="allow_no_texture_points"  value="$(arg allow_no_texture_points)"/>
       <arg name="ordered_pc"               value="$(arg ordered_pc)"/>
+
+      <arg name="inter_cam_sync_mode"      value="$(arg inter_cam_sync_mode)"/>
       
     </include>
   </group>
