@@ -17,6 +17,9 @@
 #include <librealsense2/rs.hpp>
 #include <librealsense2/rsutil.h>
 #include "constants.h"
+#ifdef BUILD_WITH_NITROS
+#include "nitros_image_publisher.h"
+#endif
 
 // cv_bridge.h last supported version is humble
 #if defined(CV_BRDIGE_HAS_HPP)
@@ -304,6 +307,16 @@ namespace realsense2_camera
             const std::map<stream_index_pair, std::shared_ptr<image_publisher>>& image_publishers,
             const bool is_publishMetadata = true);
 
+#ifdef BUILD_WITH_NITROS
+        // Map an rs2 pixel format to a NITROS supported-type name + sensor_msgs encoding string +
+        // bytes-per-pixel. Returns false for formats not (yet) supported by the NITROS color path.
+        bool getNitrosImageFormat(const rs2_format& format, std::string& nitros_format,
+                                  std::string& encoding, unsigned int& bpp);
+        // Publish a video frame as a NITROS image using its GPU device pointer (zero-copy).
+        void publishNitrosFrame(rs2::frame f, const rclcpp::Time& t, const stream_index_pair& stream,
+                                unsigned int width, unsigned int height, const rs2_format& stream_format);
+#endif
+
         void publishRGBD(
             const cv::Mat& rgb_cv_matrix,
             const rs2_format& color_format,
@@ -369,8 +382,12 @@ namespace realsense2_camera
         std::vector<geometry_msgs::msg::TransformStamped> _static_tf_msgs;
         std::shared_ptr<std::thread> _tf_t;
 
-        bool _use_intra_process;      
+        bool _use_intra_process;
         std::map<stream_index_pair, std::shared_ptr<image_publisher>> _image_publishers;
+#ifdef BUILD_WITH_NITROS
+        bool _enable_color_nitros = false;
+        std::map<stream_index_pair, std::shared_ptr<NitrosImagePublisher>> _nitros_image_publishers;
+#endif
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _labeled_pointcloud_publisher;
         rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _occupancy_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr> _imu_publishers;

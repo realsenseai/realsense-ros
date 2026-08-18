@@ -91,6 +91,14 @@ void BaseRealSenseNode::getParameters()
     _tf_prefix = _parameters->setParam<std::string>(param_name, "");
     _parameters_names.push_back(param_name);
 
+#ifdef BUILD_WITH_NITROS
+    // Enable NITROS-native GPU zero-copy publishing of the color stream (Jetson / Isaac ROS).
+    // Read once at construction (publisher creation happens in rs_node_setup); default off.
+    param_name = std::string("enable_color_nitros");
+    _enable_color_nitros = _parameters->setParam<bool>(param_name, false);
+    _parameters_names.push_back(param_name);
+#endif
+
 #if defined (ACCELERATE_GPU_WITH_GLSL)
     param_name = std::string("accelerate_gpu_with_glsl");
      _parameters->setParam<bool>(param_name, false, 
