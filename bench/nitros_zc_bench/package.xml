@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>nitros_zc_bench</name>
+  <version>0.2.0</version>
+  <description>
+    Consumer-side benchmark for the realsense2_camera NITROS zero-copy color path: compares a
+    plain sensor_msgs/Image consumer (which must copy every frame host-to-device) against a
+    NITROS consumer that reads the frame in place on the GPU. Both run the identical CUDA kernel
+    over every pixel, so the only difference measured is how the frame reaches the GPU.
+  </description>
+  <maintainer email="ashraf.kattoura@realsenseai.com">Ashraf Kattoura</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>isaac_ros_nitros</depend>
+  <depend>isaac_ros_managed_nitros</depend>
+  <depend>isaac_ros_nitros_image_type</depend>
+  <depend>rclcpp_components</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
