@@ -57,6 +57,10 @@ public:
     // at most once every few frames, which bounds how long a new subscriber waits for its first one.
     bool hasSubscribers();
 
+    // Returns true the first time only, for a warning that should be reported once per stream.
+    // Needs no locking: an instance serves one stream and is only used from that stream's thread.
+    bool takeUploadWarning();
+
     // gpu_src   : CUDA device pointer to the frame pixels (aliases the SDK frame buffer).
     // size_bytes: number of bytes to copy (width * height * bytes_per_pixel).
     // encoding  : sensor_msgs::image_encodings string matching nitros_format (e.g. "rgb8").

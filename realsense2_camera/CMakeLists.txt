@@ -173,7 +173,7 @@ if (BUILD_WITH_NITROS)
   find_package(isaac_ros_nitros REQUIRED)
   find_package(isaac_ros_managed_nitros REQUIRED)
   find_package(isaac_ros_nitros_image_type REQUIRED)
-  message(STATUS "🚀 BUILD_WITH_NITROS enabled — NITROS GPU zero-copy color publishing")
+  message(STATUS "🚀 BUILD_WITH_NITROS enabled — NITROS GPU publishing for color, depth and aligned depth")
 endif()
 
 #set(CMAKE_NO_SYSTEM_FROM_IMPORTED true)
@@ -391,7 +391,8 @@ if (BUILD_WITH_NITROS)
     isaac_ros_managed_nitros
     isaac_ros_nitros_image_type)
   target_link_libraries(${PROJECT_NAME} CUDA::cudart)
-  # The Isaac ROS headers require C++17; the rest of the wrapper builds as C++14.
+  # The Isaac ROS headers require C++17, so this build of the whole target uses C++17 rather than
+  # the C++14 default. Only relevant when BUILD_WITH_NITROS is on.
   target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 endif()
 

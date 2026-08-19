@@ -71,6 +71,8 @@ struct NitrosImagePublisher::Impl
     cudaStream_t stream{nullptr};
     cudaEvent_t copy_done{nullptr};
 
+    bool upload_warning_pending{true};
+
     // Cached subscriber state; the counter starts due so the first call queries the graph.
     bool has_subscribers{false};
     uint64_t subscriber_check_counter{SUBSCRIBER_CHECK_INTERVAL};
@@ -196,6 +198,16 @@ NitrosImagePublisher::~NitrosImagePublisher()
 const std::string & NitrosImagePublisher::getTopicName() const
 {
     return _impl->topic_name;
+}
+
+bool NitrosImagePublisher::takeUploadWarning()
+{
+    if (!_impl->upload_warning_pending)
+    {
+        return false;
+    }
+    _impl->upload_warning_pending = false;
+    return true;
 }
 
 bool NitrosImagePublisher::hasSubscribers()

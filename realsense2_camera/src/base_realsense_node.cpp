@@ -1431,7 +1431,7 @@ void BaseRealSenseNode::publishNitrosFrame(
 
     // A frame the SDK had to upload was never GPU-resident, so publishing it through NITROS costs
     // an extra copy over the plain image topic. Say so once per stream rather than every frame.
-    if (copied && _nitros_upload_warned.insert(stream).second)
+    if (copied && it->second->takeUploadWarning())
     {
         ROS_WARN_STREAM("NITROS " << STREAM_NAME(stream) << ": librealsense had to upload this frame "
                         "host->device, so it was not zero-copy at the source. Publishing it as NITROS "

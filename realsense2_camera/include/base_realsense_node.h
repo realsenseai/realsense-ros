@@ -19,7 +19,6 @@
 #include "constants.h"
 #ifdef BUILD_WITH_NITROS
 #include "nitros_image_publisher.h"
-#include <set>
 #endif
 
 // cv_bridge.h last supported version is humble
@@ -398,8 +397,6 @@ namespace realsense2_camera
         bool _enable_aligned_depth_nitros = false;
         std::map<stream_index_pair, std::shared_ptr<NitrosImagePublisher>> _nitros_image_publishers;
         std::map<stream_index_pair, std::shared_ptr<NitrosImagePublisher>> _nitros_aligned_image_publishers;
-        // Streams already reported as not zero-copy at the source, so the warning is not repeated.
-        std::set<stream_index_pair> _nitros_upload_warned;
 #endif
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _labeled_pointcloud_publisher;
         rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _occupancy_publisher;
