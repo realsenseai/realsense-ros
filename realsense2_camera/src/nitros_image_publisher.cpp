@@ -141,11 +141,17 @@ NitrosImagePublisher::NitrosImagePublisher(
     }
 
 #if RS_NITROS_HAS_MEMPOOL
+    // Allocate from the device this node is actually using rather than assuming device 0.
+    int cuda_device = 0;
+    if (cudaGetDevice(&cuda_device) != cudaSuccess)
+    {
+        cuda_device = 0;
+    }
     cudaMemPoolProps props{};
     props.allocType = cudaMemAllocationTypePinned;
     props.handleTypes = cudaMemHandleTypeNone;
     props.location.type = cudaMemLocationTypeDevice;
-    props.location.id = 0;
+    props.location.id = cuda_device;
     err = cudaMemPoolCreate(&_impl->pool, &props);
     if (err != cudaSuccess)
     {
