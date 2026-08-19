@@ -91,6 +91,24 @@ void BaseRealSenseNode::getParameters()
     _tf_prefix = _parameters->setParam<std::string>(param_name, "");
     _parameters_names.push_back(param_name);
 
+#ifdef BUILD_WITH_NITROS
+    // Enable NITROS-native GPU publishing per stream (Jetson / Isaac ROS). Read once at construction
+    // (publisher creation happens in rs_node_setup), so these are start-up only; default off.
+    const std::vector<std::pair<std::string, stream_index_pair>> nitros_stream_params = {
+        {"enable_color_nitros", COLOR},
+        {"enable_depth_nitros", DEPTH}};
+    for (const auto& nitros_param : nitros_stream_params)
+    {
+        param_name = nitros_param.first;
+        _nitros_enabled_streams[nitros_param.second] = _parameters->setParam<bool>(param_name, false);
+        _parameters_names.push_back(param_name);
+    }
+    // Depth aligned to another stream, published on ~/aligned_depth_to_<stream>/nitros_image.
+    param_name = std::string("enable_aligned_depth_nitros");
+    _enable_aligned_depth_nitros = _parameters->setParam<bool>(param_name, false);
+    _parameters_names.push_back(param_name);
+#endif
+
 #if defined (ACCELERATE_GPU_WITH_GLSL)
     param_name = std::string("accelerate_gpu_with_glsl");
      _parameters->setParam<bool>(param_name, false, 

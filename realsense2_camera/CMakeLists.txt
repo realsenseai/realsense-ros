@@ -32,6 +32,10 @@ option(BUILD_WITH_OPENMP "Use OpenMP" OFF)
 option(SET_USER_BREAK_AT_STARTUP "Set user wait point in startup (for debug)" OFF)
 # Define an option to enable or disable lifecycle nodes
 option(USE_LIFECYCLE_NODE "Enable lifecycle nodes (ON/OFF)" OFF)
+# NITROS-native GPU zero-copy publishing (Jetson / Isaac ROS). Requires an Isaac ROS workspace
+# (isaac_ros_nitros, isaac_ros_managed_nitros, isaac_ros_nitros_image_type) and a librealsense
+# built with BUILD_WITH_CUDA_ZEROCOPY. Default OFF so standard builds are unaffected.
+option(BUILD_WITH_NITROS "Enable NITROS-native GPU zero-copy publishing (Jetson / Isaac ROS)" OFF)
 
 # Compiler Defense Flags
 if(UNIX OR APPLE)
@@ -160,6 +164,18 @@ if(NOT realsense2_FOUND)
     message(FATAL_ERROR "\n\n RealSense SDK 2.0 is missing, please install it from https://github.com/realsenseai/librealsense/releases\n\n")
 endif()
 
+if (BUILD_WITH_NITROS)
+  if (USE_LIFECYCLE_NODE)
+    message(FATAL_ERROR "BUILD_WITH_NITROS is incompatible with USE_LIFECYCLE_NODE: ManagedNitrosPublisher requires an rclcpp::Node.")
+  endif()
+  # CUDAToolkit rather than the deprecated FindCUDA module (removed in CMake 4).
+  find_package(CUDAToolkit REQUIRED)
+  find_package(isaac_ros_nitros REQUIRED)
+  find_package(isaac_ros_managed_nitros REQUIRED)
+  find_package(isaac_ros_nitros_image_type REQUIRED)
+  message(STATUS "🚀 BUILD_WITH_NITROS enabled — NITROS GPU zero-copy color publishing")
+endif()
+
 #set(CMAKE_NO_SYSTEM_FROM_IMPORTED true)
 include_directories(include)
 
@@ -188,6 +204,10 @@ set(SOURCES
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   list(APPEND SOURCES src/gl_gpu_processing.cpp)
+endif()
+
+if (BUILD_WITH_NITROS)
+  list(APPEND SOURCES src/nitros_image_publisher.cpp)
 endif()
 
 if(NOT DEFINED ENV{ROS_DISTRO})
@@ -240,6 +260,10 @@ if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   add_definitions(-DACCELERATE_GPU_WITH_GLSL)
 endif()
 
+if (BUILD_WITH_NITROS)
+  add_definitions(-DBUILD_WITH_NITROS)
+endif()
+
 set(INCLUDES
     include/context_singleton_wrapper.h
     include/constants.h
@@ -258,6 +282,10 @@ set(INCLUDES
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
   list(APPEND INCLUDES include/gl_window.h)
+endif()
+
+if (BUILD_WITH_NITROS)
+  list(APPEND INCLUDES include/nitros_image_publisher.h)
 endif()
 
 if (BUILD_TOOLS)
@@ -325,6 +353,10 @@ else()
   list(APPEND targets realsense2::realsense2)
 endif()
 
+if (BUILD_WITH_NITROS)
+  list(APPEND dependencies isaac_ros_nitros isaac_ros_managed_nitros isaac_ros_nitros_image_type)
+endif()
+
 # If the flag is enabled, define the macro
 if(USE_LIFECYCLE_NODE)
     find_package(rclcpp_lifecycle REQUIRED)
@@ -350,6 +382,18 @@ install(FILES "${CMAKE_BINARY_DIR}/global_settings.yaml"
 target_link_libraries(${PROJECT_NAME}
   ${targets}
 )
+
+# NITROS packages export their include dirs and libraries the ament way; use
+# ament_target_dependencies so GXF / Isaac ROS transitive deps are picked up.
+if (BUILD_WITH_NITROS)
+  ament_target_dependencies(${PROJECT_NAME}
+    isaac_ros_nitros
+    isaac_ros_managed_nitros
+    isaac_ros_nitros_image_type)
+  target_link_libraries(${PROJECT_NAME} CUDA::cudart)
+  # The Isaac ROS headers require C++17; the rest of the wrapper builds as C++14.
+  target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+endif()
 
 # Workaround: librealsense built with bundled DDS exports its own fastcdr
 # symbols from librealsense2.so, clashing at runtime with ROS 2's fastdds.

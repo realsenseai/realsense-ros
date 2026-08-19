@@ -622,12 +622,12 @@ void BaseRealSenseNode::frame_callback(rs2::frame frame)
                     sent_depth_frame = true;
                     if (original_color_frame && _align_depth_filter->is_enabled())
                     {
-                        publishFrame(f, t, COLOR, _depth_aligned_image, _depth_aligned_info_publisher, _depth_aligned_image_publishers, false);
+                        publishFrame(f, t, COLOR, _depth_aligned_image, _depth_aligned_info_publisher, _depth_aligned_image_publishers, false, true);
                         continue;
                     }
                     if (original_infra2_frame && _align_depth_filter->is_enabled())
                     {
-                        publishFrame(f, t, INFRA2, _depth_aligned_image, _depth_aligned_info_publisher, _depth_aligned_image_publishers, false);
+                        publishFrame(f, t, INFRA2, _depth_aligned_image, _depth_aligned_info_publisher, _depth_aligned_image_publishers, false, true);
                         continue;
                     }
                 }
@@ -1221,7 +1221,8 @@ void BaseRealSenseNode::publishFrame(
     std::map<stream_index_pair, cv::Mat>& images,
     const std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr>& info_publishers,
     const std::map<stream_index_pair, std::shared_ptr<image_publisher>>& image_publishers,
-    const bool is_publishMetadata)
+    const bool is_publishMetadata,
+    const bool is_aligned_frame)
 {
     ROS_DEBUG("publishFrame(...)");
     unsigned int width = 0;
@@ -1251,6 +1252,14 @@ void BaseRealSenseNode::publishFrame(
         ROS_ERROR("f.is<rs2::video_frame>() check failed. Frame was dropped.");
         return;
     }
+
+#ifdef BUILD_WITH_NITROS
+    // Additive: hand the frame's GPU device pointer straight to NITROS (no CPU copy). Independent of
+    // the sensor_msgs publishers below, which keep working unchanged.
+    publishNitrosFrame(f, t, stream, width, height, stream_format, is_aligned_frame);
+#else
+    (void)is_aligned_frame;
+#endif
 
     // Publish stream image
     if (image_publishers.find(stream) != image_publishers.end())
@@ -1345,6 +1354,101 @@ void BaseRealSenseNode::publishFrame(
         publishMetadata(f, t, OPTICAL_FRAME_ID(stream));
     }
 }
+
+#ifdef BUILD_WITH_NITROS
+bool BaseRealSenseNode::getNitrosImageFormat(
+    const rs2_format& format, std::string& nitros_format, std::string& encoding, unsigned int& bpp)
+{
+    // Only the NITROS supported-type name is new here; the ROS encoding comes from the map
+    // initializeFormatsMaps() already builds, and the bytes per pixel are derived from it, so
+    // there is a single source of truth for the rs2 -> ROS format mapping.
+    // Z16 depth reaches NITROS as GRAY16, the same GXF format as mono16: the wrapper reports it with
+    // the "16UC1" encoding, which NITROS accepts and maps to GRAY16.
+    static const std::map<rs2_format, std::string> rs_format_to_nitros_format = {
+        {RS2_FORMAT_RGB8,  "nitros_image_rgb8"},
+        {RS2_FORMAT_BGR8,  "nitros_image_bgr8"},
+        {RS2_FORMAT_RGBA8, "nitros_image_rgba8"},
+        {RS2_FORMAT_BGRA8, "nitros_image_bgra8"},
+        {RS2_FORMAT_Z16,   "nitros_image_mono16"}};
+
+    auto nitros_it = rs_format_to_nitros_format.find(format);
+    if (nitros_it == rs_format_to_nitros_format.end())
+        return false;
+
+    auto ros_it = _rs_format_to_ros_format.find(format);
+    if (ros_it == _rs_format_to_ros_format.end())
+        return false;
+
+    nitros_format = nitros_it->second;
+    encoding = ros_it->second;
+    bpp = sensor_msgs::image_encodings::numChannels(encoding) *
+          (sensor_msgs::image_encodings::bitDepth(encoding) / 8);
+    return true;
+}
+
+bool BaseRealSenseNode::isNitrosEnabled(const stream_index_pair& sip) const
+{
+    auto it = _nitros_enabled_streams.find(sip);
+    return it != _nitros_enabled_streams.end() && it->second;
+}
+
+void BaseRealSenseNode::publishNitrosFrame(
+    rs2::frame f, const rclcpp::Time& t, const stream_index_pair& stream,
+    unsigned int width, unsigned int height, const rs2_format& stream_format,
+    const bool is_aligned_frame)
+{
+    auto& publishers = is_aligned_frame ? _nitros_aligned_image_publishers : _nitros_image_publishers;
+    auto it = publishers.find(stream);
+    if (it == publishers.end())
+        return;
+
+    // Nothing subscribed means nothing to do: the device-to-device copy and the GXF message cost
+    // ~0.4 ms per frame on the SDK callback thread.
+    if (!it->second->hasSubscribers())
+        return;
+
+    std::string nitros_format, encoding;
+    unsigned int bpp = 0;
+    if (!getNitrosImageFormat(stream_format, nitros_format, encoding, bpp))
+        return;
+
+    // Get a CUDA device pointer for the frame. On a librealsense built with
+    // BUILD_WITH_CUDA_ZEROCOPY running on an integrated GPU (Jetson), this aliases the
+    // GPU-mapped frame buffer with no host->device copy (copied=false). Otherwise the SDK
+    // uploads (copied=true) so the path still works; either way we get a device pointer.
+    bool copied = false;
+    const void* gpu_ptr = f.get_gpu_data_or_upload(&copied);
+    if (!gpu_ptr)
+    {
+        ROS_WARN_STREAM_ONCE("NITROS: no GPU pointer available for " << STREAM_NAME(stream)
+                             << " (librealsense not built with CUDA?). Skipping NITROS publish.");
+        return;
+    }
+
+    std_msgs::msg::Header header;
+    header.stamp = t;
+    header.frame_id = OPTICAL_FRAME_ID(stream);
+
+    // A frame the SDK had to upload was never GPU-resident, so publishing it through NITROS costs
+    // an extra copy over the plain image topic. Say so once per stream rather than every frame.
+    if (copied && _nitros_upload_warned.insert(stream).second)
+    {
+        ROS_WARN_STREAM("NITROS " << STREAM_NAME(stream) << ": librealsense had to upload this frame "
+                        "host->device, so it was not zero-copy at the source. Publishing it as NITROS "
+                        "costs an extra copy compared with the plain image topic. Zero-copy capture "
+                        "currently covers the color stream and depth aligned to color.");
+    }
+
+    // The publisher D2D-copies the pixels into a GXF-owned buffer synchronously, so `f` (and the
+    // frame-pool buffer gpu_ptr aliases) only needs to stay alive for the duration of this call.
+    const size_t size_bytes = static_cast<size_t>(width) * height * bpp;
+    it->second->publish(gpu_ptr, width, height, size_bytes, encoding, header);
+
+    ROS_DEBUG_STREAM("NITROS " << (is_aligned_frame ? "aligned " : "") << STREAM_NAME(stream)
+                     << " published ("
+                     << (copied ? "UPLOAD (host->device copy)" : "ZERO-COPY source") << ")");
+}
+#endif
 
 
 void BaseRealSenseNode::publishRGBD(
