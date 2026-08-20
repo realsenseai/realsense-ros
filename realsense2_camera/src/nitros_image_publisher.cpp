@@ -201,6 +201,22 @@ NitrosImagePublisher::~NitrosImagePublisher()
 #endif
 }
 
+bool nitrosGpuIsIntegrated()
+{
+    // Fixed for the lifetime of the process; the answer is the same for every stream.
+    static const bool integrated = []() {
+        int device = 0;
+        int value = 0;
+        if (cudaGetDevice(&device) != cudaSuccess ||
+            cudaDeviceGetAttribute(&value, cudaDevAttrIntegrated, device) != cudaSuccess)
+        {
+            return false;
+        }
+        return value != 0;
+    }();
+    return integrated;
+}
+
 const std::string & NitrosImagePublisher::getTopicName() const
 {
     return _impl->topic_name;

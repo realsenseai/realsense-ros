@@ -1426,6 +1426,8 @@ ros2 launch realsense2_camera rs_launch.py enable_color_nitros:=true enable_dept
 
 Needs an Isaac ROS workspace (`isaac_ros_nitros`, `isaac_ros_managed_nitros`, `isaac_ros_nitros_image_type`) and a librealsense built with `BUILD_WITH_CUDA_ZEROCOPY`.
 
+**Jetson and x86 behave differently at the source.** librealsense only captures straight into GPU-visible memory on an integrated GPU, so on Jetson the frame never touches the CPU at all. The same build works on x86 with a discrete NVIDIA GPU, except that the SDK has to upload each frame over PCIe first - the node reports that once per stream. The NITROS handoff itself is still copy-free there, so it stays cheaper than `image_raw`, but only the Jetson path has been benchmarked.
+
 ### The consumer must run in the same process
 
 A GPU pointer is only valid inside the process that created it, so load your consumer as a component in the same container as the camera (see [Efficient intra-process communication](#efficient-intra-process-communication)). Launch it as its own process instead and every frame gets copied through host memory - worse than not using NITROS at all. The node warns once if it sees that happening.
@@ -1449,7 +1451,7 @@ At 1080p30 on an AGX Orin, the composed NITROS path used about a third less CPU 
 
 * Color, depth and aligned depth only - no point cloud yet.
 * Not compatible with `-DUSE_LIFECYCLE_NODE=ON`.
-* A stream has to reach the wrapper GPU-resident. If librealsense has to upload it, NITROS costs an extra copy over the plain topic and the node warns once per stream.
+* Zero-copy capture needs an integrated GPU (Jetson) and a librealsense with `BUILD_WITH_CUDA_ZEROCOPY`. Anywhere else the SDK uploads the frame first, and the node says so once per stream - on a discrete GPU that is expected, on Jetson it means the SDK was built without zero-copy support.
 
 <hr>
 

@@ -1431,12 +1431,24 @@ void BaseRealSenseNode::publishNitrosFrame(
 
     // A frame the SDK had to upload was never GPU-resident, so publishing it through NITROS costs
     // an extra copy over the plain image topic. Say so once per stream rather than every frame.
+    // On a discrete GPU this is by design, so report it as information rather than as a warning.
     if (copied && it->second->takeUploadWarning())
     {
-        ROS_WARN_STREAM("NITROS " << STREAM_NAME(stream) << ": librealsense had to upload this frame "
-                        "host->device, so it was not zero-copy at the source. Publishing it as NITROS "
-                        "costs an extra copy compared with the plain image topic. Zero-copy capture "
-                        "currently covers the color stream and depth aligned to color.");
+        if (nitrosGpuIsIntegrated())
+        {
+            ROS_WARN_STREAM("NITROS " << STREAM_NAME(stream) << ": librealsense had to upload this "
+                            "frame host->device, so it was not zero-copy at the source, and "
+                            "publishing it as NITROS costs an extra copy over the plain image topic. "
+                            "On an integrated GPU that is unexpected: check that librealsense was "
+                            "built with BUILD_WITH_CUDA_ZEROCOPY.");
+        }
+        else
+        {
+            ROS_INFO_STREAM("NITROS " << STREAM_NAME(stream) << ": this GPU is discrete, so "
+                            "librealsense uploads each frame host->device -- zero-copy capture "
+                            "requires an integrated GPU. NITROS still avoids the serialization and "
+                            "the subscriber-side upload for same-process subscribers.");
+        }
     }
 
     // The publisher D2D-copies the pixels into a GXF-owned buffer synchronously, so `f` (and the

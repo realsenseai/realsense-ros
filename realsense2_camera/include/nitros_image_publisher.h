@@ -42,6 +42,12 @@ namespace realsense2_camera
 //
 // Not thread safe: one publisher instance serves one stream, and the wrapper only ever publishes a
 // given stream from that stream's frame-callback thread.
+// True when the CUDA device this node uses shares DRAM with the CPU (Jetson). librealsense's
+// zero-copy capture is deliberately integrated-GPU only -- on a discrete GPU, mapped host memory
+// would be read per-element over PCIe -- so on x86 the SDK always uploads and that is expected,
+// not a misconfiguration. Callers use this to report an upload for what it is.
+bool nitrosGpuIsIntegrated();
+
 class NitrosImagePublisher
 {
 public:
