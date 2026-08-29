@@ -62,6 +62,7 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
      * [Available Services](#available-services)
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
+     * [GPU zero-copy publishing (NITROS)](#gpu-zero-copy-publishing-nitros)
      * [Logging](#logging)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
@@ -496,6 +497,10 @@ User can set the camera name and camera namespace, to distinguish between camera
     ```
 
 #### Parameters that cannot be changed in runtime:
+- **enable_color_nitros**, **enable_depth_nitros**, **enable_aligned_depth_nitros**:
+  - publish that stream as a NITROS GPU image, on `~/<stream>/nitros_image`, in addition to its usual image topic.
+  - Requires a build with `-DBUILD_WITH_NITROS=ON` in an Isaac ROS workspace. Default: `false` for each.
+  - The consumer must run in the same process; see [GPU zero-copy publishing (NITROS)](#gpu-zero-copy-publishing-nitros).
 - **serial_no**:
   - will attach to the device with the given serial number (*serial_no*) number.
   - Default, attach to the first (in an inner list) RealSense device.
@@ -662,6 +667,8 @@ Enabling stream adds matching topics. For instance, enabling the gyro and accel 
 - /camera/camera/gyro/sample
 
 <hr>
+
+- `/camera/camera/<stream>/nitros_image`: NITROS GPU image of a stream, published only with `enable_<stream>_nitros:=true` on a `BUILD_WITH_NITROS` build. See [GPU zero-copy publishing (NITROS)](#gpu-zero-copy-publishing-nitros).
 
 ## RGBD Topic
 
@@ -1396,6 +1403,55 @@ The launch file accepts a parameter, `intra_process_comms`, controlling whether 
 ```bash
 ros2 launch realsense2_camera rs_intra_process_demo_launch.py intra_process_comms:=true
 ```
+
+<hr>
+
+## GPU zero-copy publishing (NITROS):
+
+On Jetson with [Isaac ROS](https://nvidia-isaac-ros.github.io/), the wrapper can publish frames as NITROS GPU images, so a GPU consumer reads them in place instead of copying them out of host memory. Supported streams:
+
+| Parameter | Topic | Format |
+| --- | --- | --- |
+| `enable_color_nitros` | `~/color/nitros_image` | `nitros_image_rgb8` (also `bgr8`/`rgba8`/`bgra8`) |
+| `enable_depth_nitros` | `~/depth/nitros_image` | `nitros_image_mono16` |
+| `enable_aligned_depth_nitros` | `~/aligned_depth_to_<stream>/nitros_image` | `nitros_image_mono16` |
+
+Each one is off by default and purely additive - the usual image topics keep working unchanged.
+
+```bash
+colcon build --packages-select realsense2_camera_msgs realsense2_camera \
+  --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_NITROS=ON
+ros2 launch realsense2_camera rs_launch.py enable_color_nitros:=true enable_depth_nitros:=true
+```
+
+Needs an Isaac ROS workspace (`isaac_ros_nitros`, `isaac_ros_managed_nitros`, `isaac_ros_nitros_image_type`) and a librealsense built with `BUILD_WITH_CUDA_ZEROCOPY`.
+
+**Jetson and x86 behave differently at the source.** librealsense only captures straight into GPU-visible memory on an integrated GPU, so on Jetson the frame never touches the CPU at all. The same build works on x86 with a discrete NVIDIA GPU, except that the SDK has to upload each frame over PCIe first - the node reports that once per stream. The NITROS handoff itself is still copy-free there, so it stays cheaper than `image_raw`, but only the Jetson path has been benchmarked.
+
+### The consumer must run in the same process
+
+A GPU pointer is only valid inside the process that created it, so load your consumer as a component in the same container as the camera (see [Efficient intra-process communication](#efficient-intra-process-communication)). Launch it as its own process instead and every frame gets copied through host memory - worse than not using NITROS at all. The node warns once if it sees that happening.
+
+Two things to avoid:
+
+* **Do not set `use_intra_process_comms`** on the node. NITROS enables it on its own publishers; setting it at node level also applies it to the transient-local negotiation topics and the node then fails to start.
+* **Do not subscribe to a `nitros_image` topic from another process** (rviz, `ros2 topic echo`, a bag recorder). A single outside subscriber forces a device-to-host copy of every frame. Use the plain image topics for tooling.
+
+### Choosing between the options
+
+| Consumer | Use |
+| --- | --- |
+| Isaac ROS / NITROS node in the same process | `nitros_image` - no copy at all |
+| Any node in the same process | `image_raw` + `use_intra_process_comms` - no serialisation, but still one host-to-device copy |
+| Anything in a separate process | `image_raw` - NITROS would only add copies |
+
+At 1080p30 on an AGX Orin, the composed NITROS path used about a third less CPU than the same pipeline over `image_raw`, at the same frame rate.
+
+### Limitations
+
+* Color, depth and aligned depth only - no point cloud yet.
+* Not compatible with `-DUSE_LIFECYCLE_NODE=ON`.
+* Zero-copy capture needs an integrated GPU (Jetson) and a librealsense with `BUILD_WITH_CUDA_ZEROCOPY`. Anywhere else the SDK uploads the frame first, and the node says so once per stream - on a discrete GPU that is expected, on Jetson it means the SDK was built without zero-copy support.
 
 <hr>
 

@@ -206,8 +206,14 @@ void BaseRealSenseNode::stopPublishers(const std::vector<stream_profile>& profil
         {
             _image_publishers.erase(sip);
             _info_publishers.erase(sip);
+#ifdef BUILD_WITH_NITROS
+            _nitros_image_publishers.erase(sip);
+#endif
             _depth_aligned_image_publishers.erase(sip);
             _depth_aligned_info_publisher.erase(sip);
+#ifdef BUILD_WITH_NITROS
+            _nitros_aligned_image_publishers.erase(sip);
+#endif
             if(profile.stream_type() == RS2_STREAM_LABELED_POINT_CLOUD && _labeled_pointcloud_publisher)
             {
                 _labeled_pointcloud_publisher.reset();
@@ -300,6 +306,30 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                 }
                 #endif
 
+#ifdef BUILD_WITH_NITROS
+                // Additive NITROS-native GPU publisher, for streams the user enabled.
+                if (isNitrosEnabled(sip))
+                {
+                    std::string nitros_format, encoding;
+                    unsigned int bpp = 0;
+                    if (getNitrosImageFormat(profile.format(), nitros_format, encoding, bpp))
+                    {
+                        std::stringstream nitros_topic;
+                        nitros_topic << "~/" << stream_name << "/nitros_image";
+                        _nitros_image_publishers[sip] =
+                            std::make_shared<NitrosImagePublisher>(&_node, nitros_topic.str(), nitros_format);
+                        ROS_INFO_STREAM("NITROS publisher created on topic " << nitros_topic.str()
+                                        << " (format " << nitros_format << ")");
+                    }
+                    else
+                    {
+                        ROS_WARN_STREAM("NITROS publishing requested for " << stream_name << " but format "
+                                        << rs2_format_to_string(profile.format())
+                                        << " is not supported; skipping NITROS for this stream.");
+                    }
+                }
+#endif
+
                 // create cameraInfo publishers only for non-SC streams
                 if(shouldPublishCameraInfo(sip))
                 {
@@ -335,6 +365,24 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                     #endif
                     _depth_aligned_info_publisher[sip] = _node.create_publisher<sensor_msgs::msg::CameraInfo>(aligned_camera_info.str(),
                                                       rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(info_qos), info_qos));
+#ifdef BUILD_WITH_NITROS
+                    // The frames published here are the depth frames after rs2::align, so the NITROS
+                    // format follows Z16 rather than this stream's own format.
+                    if (_enable_aligned_depth_nitros)
+                    {
+                        std::string nitros_format, encoding;
+                        unsigned int bpp = 0;
+                        if (getNitrosImageFormat(RS2_FORMAT_Z16, nitros_format, encoding, bpp))
+                        {
+                            std::stringstream aligned_nitros_topic;
+                            aligned_nitros_topic << "~/" << aligned_stream_name << "/nitros_image";
+                            _nitros_aligned_image_publishers[sip] = std::make_shared<NitrosImagePublisher>(
+                                &_node, aligned_nitros_topic.str(), nitros_format);
+                            ROS_INFO_STREAM("NITROS publisher created on topic " << aligned_nitros_topic.str()
+                                            << " (format " << nitros_format << ")");
+                        }
+                    }
+#endif
                 }
             }
         }

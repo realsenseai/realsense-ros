@@ -17,6 +17,9 @@
 #include <librealsense2/rs.hpp>
 #include <librealsense2/rsutil.h>
 #include "constants.h"
+#ifdef BUILD_WITH_NITROS
+#include "nitros_image_publisher.h"
+#endif
 
 // cv_bridge.h last supported version is humble
 #if defined(CV_BRDIGE_HAS_HPP)
@@ -302,7 +305,23 @@ namespace realsense2_camera
             std::map<stream_index_pair, cv::Mat>& images,
             const std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr>& info_publishers,
             const std::map<stream_index_pair, std::shared_ptr<image_publisher>>& image_publishers,
-            const bool is_publishMetadata = true);
+            const bool is_publishMetadata = true,
+            // True for the depth-aligned call paths: they publish a depth frame under the
+            // COLOR/INFRA2 stream key, so it must go out on the aligned topic, not that stream's.
+            const bool is_aligned_frame = false);
+
+#ifdef BUILD_WITH_NITROS
+        // Map an rs2 pixel format to a NITROS supported-type name + sensor_msgs encoding string +
+        // bytes-per-pixel. Returns false for formats with no NITROS equivalent.
+        bool getNitrosImageFormat(const rs2_format& format, std::string& nitros_format,
+                                  std::string& encoding, unsigned int& bpp);
+        // Publish a video frame as a NITROS image using its GPU device pointer (zero-copy).
+        void publishNitrosFrame(rs2::frame f, const rclcpp::Time& t, const stream_index_pair& stream,
+                                unsigned int width, unsigned int height, const rs2_format& stream_format,
+                                const bool is_aligned_frame);
+        // True if the user asked for NITROS publishing on this stream.
+        bool isNitrosEnabled(const stream_index_pair& sip) const;
+#endif
 
         void publishRGBD(
             const cv::Mat& rgb_cv_matrix,
@@ -371,6 +390,14 @@ namespace realsense2_camera
 
         bool _use_intra_process;      
         std::map<stream_index_pair, std::shared_ptr<image_publisher>> _image_publishers;
+#ifdef BUILD_WITH_NITROS
+        // Per-stream enable_<stream>_nitros parameters, and the publishers they create. Aligned-depth
+        // frames are published under the color/infra stream key, so they need their own map.
+        std::map<stream_index_pair, bool> _nitros_enabled_streams;
+        bool _enable_aligned_depth_nitros = false;
+        std::map<stream_index_pair, std::shared_ptr<NitrosImagePublisher>> _nitros_image_publishers;
+        std::map<stream_index_pair, std::shared_ptr<NitrosImagePublisher>> _nitros_aligned_image_publishers;
+#endif
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _labeled_pointcloud_publisher;
         rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _occupancy_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr> _imu_publishers;
