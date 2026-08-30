@@ -47,7 +47,7 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
-#include <nav_msgs/msg/grid_cells.hpp>
+#include <nav_msgs/msg/occupancy_grid.hpp>
 
 #if defined(HUMBLE) || defined(IRON) || defined(JAZZY) || defined(FOXY) 
 #include <tf2/LinearMath/Quaternion.h>
@@ -350,6 +350,7 @@ namespace realsense2_camera
         std::string _json_file_path;
         float _depth_scale_meters;
         float _clipping_distance;
+        float _occupancy_max_range;
 
         double _linear_accel_cov;
         double _angular_velocity_cov;
@@ -371,7 +372,7 @@ namespace realsense2_camera
         bool _use_intra_process;      
         std::map<stream_index_pair, std::shared_ptr<image_publisher>> _image_publishers;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _labeled_pointcloud_publisher;
-        rclcpp::Publisher<nav_msgs::msg::GridCells>::SharedPtr _occupancy_publisher;
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _occupancy_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr> _imu_publishers;
         std::shared_ptr<SyncedImuPublisher> _synced_imu_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> _info_publishers;
@@ -386,7 +387,10 @@ namespace realsense2_camera
         std::map<stream_index_pair, sensor_msgs::msg::CameraInfo> _camera_info;
         bool _is_initialized_time_base;
         double _camera_time_base;
-        double _previous_frame_time;
+        // Keyed by rs2::stream_profile::unique_id(). Tracking per-stream avoids
+        // false "clock reset" detections when frames from streams running at
+        // different rates interleave out of order on the shared HW clock.
+        std::map<int, double> _previous_frame_time;
 
         rclcpp::Time _ros_time_base;
         bool _sync_frames;

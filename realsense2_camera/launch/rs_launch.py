@@ -68,6 +68,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'motion_fps',                   'default': '0', 'description': "'motion stream samples per second'"},
                            {'name': 'unite_imu_method',             'default': "0", 'description': '[0-None, 1-copy, 2-linear_interpolation]'},
                            {'name': 'clip_distance',                'default': '-2.', 'description': "''"},
+                           {'name': 'occupancy_max_range',          'default': '2.5', 'description': "'max reliable range for occupancy raycasting in meters; cells beyond this are unknown (-1)'"},
                            {'name': 'angular_velocity_cov',         'default': '0.01', 'description': "''"},
                            {'name': 'linear_accel_cov',             'default': '0.01', 'description': "''"},
                            {'name': 'diagnostics_period',           'default': '0.0', 'description': 'Rate of publishing diagnostics. 0=Disabled'},

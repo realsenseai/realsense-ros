@@ -2,6 +2,123 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.58.4 (2026-08-30)
+-------------------
+* Update changelogs for 4.58.4
+* Freeze 4.58.4: bump version (`#3548 <https://github.com/realsenseai/realsense-ros/issues/3548>`_)
+* Update version to 4.58.4
+* Merge branch 'ros2-development' into ileniap/add/use-mesh/d455
+* Merge branch 'ros2-development' into patch-1
+* push ros2-master to ros2-development (`#3543 <https://github.com/realsenseai/realsense-ros/issues/3543>`_)
+* reset dev versions
+* Merge remote-tracking branch 'origin/ros2-master' into ros2-development
+* Ngoren/occupancy gridcells fix (`#3536 <https://github.com/realsenseai/realsense-ros/issues/3536>`_)
+* fix(occupancy): symmetric grid centering and review cleanups
+  - Center the grid about the camera axis with float cols/2 in both
+  origin.y and the per-cell y: the integer division shifted odd-column
+  grids (D585S emits 85 cols) half a cell laterally. Verified live:
+  origin.y now -2.975 and the grid aligns with the point cloud.
+  - Reject depth intrinsics with zero width, which would otherwise
+  publish a silent all-unknown grid.
+  - Stop the row scan at occupancy_max_range instead of skipping rows.
+  - Drop the unreachable bin < 0 guard, document why it cannot trigger.
+  - Rename bin_range to fov_span: it is the total FOV window, not the
+  width of one bin.
+  - Document occupancy_max_range in the README next to clip_distance.
+* occupancy: require depth intrinsics, drop no-FOV fallback
+* docs(occupancy): tighten comments
+* refine(occupancy): odd-column origin consistency, near-range spread guard, cast and perf cleanups
+* feat(occupancy): replace GridCells with OccupancyGrid, angular raycasting, FOV masking and max-range clipping
+  - Switch occupancy publisher from nav_msgs/GridCells to nav_msgs/OccupancyGrid
+  - Cell semantics: 0=free, 100=occupied, -1=unknown (was all-zero before)
+  - FOV masking: cells outside horizontal FOV cone (from depth camera fx) → -1
+  - True angular raycasting via θ=atan2(y,x) instead of fixed-Y column scan
+  - Shadow propagation: free until first obstacle, unknown behind it per ray
+  - Gap-ray fix: obstacle shadow spread across full angular footprint to prevent
+  rays slipping through gaps between adjacent occupied cells
+  - occupancy_max_range param (default 2.5m): cells beyond range → -1
+* initial grid type adjustment
+* LRS-1181: Make TF tests robust to split /tf_static publishing (`#3535 <https://github.com/realsenseai/realsense-ros/issues/3535>`_)
+* cmake: add ROS 2 Lyrical to supported distros (`#3525 <https://github.com/realsenseai/realsense-ros/issues/3525>`_)
+* Merge branch 'ros2-development' into worktree-remove-mqtt
+* fix: track frame timestamp per-stream in HW clock mode (silences false reset warnings on DDS) (`#3531 <https://github.com/realsenseai/realsense-ros/issues/3531>`_)
+* Remove PID whitelist in startDevice (let librealsense gate which cameras are supported) (`#3532 <https://github.com/realsenseai/realsense-ros/issues/3532>`_)
+* fix: track previous frame timestamp per-stream to avoid false HW clock reset warnings
+  The hardware-clock branch of frameSystemTimeSec compared every incoming
+  frame's timestamp against a single shared _previous_frame_time. With
+  multi-stream sources (e.g. DDS devices, where frames are tagged with
+  RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK), frames from different streams
+  running at different rates interleave out of order against that one
+  global value, triggering false "Hardware clock reset detected" warnings
+  and spurious time-base resets on nearly every frame.
+  Make _previous_frame_time a per-stream map keyed by the rs2 stream
+  unique_id, so each stream's monotonicity is checked only against itself.
+  On a real backward jump, clear the map so other streams re-seed silently
+  against the new time base on their next frame.
+  USB devices (GLOBAL_TIME domain) are unaffected — they don't enter this
+  branch.
+  Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+* making ros wrapper work with all realsense cameras
+* Merge branch 'ros2-master' into patch-1
+* Contributors: Ilenia, Nir Azkiel, Nir-Az, Niv Goren, Remi Bettan, ileniap, remibettan
+
+* Freeze 4.58.4: bump version (`#3548 <https://github.com/realsenseai/realsense-ros/issues/3548>`_)
+* Update version to 4.58.4
+* Merge branch 'ros2-development' into ileniap/add/use-mesh/d455
+* Merge branch 'ros2-development' into patch-1
+* push ros2-master to ros2-development (`#3543 <https://github.com/realsenseai/realsense-ros/issues/3543>`_)
+* reset dev versions
+* Merge remote-tracking branch 'origin/ros2-master' into ros2-development
+* Ngoren/occupancy gridcells fix (`#3536 <https://github.com/realsenseai/realsense-ros/issues/3536>`_)
+* fix(occupancy): symmetric grid centering and review cleanups
+  - Center the grid about the camera axis with float cols/2 in both
+  origin.y and the per-cell y: the integer division shifted odd-column
+  grids (D585S emits 85 cols) half a cell laterally. Verified live:
+  origin.y now -2.975 and the grid aligns with the point cloud.
+  - Reject depth intrinsics with zero width, which would otherwise
+  publish a silent all-unknown grid.
+  - Stop the row scan at occupancy_max_range instead of skipping rows.
+  - Drop the unreachable bin < 0 guard, document why it cannot trigger.
+  - Rename bin_range to fov_span: it is the total FOV window, not the
+  width of one bin.
+  - Document occupancy_max_range in the README next to clip_distance.
+* occupancy: require depth intrinsics, drop no-FOV fallback
+* docs(occupancy): tighten comments
+* refine(occupancy): odd-column origin consistency, near-range spread guard, cast and perf cleanups
+* feat(occupancy): replace GridCells with OccupancyGrid, angular raycasting, FOV masking and max-range clipping
+  - Switch occupancy publisher from nav_msgs/GridCells to nav_msgs/OccupancyGrid
+  - Cell semantics: 0=free, 100=occupied, -1=unknown (was all-zero before)
+  - FOV masking: cells outside horizontal FOV cone (from depth camera fx) → -1
+  - True angular raycasting via θ=atan2(y,x) instead of fixed-Y column scan
+  - Shadow propagation: free until first obstacle, unknown behind it per ray
+  - Gap-ray fix: obstacle shadow spread across full angular footprint to prevent
+  rays slipping through gaps between adjacent occupied cells
+  - occupancy_max_range param (default 2.5m): cells beyond range → -1
+* initial grid type adjustment
+* LRS-1181: Make TF tests robust to split /tf_static publishing (`#3535 <https://github.com/realsenseai/realsense-ros/issues/3535>`_)
+* cmake: add ROS 2 Lyrical to supported distros (`#3525 <https://github.com/realsenseai/realsense-ros/issues/3525>`_)
+* Merge branch 'ros2-development' into worktree-remove-mqtt
+* fix: track frame timestamp per-stream in HW clock mode (silences false reset warnings on DDS) (`#3531 <https://github.com/realsenseai/realsense-ros/issues/3531>`_)
+* Remove PID whitelist in startDevice (let librealsense gate which cameras are supported) (`#3532 <https://github.com/realsenseai/realsense-ros/issues/3532>`_)
+* fix: track previous frame timestamp per-stream to avoid false HW clock reset warnings
+  The hardware-clock branch of frameSystemTimeSec compared every incoming
+  frame's timestamp against a single shared _previous_frame_time. With
+  multi-stream sources (e.g. DDS devices, where frames are tagged with
+  RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK), frames from different streams
+  running at different rates interleave out of order against that one
+  global value, triggering false "Hardware clock reset detected" warnings
+  and spurious time-base resets on nearly every frame.
+  Make _previous_frame_time a per-stream map keyed by the rs2 stream
+  unique_id, so each stream's monotonicity is checked only against itself.
+  On a real backward jump, clear the map so other streams re-seed silently
+  against the new time base on their next frame.
+  USB devices (GLOBAL_TIME domain) are unaffected — they don't enter this
+  branch.
+  Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+* making ros wrapper work with all realsense cameras
+* Merge branch 'ros2-master' into patch-1
+* Contributors: Ilenia, Nir Azkiel, Niv Goren, Remi Bettan, ileniap, remibettan
+
 4.58.3 (2026-07-20)
 -------------------
 * Push 4.58.3 release into ros2-master (`#3540 <https://github.com/IntelRealSense/realsense-ros/issues/3540>`_)

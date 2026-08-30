@@ -104,6 +104,7 @@ BaseRealSenseNode::BaseRealSenseNode(RosNodeBase& node,
     _json_file_path(""),
     _depth_scale_meters(0),
     _clipping_distance(0),
+    _occupancy_max_range(0),
     _linear_accel_cov(0),
     _angular_velocity_cov(0),
     _hold_back_imu_for_frames(false),
@@ -726,21 +727,28 @@ rclcpp::Time BaseRealSenseNode::frameSystemTimeSec(rs2::frame frame)
     if (frame.get_frame_timestamp_domain() == RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK)
     {
         std::lock_guard<std::mutex> lock(_time_base_mutex);
+        const int stream_uid = frame.get_profile().unique_id();
         if (!_is_initialized_time_base)
         {
             ROS_WARN("frame's time domain is HARDWARE_CLOCK. Timestamps may reset periodically.");
             _ros_time_base = _node.now();
             _camera_time_base = timestamp_ms;
-            _previous_frame_time = timestamp_ms;
             _is_initialized_time_base = true;
         }
-        else if (_previous_frame_time > timestamp_ms)
+        else
         {
-            ROS_WARN("Hardware clock reset detected. Resetting ROS time base.");
-            _ros_time_base = _node.now();
-            _camera_time_base = timestamp_ms;
+            auto it = _previous_frame_time.find(stream_uid);
+            if (it != _previous_frame_time.end() && it->second > timestamp_ms)
+            {
+                ROS_WARN("Hardware clock reset detected. Resetting ROS time base.");
+                _ros_time_base = _node.now();
+                _camera_time_base = timestamp_ms;
+                // Other streams' previous timestamps are stale w.r.t. the new
+                // time base; drop them so they re-seed silently on next frame.
+                _previous_frame_time.clear();
+            }
         }
-        _previous_frame_time = timestamp_ms;
+        _previous_frame_time[stream_uid] = timestamp_ms;
 
         double elapsed_camera_ns = millisecondsToNanoseconds(timestamp_ms - _camera_time_base);
 
@@ -915,41 +923,134 @@ void BaseRealSenseNode::publishOccupancyFrame(rs2::frame f, const rclcpp::Time& 
     if(!_occupancy_publisher || 0 == _occupancy_publisher->get_subscription_count())
         return;
 
-    ROS_DEBUG("Publishing Occupancy GridCells Frame");
+    ROS_DEBUG("Publishing Occupancy Grid Frame");
 
-    // get frame bytes and frame metadata relevant info
+    // Horizontal FOV from depth intrinsics: tan(half_hfov) = (width/2) / fx.
+    // The FOV mask and ray binning are meaningless without it - drop the frame
+    // rather than publish a grid built on incomplete information.
+    const auto depth_info_it = _camera_info.find(DEPTH);
+    if (depth_info_it == _camera_info.end() || depth_info_it->second.k.at(0) <= 0.0
+        || depth_info_it->second.width == 0)
+    {
+        ROS_WARN("Occupancy grid not published: depth stream intrinsics are not available");
+        return;
+    }
+    const float tan_half_hfov = (static_cast<float>(depth_info_it->second.width) * 0.5f)
+                                / static_cast<float>(depth_info_it->second.k.at(0));
+
     auto frame_as_uint8_arr = (uint8_t*)f.get_data();
-    auto cols = static_cast<int>(f.get_frame_metadata(RS2_FRAME_METADATA_OCCUPANCY_GRID_COLUMNS)); // grid cells width
-    auto rows = static_cast<int>(f.get_frame_metadata(RS2_FRAME_METADATA_OCCUPANCY_GRID_ROWS)); // grid cells height
-    auto cell_size = static_cast<float>(f.get_frame_metadata(RS2_FRAME_METADATA_OCCUPANCY_CELL_SIZE) / 100.0f); // convert to meters
+    auto cols = static_cast<int>(f.get_frame_metadata(RS2_FRAME_METADATA_OCCUPANCY_GRID_COLUMNS));
+    auto rows = static_cast<int>(f.get_frame_metadata(RS2_FRAME_METADATA_OCCUPANCY_GRID_ROWS));
+    auto cell_size = static_cast<float>(f.get_frame_metadata(RS2_FRAME_METADATA_OCCUPANCY_CELL_SIZE)) / 100.0f; // cm -> m
 
-    // create GridCells msg and start filling it
-    nav_msgs::msg::GridCells msg;
+    nav_msgs::msg::OccupancyGrid msg;
     msg.header.stamp = t;
     msg.header.frame_id = FRAME_ID(OCCUPANCY);
-    msg.cell_width = cell_size;
-    msg.cell_height = cell_size;
 
-    for (auto i = 0; i < cols * rows; ++i)
+    // Axes follow ROS convention (X: forward, Y: left):
+    //   width  = cells along X = firmware rows
+    //   height = cells along Y = firmware cols
+    // Origin is the corner of cell (0,0): nearest boundary in X, rightmost in Y.
+    // The grid is symmetric about the camera axis, so the right boundary is at
+    // y = -cols/2 cells regardless of parity; the per-cell y below uses the
+    // same convention.
+    msg.info.map_load_time = t;
+    msg.info.resolution = cell_size;
+    msg.info.width  = static_cast<uint32_t>(rows);
+    msg.info.height = static_cast<uint32_t>(cols);
+    msg.info.origin.position.x = 0.0;
+    msg.info.origin.position.y = -cell_size * static_cast<float>(cols) * 0.5f;
+    msg.info.origin.position.z = 0.0;
+    msg.info.origin.orientation.w = 1.0;
+
+    // data[row_idx * width + col_idx]: 0 = free, 100 = occupied, -1 = unknown.
+    // Firmware row 0 is the farthest row and col 0 the leftmost, so both
+    // indices are flipped when writing into the message.
+    // Cells are traced along rays grouped by angle (theta = atan2(y, x)),
+    // nearest to farthest: free until the first obstacle, occupied at it,
+    // unknown behind it.
+    msg.data.assign(rows * cols, -1);
+
+    const auto width = msg.info.width;
+
+    const float half_fov_rad = std::atan(tan_half_hfov);
+    const float fov_span = 2.0f * half_fov_rad; // total angular window covered by the bins
+
+    // Full grid extent, unless limited by occupancy_max_range.
+    const float x_far = (static_cast<float>(rows) - 0.5f) * cell_size;
+    const float max_range = (_occupancy_max_range > 0.0f) ? _occupancy_max_range : x_far;
+
+    // Enough angular bins to resolve one cell width at the farthest depth.
+    const int N_bins = std::max(cols,
+        static_cast<int>(std::ceil(x_far * fov_span / cell_size)) + 1);
+
+    // Rows are scanned nearest-first while bin_occluded tracks which rays are
+    // already blocked. Occlusion is applied only after a row completes, so cells
+    // at the same depth never shadow each other.
+    // uint8_t rather than bool to avoid vector<bool>'s bit-proxy overhead.
+    std::vector<uint8_t> bin_occluded(N_bins, 0);
+    std::vector<std::pair<int,float>> pending;  // (bin, x) of this row's obstacles
+    pending.reserve(cols);
+
+    for (int fw_row = rows - 1; fw_row >= 0; --fw_row)
     {
-        // AICV algo is packing each 8 cells into one byte. Each byte include 8 bits <--> 8 cells
-        // The rightest bit (LSB) inside the packed byte from AICV algo represnts the closest cell we want to work with in the grid.
-        // e.g. Original Occupancy Cells: 0 0 1 1 0 0 1 0 ---> AICV packing algo ---> 01001100 (not the opposite order)
-        // In this if we check if current cell is occupied.
-        // Note that we start working from the most left bit, aka, the farest point of the grid.
-        if ((frame_as_uint8_arr[i / 8U] & (1U << i % 8)) != 0)
+        const float x = (static_cast<float>(rows - fw_row) - 0.5f) * cell_size;
+        // Rows are scanned nearest-first, so past max_range every remaining row
+        // is also beyond it: stop, leaving them unknown.
+        if (x > max_range) break;
+
+        pending.clear();
+
+        for (int fw_col = 0; fw_col < cols; ++fw_col)
         {
-            // Find x,y,z positions of current index
-            // Remember, in ROS CS: (X: Forward, Y: Left, Z: Up)
-            geometry_msgs::msg::Point p3d;
-            uint32_t row = (i / cols);
-            uint32_t col = (i % cols);
-            p3d.x = (cell_size * static_cast<float>(rows)) - cell_size * (static_cast<float>(row) + 0.5f);
-            p3d.y = (cell_size * static_cast<float>(cols)) / 2 - cell_size * (static_cast<float>(col) + 0.5f);
-            p3d.z = 0;
-            msg.cells.push_back(p3d);
+            // Symmetric about the camera axis, consistent with origin.y above.
+            const float y = (static_cast<float>(cols) * 0.5f -
+                             static_cast<float>(fw_col) - 0.5f) * cell_size;
+            if (std::fabs(y) >= x * tan_half_hfov) continue; // outside FOV
+
+            const float theta = std::atan2(y, x);
+            // The FOV mask above guarantees |theta| < half_fov_rad, so bin is
+            // non-negative; min() clamps the +edge (normalized == 1.0) only.
+            const int bin = std::min(
+                static_cast<int>((theta + half_fov_rad) / fov_span * static_cast<float>(N_bins)),
+                N_bins - 1);
+
+            const int i = fw_row * cols + fw_col;
+            const uint32_t og_col_idx = width - 1u - static_cast<uint32_t>(fw_row);
+            const uint32_t og_row_idx = static_cast<uint32_t>(cols) - 1u - static_cast<uint32_t>(fw_col);
+            auto& cell_out = msg.data[og_row_idx * width + og_col_idx];
+
+            // Cells are bit-packed 8 per byte, LSB first: bit (i%8) of byte (i/8)
+            // is cell i in row-major order.
+            if ((frame_as_uint8_arr[i / 8U] & (1U << (i % 8U))) != 0)
+            {
+                cell_out = 100;
+                pending.emplace_back(bin, x); // shadow is spread after the row completes
+            }
+            else if (!bin_occluded[bin])
+            {
+                cell_out = 0; // clear line of sight
+            }
+            // else: leave as -1 (ray blocked by a closer obstacle)
+        }
+
+        // Each obstacle blocks its own bin plus the bins covered by the cell's
+        // physical width at its depth, so no ray can slip between two adjacent
+        // occupied cells. Obstacles in the nearest two rows are skipped: their
+        // footprint spans nearly the whole FOV, and a single noisy near hit
+        // would blank the entire grid.
+        for (const auto& [obs_bin, x_obs] : pending)
+        {
+            if (x_obs <= 2.0f * cell_size)
+                continue;
+            const int n_spread = std::max(1, static_cast<int>(std::ceil(
+                cell_size * static_cast<float>(N_bins) / (2.0f * x_obs * fov_span))));
+            for (int b = std::max(0, obs_bin - n_spread);
+                     b <= std::min(N_bins - 1, obs_bin + n_spread); ++b)
+                bin_occluded[b] = 1;
         }
     }
+
     _occupancy_publisher->publish(msg);
 }
 

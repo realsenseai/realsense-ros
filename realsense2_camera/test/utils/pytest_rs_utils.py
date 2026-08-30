@@ -1000,6 +1000,22 @@ class RsTestBaseClass():
             if res[couple] == None:
                 return False, str(couple) + ": didn't get any tf data"
         return True,""
+
+    def check_static_transform_data(self, topic, frame_ids):
+        # /tf_static is latched and the node resets its static broadcaster when
+        # (re)publishing, so the first message received can be incomplete.
+        # Aggregate the transforms from ALL received messages before checking,
+        # to avoid a flaky race.
+        coupled_frame_ids = [xx for xx in itertools.combinations(frame_ids, 2)]
+        tfBuffer = tf2_ros.Buffer()
+        while self.node.get_num_chunks(topic) > 0:
+            for transform in self.node.pop_first_chunk(topic).transforms:
+                tfBuffer.set_transform_static(transform, "default_authority")
+        for couple in coupled_frame_ids:
+            from_id, to_id = couple
+            if not tfBuffer.can_transform(from_id, to_id, rclpy.time.Time(), rclpy.time.Duration(nanoseconds=3e6)):
+                return False, str(couple) + ": didn't get any tf data"
+        return True, ""
     
     '''
     Please override and use your own process_data if the default check is not suitable.

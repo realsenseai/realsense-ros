@@ -63,7 +63,6 @@ Note: A redirection from the previous name IntelRealSense is currently in place,
      * [Available Actions](#available-actions)
      * [Efficient intra-process communication](#efficient-intra-process-communication)
      * [Logging](#logging)
-  * [ROS <-> MQTT Bridge Node](realsense2_ros_mqtt_bridge/README.md)
   * [Contributing](CONTRIBUTING.md)
   * [License](LICENSE)
 
@@ -539,6 +538,11 @@ User can set the camera name and camera namespace, to distinguish between camera
 - **clip_distance**:
   - Remove from the depth image all values above a given value (meters). Disable by giving negative value (default)
   - For example: `clip_distance:=1.5`
+- **occupancy_max_range**:
+  - Maximum reliable range (meters) for the occupancy grid raycasting. Cells beyond this distance are published as unknown (-1) rather than free, since the absence of a detection there is not evidence of free space.
+  - Defaults to 2.5. Set to 0 or a negative value to use the full grid extent.
+  - For example: `occupancy_max_range:=3.0`
+  - Relevant only when the occupancy stream is enabled (`enable_occupancy:=true`); requires the depth stream for its intrinsics.
 - **linear_accel_cov**, **angular_velocity_cov**: sets the variance given to the Imu readings.
 - **hold_back_imu_for_frames**: Images processing takes time. Therefor there is a time gap between the moment the image arrives at the wrapper and the moment the image is published to the ROS environment. During this time, Imu messages keep on arriving and a situation is created where an image with earlier timestamp is published after Imu message with later timestamp. If that is a problem, setting *hold_back_imu_for_frames* to *true* will hold the Imu messages back while processing the images and then publish them all in a burst, thus keeping the order of publication as the order of arrival. Note that in either case, the timestamp in each message's header reflects the time of it's origin.
 - **publish_tf**:
