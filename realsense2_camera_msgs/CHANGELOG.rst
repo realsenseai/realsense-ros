@@ -2,6 +2,18 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Freeze 4.58.4: bump version (`#3548 <https://github.com/realsenseai/realsense-ros/issues/3548>`_)
+* Update version to 4.58.4
+* Merge branch 'ros2-development' into ileniap/add/use-mesh/d455
+* Merge branch 'ros2-development' into patch-1
+* push ros2-master to ros2-development (`#3543 <https://github.com/realsenseai/realsense-ros/issues/3543>`_)
+* reset dev versions
+* Merge remote-tracking branch 'origin/ros2-master' into ros2-development
+* Merge branch 'ros2-master' into patch-1
+* Contributors: Ilenia, Nir Azkiel, ileniap
+
 4.58.3 (2026-07-20)
 -------------------
 * Push 4.58.3 release into ros2-master (`#3540 <https://github.com/IntelRealSense/realsense-ros/issues/3540>`_)
