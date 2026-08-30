@@ -2,8 +2,8 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.58.4 (2026-08-30)
+-------------------
 * Update changelogs for 4.58.4
 * Freeze 4.58.4: bump version (`#3548 <https://github.com/realsenseai/realsense-ros/issues/3548>`_)
 * Update version to 4.58.4
