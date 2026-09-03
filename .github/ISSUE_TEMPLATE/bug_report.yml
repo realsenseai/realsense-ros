@@ -244,7 +244,11 @@ body:
     attributes:
       label: Relevant Log Output
       description: |
-        Node output (run with `--ros-args --log-level debug` if possible), plus `ros2 topic list` / `ros2 topic hz` output if relevant.
+        Node output at debug level if possible:
+        - `ros2 run realsense2_camera realsense2_camera_node --ros-args --log-level debug`
+        - `ros2 launch realsense2_camera rs_launch.py log_level:=debug`
+
+        Please also add `ros2 topic list` / `ros2 topic hz` output if relevant.
       render: shell
 
   - type: textarea
