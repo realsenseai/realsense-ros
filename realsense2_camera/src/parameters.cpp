@@ -66,8 +66,14 @@ void BaseRealSenseNode::getParameters()
     _clipping_distance = _parameters->setParam<double>(param_name, -1.0);
     _parameters_names.push_back(param_name);
 
-    param_name = std::string("occupancy_max_range");
-    _occupancy_max_range = static_cast<float>(_parameters->setParam<double>(param_name, 2.5));
+    param_name = std::string("occupancy_occupied_threshold");
+    _occupancy_occupied_threshold = static_cast<int>(_parameters->setParam<int>(param_name, 100));
+    if (_occupancy_occupied_threshold < 1 || _occupancy_occupied_threshold > 100)
+    {
+        ROS_WARN_STREAM("occupancy_occupied_threshold " << _occupancy_occupied_threshold
+                        << " out of [1,100]; using 100");
+        _occupancy_occupied_threshold = 100;
+    }
     _parameters_names.push_back(param_name);
 
     param_name = std::string("linear_accel_cov");

@@ -255,6 +255,9 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                 // and not a normal image publisher
                  _occupancy_publisher = _node.create_publisher<nav_msgs::msg::OccupancyGrid>("~/occupancy",
                     rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(qos),qos));
+                 _occupancy_certainty_publisher = _node.create_publisher<nav_msgs::msg::OccupancyGrid>(
+                    "~/occupancy_certainty",
+                    rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(qos), qos));
             }
             else if(profile.stream_type() == RS2_STREAM_LABELED_POINT_CLOUD)
             {

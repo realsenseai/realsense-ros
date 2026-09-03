@@ -17,6 +17,7 @@
 #include <librealsense2/rs.hpp>
 #include <librealsense2/rsutil.h>
 #include "constants.h"
+#include "occupancy_map1.h"
 
 // cv_bridge.h last supported version is humble
 #if defined(CV_BRDIGE_HAS_HPP)
@@ -273,6 +274,7 @@ namespace realsense2_camera
         void publishDynamicTransforms();
         void publishPointCloud(rs2::points f, const rclcpp::Time& t, const rs2::frameset& frameset);
         void publishOccupancyFrame(rs2::frame f, const rclcpp::Time& t);
+        void publishOccupancyFromMap1(const map1::occg_view& view, const rclcpp::Time& t);
         void publishLabeledPointCloud(rs2::labeled_points lpc, const rclcpp::Time& t);
         bool shouldPublishCameraInfo(const stream_index_pair& sip);
         Extrinsics rsExtrinsicsToMsg(const rs2_extrinsics& extrinsics) const;
@@ -350,7 +352,7 @@ namespace realsense2_camera
         std::string _json_file_path;
         float _depth_scale_meters;
         float _clipping_distance;
-        float _occupancy_max_range;
+        int   _occupancy_occupied_threshold;
 
         double _linear_accel_cov;
         double _angular_velocity_cov;
@@ -373,6 +375,7 @@ namespace realsense2_camera
         std::map<stream_index_pair, std::shared_ptr<image_publisher>> _image_publishers;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _labeled_pointcloud_publisher;
         rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _occupancy_publisher;
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _occupancy_certainty_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr> _imu_publishers;
         std::shared_ptr<SyncedImuPublisher> _synced_imu_publisher;
         std::map<stream_index_pair, rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> _info_publishers;

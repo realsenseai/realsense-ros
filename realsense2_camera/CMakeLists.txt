@@ -450,6 +450,13 @@ if(BUILD_TESTING)
     endforeach()
   endforeach()
 
+  # Unit tests for occupancy grid utilities
+  ament_add_gtest(test_occupancy_grid_utils test/unit/test_occupancy_grid_utils.cpp)
+  target_include_directories(test_occupancy_grid_utils PRIVATE include)
+
+  # Unit tests for the MAP1 self-describing occupancy payload parser
+  ament_add_gtest(test_occupancy_map1 test/unit/test_occupancy_map1.cpp)
+  target_include_directories(test_occupancy_map1 PRIVATE include)
 
   find_package(ament_cmake_pytest REQUIRED)
   set(_pytest_folders
