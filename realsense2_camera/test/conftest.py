@@ -11,9 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import subprocess
+import ctypes
+import glob
+import os
 
 import pytest
+
+
+def librealsense_path():
+    ''' Path of the librealsense2 the camera node will load. Resolved through the dynamic
+        loader, since the ROS packages install into /opt/ros/<distro>/lib, which is reached
+        via LD_LIBRARY_PATH and is not in the ldconfig cache.
+    '''
+    try:
+        ctypes.CDLL('librealsense2.so')
+        return next(l.split()[-1] for l in open('/proc/self/maps') if 'librealsense2.so' in l)
+    except Exception:
+        pass
+    libs = [lib for d in os.environ.get('LD_LIBRARY_PATH', '').split(':') if d
+            for lib in glob.glob(os.path.join(d, 'librealsense2.so*')) if os.path.getsize(lib)]
+    return libs[0] if libs else None
 
 
 def sdk_plays_compressed_db3():
@@ -23,13 +40,13 @@ def sdk_plays_compressed_db3():
         branch reports 2.58.0 - lower than the released 2.58.4 that lacks the support.
         Returns True when it cannot tell, so the tests run.
     '''
+    path = librealsense_path()
+    if not path:
+        return True
     try:
-        libs = subprocess.run(['ldconfig', '-p'], capture_output=True, text=True).stdout
-        path = next(l.rsplit('=>', 1)[-1].strip() for l in libs.splitlines()
-                    if 'librealsense2.so' in l and '=>' in l)
         with open(path, 'rb') as lib:
             return b'/compressedDepth' in lib.read()
-    except Exception:
+    except OSError:
         return True
 
 
