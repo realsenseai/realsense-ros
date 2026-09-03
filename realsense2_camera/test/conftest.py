@@ -11,47 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import functools
 import subprocess
 
 import pytest
 
 
-@functools.lru_cache(maxsize=1)
 def sdk_plays_compressed_db3():
-    ''' Whether the installed librealsense2 can play back the compressed .db3 recordings
-        the rosbag tests use.
-
-        Those recordings keep their frames on /compressed and /compressedDepth topics, which
-        librealsense only learned to read in PR #15556. The librealsense2 packages on the ROS
-        servers can still predate it, and the reader then logs "unknown message type" for every
-        metadata message and delivers no frames.
-
-        This probes the installed library for the topic suffix instead of comparing versions,
-        because a source build of the development branch reports 2.58.0 - lower than the
-        released 2.58.4 that lacks the support - so a version floor would skip the tests
-        exactly where they do work. Fails open: if the library cannot be located, run them.
+    ''' Whether the installed librealsense2 can read the /compressed and /compressedDepth
+        topics of the .db3 test recordings (librealsense PR #15556). Probes the library for
+        the topic suffix rather than its version, since a source build of the development
+        branch reports 2.58.0 - lower than the released 2.58.4 that lacks the support.
+        Returns True when it cannot tell, so the tests run.
     '''
     try:
-        ldconfig = subprocess.run(['ldconfig', '-p'], capture_output=True, text=True).stdout
-    except (OSError, subprocess.SubprocessError):
+        libs = subprocess.run(['ldconfig', '-p'], capture_output=True, text=True).stdout
+        path = next(l.rsplit('=>', 1)[-1].strip() for l in libs.splitlines()
+                    if 'librealsense2.so' in l and '=>' in l)
+        with open(path, 'rb') as lib:
+            return b'/compressedDepth' in lib.read()
+    except Exception:
         return True
-    for line in ldconfig.splitlines():
-        if 'librealsense2.so' in line and '=>' in line:
-            try:
-                with open(line.split('=>')[-1].strip(), 'rb') as lib:
-                    return b'/compressedDepth' in lib.read()
-            except OSError:
-                return True
-    return True
 
 
 def pytest_collection_modifyitems(config, items):
     if sdk_plays_compressed_db3():
         return
-    skip_rosbag = pytest.mark.skip(
-        reason="installed librealsense2 cannot play compressed .db3 recordings "
-               "(needs librealsense PR #15556)")
+    skip = pytest.mark.skip(reason="installed librealsense2 cannot play compressed .db3 "
+                                   "recordings (needs librealsense PR #15556)")
     for item in items:
         if 'rosbag' in item.keywords:
-            item.add_marker(skip_rosbag)
+            item.add_marker(skip)
