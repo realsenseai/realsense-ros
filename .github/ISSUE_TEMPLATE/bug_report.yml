@@ -134,6 +134,8 @@ body:
         - Raspberry Pi
         - NVIDIA Jetson Xavier AGX
         - NVIDIA Jetson Orin AGX
+        - NVIDIA Jetson Orin NX
+        - NVIDIA Jetson Orin Nano
         - Other ARM (specify in description)
         - Other (specify in description)
     validations:
