@@ -1,0 +1,260 @@
+name: Bug Report
+description: File a bug report to help us improve the ROS Wrapper
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+        Before opening a new issue, please check:
+        - [ROS Wrapper README](https://github.com/realsenseai/realsense-ros/blob/ros2-development/README.md)
+        - [Wrapper Parameters & Topics](https://github.com/realsenseai/realsense-ros/blob/ros2-development/README.md#usage)
+        - [LibRealSense SDK Troubleshooting Q&A](https://github.com/realsenseai/librealsense/wiki/Troubleshooting-Q%26A)
+        - [Existing Issues](https://github.com/realsenseai/realsense-ros/issues) (open and closed)
+        - [Discussions](https://github.com/realsenseai/realsense-ros/discussions)
+
+  - type: dropdown
+    id: camera-model
+    attributes:
+      label: Camera Model
+      description: Which RealSense camera are you using?
+      options:
+        - D405
+        - D415
+        - D421
+        - D435
+        - D435i
+        - D455
+        - D457
+        - D555
+        - D585
+        - Other (please specify in description)
+    validations:
+      required: true
+
+  - type: input
+    id: ros-wrapper-version
+    attributes:
+      label: ROS Wrapper Version
+      description: Version of realsense2_camera (see `realsense2_camera/package.xml`, or `ros2 pkg xml realsense2_camera`)
+      placeholder: e.g., 4.58.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ros-distro
+    attributes:
+      label: ROS Distro
+      description: Which ROS 2 distribution are you running?
+      options:
+        - Humble
+        - Iron
+        - Jazzy
+        - Kilted
+        - Rolling
+        - Foxy (EOL - not supported)
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: Installation Method
+      description: How did you install the ROS Wrapper?
+      options:
+        - Debian package from ROS servers (apt install ros-<distro>-realsense2-*)
+        - Built from source in a colcon workspace
+        - Docker image
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: input
+    id: sdk-version
+    attributes:
+      label: LibRealSense SDK Version
+      description: Which version of librealsense is the wrapper built/running against? (`rs-enumerate-devices -v`)
+      placeholder: e.g., 2.58.0
+    validations:
+      required: true
+
+  - type: input
+    id: firmware-version
+    attributes:
+      label: Firmware Version
+      description: Open RealSense Viewer and click the camera info icon, or run `rs-enumerate-devices`
+      placeholder: e.g., 5.16.0.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: What OS are you running?
+      options:
+        - Ubuntu 20.04
+        - Ubuntu 22.04
+        - Ubuntu 24.04
+        - Ubuntu 26.04
+        - Nvidia Jetson JP5
+        - Nvidia Jetson JP6
+        - Nvidia Jetson JP7
+        - Other Linux (specify in description)
+        - Windows 10
+        - Windows 11
+        - MacOS
+    validations:
+      required: true
+
+  - type: input
+    id: kernel-version
+    attributes:
+      label: Kernel Version (Linux Only)
+      description: Output of `uname -r`
+      placeholder: e.g., 5.15.0-91-generic
+
+  - type: input
+    id: mipi-driver-version
+    attributes:
+      label: MIPI Driver Version (NVIDIA Jetson Only)
+      description: use `modinfo d4xx` to find this
+      placeholder: e.g., 1.0.1.33
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: What hardware are you running on?
+      options:
+        - PC (AMD64/x86_64)
+        - Raspberry Pi
+        - NVIDIA Jetson Xavier AGX
+        - NVIDIA Jetson Orin AGX
+        - NVIDIA Jetson Orin NX
+        - NVIDIA Jetson Orin Nano
+        - Other ARM (specify in description)
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: connection-type
+    attributes:
+      label: Connection Type
+      description: How is the camera connected to the host?
+      options:
+        - USB3
+        - GMSL/MIPI
+        - USB2
+        - Ethernet/DDS
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: node-mode
+    attributes:
+      label: Node Launch Mode
+      description: How is the camera node running?
+      multiple: true
+      options:
+        - Standalone node (ros2 run / ros2 launch)
+        - Composable node in a container
+        - Multiple cameras
+        - rosbag playback / recording
+        - Other (specify in description)
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected Area
+      description: Which part of the wrapper is affected?
+      multiple: true
+      options:
+        - Depth / Infra topics
+        - Color topic
+        - IMU topics (accel/gyro)
+        - Point cloud
+        - Align depth to color
+        - Metadata / Extrinsics / CameraInfo
+        - TF frames / URDF description
+        - Dynamic parameters (ros2 param)
+        - Services (device_info, reset, etc.)
+        - Launch files
+        - Frame rate / latency / performance
+        - Build / installation
+        - Other (specify in description)
+
+  - type: dropdown
+    id: segment
+    attributes:
+      label: Application Segment
+      description: What is your use case?
+      options:
+        - Robotics
+        - Augmented Reality (AR)
+        - Virtual Reality (VR)
+        - 3D Scanning
+        - Computer Vision
+        - Industrial/Manufacturing
+        - Healthcare
+        - Education/Research
+        - Other (specify in description)
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: Please provide a clear and detailed description of the bug
+      placeholder: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide detailed steps to reproduce the issue, including the exact launch command and parameters
+      placeholder: |
+        1. Launch the node with `ros2 launch realsense2_camera rs_launch.py ...`
+        2. Echo the topic `ros2 topic echo /camera/camera/depth/image_rect_raw`
+        3. Change parameter with `ros2 param set ...`
+        4. Observe error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe the expected behavior
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what actually happened, include error messages if applicable
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Log Output
+      description: |
+        Node output at debug level if possible:
+        - `ros2 run realsense2_camera realsense2_camera_node --ros-args --log-level debug`
+        - `ros2 launch realsense2_camera rs_launch.py log_level:=debug`
+
+        Please also add `ros2 topic list` / `ros2 topic hz` output if relevant.
+      render: shell
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here (screenshots, RViz captures, rosbag files, code snippets, etc.)

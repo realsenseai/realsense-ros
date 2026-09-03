@@ -1,0 +1,133 @@
+name: Question / Help Wanted
+description: Ask a question or request help with the RealSense ROS Wrapper
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reaching out!
+
+        Before asking a question, please check:
+        - [ROS Wrapper README](https://github.com/realsenseai/realsense-ros/blob/ros2-development/README.md)
+        - [LibRealSense SDK Troubleshooting Q&A](https://github.com/realsenseai/librealsense/wiki/Troubleshooting-Q%26A)
+        - [Existing Issues](https://github.com/realsenseai/realsense-ros/issues) (open and closed)
+
+        For general discussions, consider using [GitHub Discussions](https://github.com/realsenseai/realsense-ros/discussions) instead.
+
+  - type: dropdown
+    id: camera-model
+    attributes:
+      label: Camera Model (if applicable)
+      description: Which RealSense camera is your question about?
+      multiple: true
+      options:
+        - General question (no specific camera)
+        - D405
+        - D415
+        - D421
+        - D435
+        - D435i
+        - D455
+        - D457
+        - D555
+        - D585
+        - Other (please specify in description)
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      description: What is your question about?
+      multiple: true
+      options:
+        - Installation / Build from source
+        - Launch files and arguments
+        - Parameters (static / dynamic)
+        - Depth / Infra topics
+        - Color topic
+        - IMU topics (accel/gyro)
+        - Point cloud
+        - Align depth to color
+        - Metadata / Extrinsics / CameraInfo
+        - TF frames / URDF description
+        - Services (device_info, reset, etc.)
+        - Multiple cameras
+        - Composable nodes / intra-process comms
+        - Recording / Playback (rosbag)
+        - Performance Optimization
+        - QoS settings
+        - Nav2 / MoveIt / other ROS integration
+        - Hardware Compatibility
+        - Firmware
+        - Error Messages
+        - Other (specify in description)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Please provide a clear and detailed question
+      placeholder: What would you like to know?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / What You've Tried
+      description: What have you already tried? Include your launch command, parameters, code or debugging steps
+      placeholder: |
+        - I've launched with...
+        - I've looked at...
+        - Here's my code / launch file...
+
+  - type: input
+    id: ros-wrapper-version
+    attributes:
+      label: ROS Wrapper Version (if applicable)
+      placeholder: e.g., 4.58.0
+
+  - type: dropdown
+    id: ros-distro
+    attributes:
+      label: ROS Distro (if applicable)
+      options:
+        - Humble
+        - Iron
+        - Jazzy
+        - Kilted
+        - Rolling
+        - Foxy (EOL - not supported)
+        - N/A
+        - Other (specify in description)
+
+  - type: input
+    id: sdk-version
+    attributes:
+      label: LibRealSense SDK Version (if applicable)
+      placeholder: e.g., 2.58.0
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System (if applicable)
+      options:
+        - Ubuntu 20.04
+        - Ubuntu 22.04
+        - Ubuntu 24.04
+        - Ubuntu 26.04
+        - Nvidia Jetson JP5
+        - Nvidia Jetson JP6
+        - Nvidia Jetson JP7
+        - Other Linux
+        - Windows 10
+        - Windows 11
+        - MacOS
+        - N/A
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or code snippets that might help
