@@ -25,7 +25,8 @@ def librealsense_path():
     '''
     try:
         ctypes.CDLL('librealsense2.so')
-        return next(l.split()[-1] for l in open('/proc/self/maps') if 'librealsense2.so' in l)
+        with open('/proc/self/maps') as maps:
+            return next(l.split()[-1] for l in maps if 'librealsense2.so' in l)
     except Exception:
         pass
     libs = [lib for d in os.environ.get('LD_LIBRARY_PATH', '').split(':') if d
