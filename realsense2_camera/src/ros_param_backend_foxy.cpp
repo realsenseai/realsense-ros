@@ -5,7 +5,7 @@
 
 namespace realsense2_camera
 {
-    void ParametersBackend::add_on_set_parameters_callback(rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback)
+    void ParametersBackend::add_on_set_parameters_callback(ros2_param_callback_type callback)
     {
         _ros_callback = _node.add_on_set_parameters_callback(callback);
     }
@@ -14,7 +14,8 @@ namespace realsense2_camera
     {
         if (_ros_callback)
         {
-            _node.remove_on_set_parameters_callback((rclcpp::node_interfaces::OnSetParametersCallbackHandle*)(_ros_callback.get()));
+            // Explicit cast to void* or standard handle depending on the compiler's rigorous type matching
+            _node.remove_on_set_parameters_callback(reinterpret_cast<rclcpp::node_interfaces::OnSetParametersCallbackHandle*>(_ros_callback.get()));
             _ros_callback.reset();
         }
     }

@@ -4,6 +4,8 @@
 #pragma once
 
 #include <rclcpp/rclcpp.hpp>
+#include <vector>
+#include <functional>
 
 namespace realsense2_camera
 {
@@ -15,8 +17,21 @@ namespace realsense2_camera
                 _logger(node.get_logger())
                 {};
             ~ParametersBackend();
-            void add_on_set_parameters_callback(rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback);
 
+// --- JAZZY & HUMBLE COMPATIBILITY LAYER ---
+#if defined(JAZZY)
+    // Forced fallback for Jazzy systems using our custom CMake flag
+    using ros2_param_callback_type = std::function<rcl_interfaces::msg::SetParametersResult(const std::vector<rclcpp::Parameter> &)>;
+#elif defined(RCLCPP_HAS_OnSetParametersCallbackType)
+    // Modern ROS 2 fallback alias
+    using ros2_param_callback_type = rclcpp::node_interfaces::NodeParametersInterface::OnSetParametersCallbackType;
+#else
+    // Legacy ROS 2 (Foxy, Humble) alias
+    using ros2_param_callback_type = rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType;
+#endif
+// ------------------------------------------
+
+            void add_on_set_parameters_callback(ros2_param_callback_type callback);
 
         private:
             rclcpp::Node& _node;
