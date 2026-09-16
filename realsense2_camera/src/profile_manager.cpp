@@ -86,6 +86,7 @@ void ProfilesManager::registerSensorUpdateParam(std::string template_name,
     // This function registers parameters that their modification requires a sensor update.
     // For each pair of stream-index, Function add a parameter to <params>, if does not exist yet, and advertise it by <template_name>.
     // parameters in <params> are dynamically being updated.
+    auto sip_default_profiles = getDefaultProfiles();
     for (auto& sip : unique_sips)
     {
         std::string param_name = applyTemplateName(template_name, sip);
@@ -95,7 +96,7 @@ void ProfilesManager::registerSensorUpdateParam(std::string template_name,
                 // Disabling Infra 0 stream by default
                 params[sip] = std::make_shared<T>(false);
             else
-                params[sip] = std::make_shared<T>(value);
+                params[sip] = std::make_shared<T>(sip_default_profiles.count(sip) ? value : T{});
         }
         std::shared_ptr<T> param = params[sip];
         _params.getParameters()->setParam<T>(param_name, *(params[sip]), [param, update_sensor_func](const rclcpp::Parameter& parameter)
