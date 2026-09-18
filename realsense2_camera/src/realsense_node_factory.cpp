@@ -99,11 +99,7 @@ RealSenseNodeFactory::RealSenseNodeFactory(const std::string & node_name, const 
 
 RealSenseNodeFactory::~RealSenseNodeFactory()
 {
-    _is_alive = false;
-    if (_query_thread.joinable())
-    {
-        _query_thread.join();
-    }
+    closeDevice();
 }
 
 std::string RealSenseNodeFactory::parseUsbPort(std::string line)
