@@ -116,6 +116,7 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(fastrtps)
 
 find_package(rclcpp_components REQUIRED)
 if(TARGET rclcpp_components::component)
