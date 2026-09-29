@@ -48,8 +48,8 @@ namespace realsense2_camera
     rs2_format string_to_rs2_format(std::string str);
     std::string vectorToJsonString(const std::vector<uint8_t>& vec);
 
-    // Sets an option; a safety-mode change is retried because the FW can reject the
-    // transition while the camera is still settling (e.g. right after start-up).
+    // Sets an option. A safety-mode change is retried with read-back for up to 8s (like LibCI's
+    // tests_wrapper), and SERVICE -> STANDBY is routed through RUN (direct locks the D585S).
     void set_option_with_retry(rs2::options sensor, rs2_option option, float value);
 }
 
