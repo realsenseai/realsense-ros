@@ -182,7 +182,7 @@ void BaseRealSenseNode::setAvailableSensors()
                 {
                     prev_safety_mode = _safety_sensor->get_option(RS2_OPTION_SAFETY_MODE);
                     if (prev_safety_mode != RS2_SAFETY_MODE_SERVICE)
-                        _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
+                        set_option_with_retry(*_safety_sensor, RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
                 }
                 catch(const std::exception& e)
                 {
@@ -198,7 +198,7 @@ void BaseRealSenseNode::setAvailableSensors()
             {
                 try
                 {
-                    _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, prev_safety_mode);
+                    set_option_with_retry(*_safety_sensor, RS2_OPTION_SAFETY_MODE, prev_safety_mode);
                 }
                 catch(const std::exception& e)
                 {

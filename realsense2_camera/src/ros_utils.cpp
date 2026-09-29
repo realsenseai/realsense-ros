@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <map>
 #include <cctype>
+#include <chrono>
+#include <thread>
 
 namespace realsense2_camera
 {
@@ -152,6 +154,26 @@ std::string vectorToJsonString(const std::vector<uint8_t>& vec) {
     }
     oss << "]";
     return oss.str();
+}
+
+
+void set_option_with_retry(rs2::options sensor, rs2_option option, float value)
+{
+    const int attempts = (option == RS2_OPTION_SAFETY_MODE) ? 3 : 1;
+    for (int i = 1; ; ++i)
+    {
+        try
+        {
+            sensor.set_option(option, value);
+            return;
+        }
+        catch(const rs2::error&)
+        {
+            if (i >= attempts)
+                throw;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+    }
 }
 
 }

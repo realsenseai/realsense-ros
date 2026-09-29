@@ -47,5 +47,9 @@ namespace realsense2_camera
     const std::string list_available_qos_strings();
     rs2_format string_to_rs2_format(std::string str);
     std::string vectorToJsonString(const std::vector<uint8_t>& vec);
+
+    // Sets an option; a safety-mode change is retried because the FW can reject the
+    // transition while the camera is still settling (e.g. right after start-up).
+    void set_option_with_retry(rs2::options sensor, rs2_option option, float value);
 }
 

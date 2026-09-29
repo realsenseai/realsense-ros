@@ -28,6 +28,8 @@ from pytest_rs_utils import launch_descr_with_parameters, get_node_heirarchy
 
 import pytest_live_camera_utils
 
+SAFETY_MODE_SERVICE = 2   # rs2_safety_mode: 0=RUN, 1=STANDBY, 2=SERVICE
+
 test_params_test_default_run_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
@@ -83,18 +85,21 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
                 self.spin_for_time(wait_time=5)
 
             assert self.get_integer_param('safety_camera.safety_mode') == params['safety_camera.safety_mode']
-            assert self.get_integer_param('depth_module.exposure') == params['depth_module.exposure']
-
-            depth_metadata = msg_Metadata()
-            depth_metadata.json_data = '{"actual_exposure":'+str(params['depth_module.exposure']) +'}'
 
             themes = [
                 {'topic':get_node_heirarchy(params)+'/depth/metadata',
                 'msg_type':msg_Metadata,
                 'expected_data_chunks':1,
-                'data':depth_metadata
                 }
             ]
+            # The user depth exposure only takes effect in SERVICE mode; in RUN/STANDBY the
+            # safety pipeline drives the depth exposure itself, so there we only check that
+            # depth data flows.
+            if params['safety_camera.safety_mode'] == SAFETY_MODE_SERVICE:
+                assert self.get_integer_param('depth_module.exposure') == params['depth_module.exposure']
+                depth_metadata = msg_Metadata()
+                depth_metadata.json_data = '{"actual_exposure":'+str(params['depth_module.exposure']) +'}'
+                themes[0]['data'] = depth_metadata
 
             ret = self.run_test(themes)
             assert ret[0], ret[1]
