@@ -70,7 +70,7 @@ std::map<std::string, int> get_enum_method(rs2::options sensor, rs2_option optio
 template<class T>
 void param_set_option(rs2::options sensor, rs2_option option, const rclcpp::Parameter& parameter)
 { 
-    set_option_with_retry(sensor, option, parameter.get_value<T>());
+    sensor.set_option(option, parameter.get_value<T>());
 }
 
 void SensorParams::clearParameters()
@@ -217,7 +217,7 @@ void SensorParams::set_parameter(rs2::options sensor, rs2_option option, const s
     {
         try
         {
-            set_option_with_retry(sensor, option, new_val);
+            sensor.set_option(option, new_val);
         }
         catch(std::exception& e)
         {

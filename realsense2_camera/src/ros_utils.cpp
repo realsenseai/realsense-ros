@@ -16,10 +16,6 @@
 #include <algorithm>
 #include <map>
 #include <cctype>
-#include <chrono>
-#include <thread>
-#include <stdexcept>
-#include <string>
 
 namespace realsense2_camera
 {
@@ -156,45 +152,6 @@ std::string vectorToJsonString(const std::vector<uint8_t>& vec) {
     }
     oss << "]";
     return oss.str();
-}
-
-
-// Mirrors LibCI's tests_wrapper.set_safety_mode(): the D585S FW can transiently reject a
-// safety_mode change, so retry (with read-back) for up to 8 seconds.
-static void set_safety_mode_step(rs2::options sensor, float mode)
-{
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(8);
-    while (true)
-    {
-        try
-        {
-            sensor.set_option(RS2_OPTION_SAFETY_MODE, mode);
-            if (sensor.get_option(RS2_OPTION_SAFETY_MODE) == mode)
-                return;
-        }
-        catch(const rs2::error&)
-        {
-            if (std::chrono::steady_clock::now() >= deadline)
-                throw;
-        }
-        if (std::chrono::steady_clock::now() >= deadline)
-            throw std::runtime_error("failed to set safety_mode to " + std::to_string(int(mode)));
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-}
-
-void set_option_with_retry(rs2::options sensor, rs2_option option, float value)
-{
-    if (option != RS2_OPTION_SAFETY_MODE)
-    {
-        sensor.set_option(option, value);
-        return;
-    }
-    // Going SERVICE -> STANDBY directly leaves the D585S (FW 8.58) stuck in STANDBY, refusing
-    // any further mode change until a power cycle; go through RUN instead.
-    if (value == RS2_SAFETY_MODE_STANDBY && sensor.get_option(RS2_OPTION_SAFETY_MODE) == RS2_SAFETY_MODE_SERVICE)
-        set_safety_mode_step(sensor, RS2_SAFETY_MODE_RUN);
-    set_safety_mode_step(sensor, value);
 }
 
 }

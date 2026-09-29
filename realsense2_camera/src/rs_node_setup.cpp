@@ -173,8 +173,7 @@ void BaseRealSenseNode::setAvailableSensors()
         {
             // On safety cameras (D585S) depth controls can only be written in SERVICE mode; in RUN
             // the FW rejects them. Like LibCI's tests wrapper, switch to SERVICE while the depth
-            // sensor applies its parameters, then restore the previous mode. The requested
-            // safety_camera.safety_mode parameter is applied afterwards by the safety sensor.
+            // sensor applies its parameters.
             float prev_safety_mode = -1;
             if (_safety_sensor && sensor.is<rs2::depth_sensor>() && !_dev.is<playback>())
             {
@@ -182,7 +181,7 @@ void BaseRealSenseNode::setAvailableSensors()
                 {
                     prev_safety_mode = _safety_sensor->get_option(RS2_OPTION_SAFETY_MODE);
                     if (prev_safety_mode != RS2_SAFETY_MODE_SERVICE)
-                        set_option_with_retry(*_safety_sensor, RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
+                        _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
                 }
                 catch(const std::exception& e)
                 {
@@ -208,7 +207,11 @@ void BaseRealSenseNode::setAvailableSensors()
                 {
                     try
                     {
-                        set_option_with_retry(*_safety_sensor, RS2_OPTION_SAFETY_MODE, target_safety_mode);
+                        // SERVICE -> STANDBY directly leaves the D585S (FW 8.58) stuck in STANDBY
+                        // until a power cycle, so go through RUN.
+                        if (target_safety_mode == RS2_SAFETY_MODE_STANDBY)
+                            _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_RUN);
+                        _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, target_safety_mode);
                     }
                     catch(const std::exception& e)
                     {
