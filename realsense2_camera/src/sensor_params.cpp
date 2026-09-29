@@ -236,18 +236,6 @@ void SensorParams::registerDynamicOptions(rs2::options sensor, const std::string
         {
             continue;
         }
-        // An option can be reported as supported yet fail to query (e.g. D585S FW 8.x
-        // advertises Inter Cam Sync Mode without the backing XU). Skip it rather than
-        // letting the backend error abort device start-up.
-        try
-        {
-            sensor.get_option_range(option);
-        }
-        catch(const rs2::error& e)
-        {
-            ROS_WARN_STREAM("Skipping " << option_name << ": option range cannot be read: " << e.what());
-            continue;
-        }
         // Skip RS2_OPTION_REGION_OF_INTEREST as it's handled separately via registerAutoExposureROIOptions()
         // This option cannot be read using get_option() API - it requires specialized rect handling
         if (i == RS2_OPTION_REGION_OF_INTEREST)
