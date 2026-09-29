@@ -171,8 +171,40 @@ void BaseRealSenseNode::setAvailableSensors()
             sensor.is<rs2::safety_sensor>() ||
             sensor.is<rs2::depth_mapping_sensor>())
         {
+            // On safety cameras (D585S) depth controls can only be written in SERVICE mode; in RUN
+            // the FW rejects them. Like LibCI's tests wrapper, switch to SERVICE while the depth
+            // sensor applies its parameters, then restore the previous mode. The requested
+            // safety_camera.safety_mode parameter is applied afterwards by the safety sensor.
+            float prev_safety_mode = -1;
+            if (_safety_sensor && sensor.is<rs2::depth_sensor>() && !_dev.is<playback>())
+            {
+                try
+                {
+                    prev_safety_mode = _safety_sensor->get_option(RS2_OPTION_SAFETY_MODE);
+                    if (prev_safety_mode != RS2_SAFETY_MODE_SERVICE)
+                        _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_SERVICE);
+                }
+                catch(const std::exception& e)
+                {
+                    ROS_WARN_STREAM("Failed to switch to safety service mode before setting depth controls: " << e.what());
+                    prev_safety_mode = -1;
+                }
+            }
+
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
             rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+
+            if (prev_safety_mode >= 0 && prev_safety_mode != RS2_SAFETY_MODE_SERVICE)
+            {
+                try
+                {
+                    _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, prev_safety_mode);
+                }
+                catch(const std::exception& e)
+                {
+                    ROS_WARN_STREAM("Failed to restore safety mode " << prev_safety_mode << ": " << e.what());
+                }
+            }
         }
         else if (sensor.is<rs2::motion_sensor>())
         {
