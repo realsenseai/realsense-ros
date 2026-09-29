@@ -194,15 +194,26 @@ void BaseRealSenseNode::setAvailableSensors()
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
             rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
 
-            if (prev_safety_mode >= 0 && prev_safety_mode != RS2_SAFETY_MODE_SERVICE)
+            // Leave SERVICE straight for the mode the user asked for (safety_camera.safety_mode),
+            // or back to the previous mode if none was given. Leaving SERVICE makes the FW drop the
+            // depth controls written above, so a user who asked for SERVICE must stay in it.
+            if (prev_safety_mode >= 0)
             {
-                try
+                float target_safety_mode = prev_safety_mode;
+                const auto overrides = _node.get_node_parameters_interface()->get_parameter_overrides();
+                const auto it = overrides.find("safety_camera.safety_mode");
+                if (it != overrides.end() && it->second.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
+                    target_safety_mode = static_cast<float>(it->second.get<int64_t>());
+                if (target_safety_mode != RS2_SAFETY_MODE_SERVICE)
                 {
-                    set_option_with_retry(*_safety_sensor, RS2_OPTION_SAFETY_MODE, prev_safety_mode);
-                }
-                catch(const std::exception& e)
-                {
-                    ROS_WARN_STREAM("Failed to restore safety mode " << prev_safety_mode << ": " << e.what());
+                    try
+                    {
+                        set_option_with_retry(*_safety_sensor, RS2_OPTION_SAFETY_MODE, target_safety_mode);
+                    }
+                    catch(const std::exception& e)
+                    {
+                        ROS_WARN_STREAM("Failed to set safety mode " << target_safety_mode << " after depth setup: " << e.what());
+                    }
                 }
             }
         }
