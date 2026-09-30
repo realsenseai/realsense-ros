@@ -190,8 +190,32 @@ void BaseRealSenseNode::setAvailableSensors()
                 }
             }
 
+            // Leave SERVICE for the given mode. SERVICE -> STANDBY directly leaves the D585S
+            // (FW 8.58) stuck in STANDBY until a power cycle, so go through RUN.
+            auto leave_service_mode = [this](float mode)
+            {
+                if (mode == RS2_SAFETY_MODE_SERVICE)
+                    return;
+                if (mode == RS2_SAFETY_MODE_STANDBY)
+                    _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_RUN);
+                _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, mode);
+            };
+
             ROS_DEBUG_STREAM("Set " << module_name << " as VideoSensor.");
-            rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+            try
+            {
+                rosSensor = std::make_unique<RosSensor>(sensor, _parameters, frame_callback_function, update_sensor_func, hardware_reset_func, _diagnostics_updater, _logger, _use_intra_process, _dev.is<playback>());
+            }
+            catch(...)
+            {
+                // Don't leave the camera in SERVICE mode if the sensor setup failed.
+                if (prev_safety_mode >= 0)
+                {
+                    try { leave_service_mode(prev_safety_mode); }
+                    catch(const std::exception& e) { ROS_WARN_STREAM("Failed to restore safety mode " << prev_safety_mode << ": " << e.what()); }
+                }
+                throw;
+            }
 
             // Leave SERVICE straight for the mode the user asked for (safety_camera.safety_mode),
             // or back to the previous mode if none was given. Leaving SERVICE makes the FW drop the
@@ -203,20 +227,13 @@ void BaseRealSenseNode::setAvailableSensors()
                 const auto it = overrides.find("safety_camera.safety_mode");
                 if (it != overrides.end() && it->second.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
                     target_safety_mode = static_cast<float>(it->second.get<int64_t>());
-                if (target_safety_mode != RS2_SAFETY_MODE_SERVICE)
+                try
                 {
-                    try
-                    {
-                        // SERVICE -> STANDBY directly leaves the D585S (FW 8.58) stuck in STANDBY
-                        // until a power cycle, so go through RUN.
-                        if (target_safety_mode == RS2_SAFETY_MODE_STANDBY)
-                            _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, RS2_SAFETY_MODE_RUN);
-                        _safety_sensor->set_option(RS2_OPTION_SAFETY_MODE, target_safety_mode);
-                    }
-                    catch(const std::exception& e)
-                    {
-                        ROS_WARN_STREAM("Failed to set safety mode " << target_safety_mode << " after depth setup: " << e.what());
-                    }
+                    leave_service_mode(target_safety_mode);
+                }
+                catch(const std::exception& e)
+                {
+                    ROS_WARN_STREAM("Failed to set safety mode " << target_safety_mode << " after depth setup: " << e.what());
                 }
             }
         }
