@@ -99,11 +99,15 @@ RealSenseNodeFactory::RealSenseNodeFactory(const std::string & node_name, const 
 
 RealSenseNodeFactory::~RealSenseNodeFactory()
 {
-    _is_alive = false;
-    if (_query_thread.joinable())
+    try
     {
-        _query_thread.join();
+        closeDevice();
     }
+    catch (const std::exception& e)
+    {
+        ROS_ERROR_STREAM("Exception in RealSenseNodeFactory destructor: " << e.what());
+    }
+    catch (...) {}
 }
 
 std::string RealSenseNodeFactory::parseUsbPort(std::string line)
