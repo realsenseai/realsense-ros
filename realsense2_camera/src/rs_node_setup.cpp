@@ -62,6 +62,14 @@ void BaseRealSenseNode::monitoringProfileChanges()
                                 ))
             {
                 ROS_DEBUG("Profile has changed");
+                _is_profile_changed = false;
+                _is_align_depth_changed = false;
+
+                #if defined (ACCELERATE_GPU_WITH_GLSL)
+                    _is_accelerate_gpu_with_glsl_changed = false;
+                #endif
+
+                lock.unlock();
                 try
                 {
                     updateSensors();
@@ -70,12 +78,7 @@ void BaseRealSenseNode::monitoringProfileChanges()
                 {
                     ROS_ERROR_STREAM("Error updating the sensors: " << e.what());
                 }
-                _is_profile_changed = false;
-                _is_align_depth_changed = false;
-
-                #if defined (ACCELERATE_GPU_WITH_GLSL)
-                    _is_accelerate_gpu_with_glsl_changed = false;
-                #endif
+                lock.lock();
             }
         }
     };
