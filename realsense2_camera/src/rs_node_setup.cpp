@@ -147,7 +147,7 @@ void BaseRealSenseNode::setAvailableSensors()
     std::function<void(rs2::frame)> imu_callback_function = [this](rs2::frame frame){
         imu_callback(frame);
         if (_imu_sync_method != imu_sync_method::NONE)
-            imu_callback_sync(frame);
+            imu_callback_sync(frame, _imu_sync_method);
     };
 
     std::function<void(rs2::frame)> multiple_message_callback_function = [this](rs2::frame frame){multiple_message_callback(frame, _imu_sync_method);};
