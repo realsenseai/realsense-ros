@@ -99,11 +99,15 @@ RealSenseNodeFactory::RealSenseNodeFactory(const std::string & node_name, const 
 
 RealSenseNodeFactory::~RealSenseNodeFactory()
 {
-    _is_alive = false;
-    if (_query_thread.joinable())
+    try
     {
-        _query_thread.join();
+        closeDevice();
     }
+    catch (const std::exception& e)
+    {
+        ROS_ERROR_STREAM("Exception in RealSenseNodeFactory destructor: " << e.what());
+    }
+    catch (...) {}
 }
 
 std::string RealSenseNodeFactory::parseUsbPort(std::string line)
@@ -486,11 +490,10 @@ void RealSenseNodeFactory::closeDevice()
     }
 
     stopDevice();
+    RSContextSingletonWrapper::getInstance().set_devices_changed_callback([](rs2::event_information&) {});
     if (_device)
     {
         ROS_INFO("Closing RealSense device...");
-        RSContextSingletonWrapper::getInstance().set_devices_changed_callback([](rs2::event_information&) {});
-
         // To go into unconfigured lifecycle state for lifecycled node we have to also disconnect the device
         _device = rs2::device();
     }
