@@ -79,6 +79,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'pointcloud.stream_index_filter','default': '0', 'description': 'texture stream index for pointcloud'},
                            {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': ''},
                            {'name': 'pointcloud.allow_no_texture_points', 'default': 'false', 'description': "''"},
+                           {'name': 'pointcloud.source',            'default': 'host', 'description': "'pointcloud source: host (build on the host from depth) or device (device generated, D585; needs pointcloud.enable:=true and enable_depth:=false)'"},
                            {'name': 'align_depth.enable',           'default': 'false', 'description': 'enable align depth filter'},
                            {'name': 'colorizer.enable',             'default': 'false', 'description': 'enable colorizer filter'},
                            {'name': 'decimation_filter.enable',     'default': 'false', 'description': 'enable_decimation_filter'},
@@ -100,6 +101,8 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'depth_mapping_camera.labeled_point_cloud_profile', 'default': '0,0,0', 'description': "'Label PointCloud stream profile'"},
                            {'name': 'enable_occupancy',             'default': 'false', 'description': "'enable occupancy stream'"},
                            {'name': 'depth_mapping_camera.occupancy_profile', 'default': '0,0,0', 'description': "'Occupancy stream profile'"},
+                           {'name': 'enable_point_cloud',           'default': 'false', 'description': "'enable device point cloud stream (turned on automatically by pointcloud.source:=device)'"},
+                           {'name': 'depth_mapping_camera.point_cloud_profile', 'default': '0,0,0', 'description': "'Device point cloud stream profile'"},
                           ]
 
 def declare_configurable_parameters(parameters):

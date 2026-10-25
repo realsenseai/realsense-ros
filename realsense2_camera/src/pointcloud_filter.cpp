@@ -15,6 +15,7 @@
 #include <pointcloud_filter.h>
 #include <fstream>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
+#include "device_pointcloud_utils.h"
 
 
 using namespace realsense2_camera;
@@ -24,7 +25,8 @@ PointcloudFilter::PointcloudFilter(std::shared_ptr<rs2::filter> filter, RosNodeB
     NamedFilter(filter, parameters, logger, is_enabled, false),
     _node(node),
     _allow_no_texture_points(ALLOW_NO_TEXTURE_POINTS),
-    _ordered_pc(ORDERED_PC)
+    _ordered_pc(ORDERED_PC),
+    _source(POINTCLOUD_SOURCE_HOST)
     {
         setParameters();
     }
@@ -38,6 +40,16 @@ void PointcloudFilter::setParameters()
 
     param_name = module_name + "." + std::string("ordered_pc");
     _params.getParameters()->setParamT(param_name, _ordered_pc);
+    _parameters_names.push_back(param_name);
+
+    // Read once at startup (BaseRealSenseNode::setupDevicePointCloud validates it); no runtime change.
+    param_name = module_name + "." + std::string("source");
+    rcl_interfaces::msg::ParameterDescriptor source_descriptor;
+    source_descriptor.description = "Where the pointcloud is built. Available options are:\n"
+                                    + POINTCLOUD_SOURCE_HOST + " : on the host, from the Depth stream (default)\n"
+                                    + POINTCLOUD_SOURCE_DEVICE + " : by the device (D585 Depth Mapping sensor), requires enable_depth:=false";
+    _source = _params.getParameters()->setParam<std::string>(param_name, POINTCLOUD_SOURCE_HOST,
+                                                             std::function<void(const rclcpp::Parameter&)>(), source_descriptor);
     _parameters_names.push_back(param_name);
 
     param_name = module_name + "." + std::string("pointcloud_qos");
@@ -246,6 +258,70 @@ void PointcloudFilter::Publish(rs2::points pc, const rclcpp::Time& t, const rs2:
         msg_pointcloud->is_dense = true;
         modifier.resize(valid_count);
     }
+    {
+        std::lock_guard<std::mutex> lock_guard(_mutex_publisher);
+        if (_pointcloud_publisher)
+            _pointcloud_publisher->publish(std::move(msg_pointcloud));
+    }
+}
+
+void PointcloudFilter::PublishDevice(rs2::points pc, const rclcpp::Time& t, const std::string& frame_id, float clip_distance)
+{
+    {
+        std::lock_guard<std::mutex> lock_guard(_mutex_publisher);
+        if ((!_pointcloud_publisher) || (!(_pointcloud_publisher->get_subscription_count())))
+            return;
+    }
+
+    // The device cloud has no intrinsics and no texture coordinates: it is the bare W x H XYZ32F vertex array,
+    // so the geometry comes from the stream profile.
+    const rs2::video_stream_profile profile = pc.get_profile().as<rs2::video_stream_profile>();
+    const size_t width = static_cast<size_t>(profile.width());
+    const size_t height = static_cast<size_t>(profile.height());
+    if (profile.format() != RS2_FORMAT_XYZ32F || pc.size() != width * height)
+    {
+        RCLCPP_WARN_THROTTLE(_logger, *_node.get_clock(), 5000,
+                             "Device point cloud frame dropped: format %s, %zu points (expected XYZ32F, %zu x %zu points)",
+                             rs2_format_to_string(profile.format()), pc.size(), width, height);
+        return;
+    }
+
+    static_assert(sizeof(rs2::vertex) == devicepcl::VERTEX_SIZE, "rs2::vertex must be a packed float3");
+    const bool ordered_pc(_ordered_pc);   // may be changed at runtime: use one value for the whole frame
+
+    sensor_msgs::msg::PointCloud2::UniquePtr msg_pointcloud = std::make_unique<sensor_msgs::msg::PointCloud2>();
+
+    // Same fields as the host "xyz" cloud (x@0, y@4, z@8, FLOAT32; point_step 16).
+    const char* field_names[] = {"x", "y", "z"};
+    for (uint32_t i = 0; i < 3; ++i)
+    {
+        sensor_msgs::msg::PointField field;
+        field.name = field_names[i];
+        field.offset = i * static_cast<uint32_t>(sizeof(float));
+        field.datatype = sensor_msgs::msg::PointField::FLOAT32;
+        field.count = 1;
+        msg_pointcloud->fields.push_back(field);
+    }
+    msg_pointcloud->is_bigendian = false;
+    msg_pointcloud->point_step = devicepcl::POINT_STEP;
+
+    const size_t count = devicepcl::repackXyz(reinterpret_cast<const float*>(pc.get_vertices()), pc.size(),
+                                              ordered_pc, clip_distance, msg_pointcloud->data);
+    if (ordered_pc)
+    {
+        msg_pointcloud->width = static_cast<uint32_t>(width);
+        msg_pointcloud->height = static_cast<uint32_t>(height);
+        msg_pointcloud->is_dense = false;
+    }
+    else
+    {
+        msg_pointcloud->width = static_cast<uint32_t>(count);
+        msg_pointcloud->height = 1;
+        msg_pointcloud->is_dense = true;
+    }
+    msg_pointcloud->row_step = msg_pointcloud->width * msg_pointcloud->point_step;
+    msg_pointcloud->header.stamp = t;
+    msg_pointcloud->header.frame_id = frame_id;
     {
         std::lock_guard<std::mutex> lock_guard(_mutex_publisher);
         if (_pointcloud_publisher)

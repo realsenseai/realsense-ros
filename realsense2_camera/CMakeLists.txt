@@ -454,6 +454,10 @@ if(BUILD_TESTING)
   ament_add_gtest(test_occupancy_grid_utils test/unit/test_occupancy_grid_utils.cpp)
   target_include_directories(test_occupancy_grid_utils PRIVATE include)
 
+  # Unit tests for the device point cloud repacking helper
+  ament_add_gtest(test_device_pointcloud_utils test/unit/test_device_pointcloud_utils.cpp)
+  target_include_directories(test_device_pointcloud_utils PRIVATE include)
+
   find_package(ament_cmake_pytest REQUIRED)
   set(_pytest_folders
     test
