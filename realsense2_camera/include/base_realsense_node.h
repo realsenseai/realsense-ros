@@ -68,6 +68,7 @@
 #endif
 
 #include <queue>
+#include <stdexcept>
 #include <mutex>
 #include <atomic>
 #include <thread>
@@ -92,6 +93,14 @@ using realsense2_camera_msgs::msg::RGBD;
 namespace realsense2_camera
 {
     typedef std::pair<rs2_stream, int> stream_index_pair;
+
+    // Thrown when the node parameters request a combination that can never run (e.g. pointcloud.source=device
+    // together with enable_depth=true). The node factory exits instead of leaving a half initialized node up.
+    class InvalidConfigurationError : public std::runtime_error
+    {
+    public:
+        using std::runtime_error::runtime_error;
+    };
 
     class image_publisher; // forward declaration
 
@@ -260,6 +269,7 @@ namespace realsense2_camera
         void setupPublishers();
         void enable_devices();
         void setupFilters();
+        void setupDevicePointCloud();
         uint64_t millisecondsToNanoseconds(double timestamp_ms);
         rclcpp::Time frameSystemTimeSec(rs2::frame frame);
         cv::Mat& fix_depth_scale(const cv::Mat& from_image, cv::Mat& to_image);
@@ -272,6 +282,7 @@ namespace realsense2_camera
         void startDynamicTf();
         void publishDynamicTransforms();
         void publishPointCloud(rs2::points f, const rclcpp::Time& t, const rs2::frameset& frameset);
+        void publishDevicePointCloud(rs2::points f, const rclcpp::Time& t);
         void publishOccupancyFrame(rs2::frame f, const rclcpp::Time& t);
         // Publishes a pure-payload (RSDEV-14426) occupancy frame. Returns false when the
         // frame lacks the pure-payload metadata set, so the caller can fall through to the

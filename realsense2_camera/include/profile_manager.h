@@ -47,6 +47,13 @@ namespace realsense2_camera
             void addWantedProfiles(std::vector<rs2::stream_profile>& wanted_profiles);
             void clearParameters();
             bool hasSIP(const stream_index_pair& sip) const;
+            // true if a stream of this type is managed here and enabled (enable_<stream> parameter).
+            bool isStreamEnabled(rs2_stream stream_type) const;
+            // Enable the streams of this type and disable all the other streams managed here (parameters are updated too).
+            // Returns false, changing nothing, if no stream of this type is managed here.
+            bool enableOnlyStream(rs2_stream stream_type);
+            // Called when an enable_<stream> parameter is set to true at runtime: a non-empty return is the reason to refuse it.
+            void setEnableBlocker(std::function<std::string(rs2_stream)> blocker) { _enable_blocker = std::move(blocker); }
             rmw_qos_profile_t getQOS(const stream_index_pair& sip) const;
             rmw_qos_profile_t getInfoQOS(const stream_index_pair& sip) const;
 
@@ -61,6 +68,7 @@ namespace realsense2_camera
             std::map<stream_index_pair, std::shared_ptr<std::string>> _profiles_image_qos_str, _profiles_info_qos_str;
             std::vector<rs2::stream_profile> _all_profiles;
             std::vector<std::string> _parameters_names;
+            std::function<std::string(rs2_stream)> _enable_blocker;
     };
 
     class VideoProfilesManager : public ProfilesManager

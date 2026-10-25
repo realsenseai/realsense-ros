@@ -99,8 +99,18 @@ void ProfilesManager::registerSensorUpdateParam(std::string template_name,
                 params[sip] = std::make_shared<T>(sip_default_profiles.count(sip) ? value : T{});
         }
         std::shared_ptr<T> param = params[sip];
-        _params.getParameters()->setParam<T>(param_name, *(params[sip]), [param, update_sensor_func](const rclcpp::Parameter& parameter)
+        _params.getParameters()->setParam<T>(param_name, *(params[sip]), [this, sip, param_name, param, update_sensor_func](const rclcpp::Parameter& parameter)
                 {
+                    if (_enable_blocker && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL && parameter.as_bool())
+                    {
+                        const std::string reason(_enable_blocker(sip.first));
+                        if (!reason.empty())
+                        {
+                            ROS_ERROR_STREAM("Can't set " << param_name << " to true: " << reason);
+                            _params.getParameters()->queueSetRosValue(param_name, *param);
+                            return;
+                        }
+                    }
                     *param = parameter.get_value<T>();
                     update_sensor_func();
                 });
@@ -243,6 +253,40 @@ std::string ProfilesManager::profile_string(const rs2::stream_profile& profile)
 bool ProfilesManager::hasSIP(const stream_index_pair& sip) const
 {
     return (_enabled_profiles.find(sip) != _enabled_profiles.end());
+}
+
+bool ProfilesManager::isStreamEnabled(rs2_stream stream_type) const
+{
+    for (const auto& enabled_profile : _enabled_profiles)
+    {
+        if (enabled_profile.first.first == stream_type && *(enabled_profile.second))
+            return true;
+    }
+    return false;
+}
+
+bool ProfilesManager::enableOnlyStream(rs2_stream stream_type)
+{
+    bool found(false);
+    for (const auto& enabled_profile : _enabled_profiles)
+    {
+        found |= (enabled_profile.first.first == stream_type);
+    }
+    if (!found)
+        return false;
+
+    for (auto& enabled_profile : _enabled_profiles)
+    {
+        const stream_index_pair& sip = enabled_profile.first;
+        bool value(sip.first == stream_type);
+        if (*(enabled_profile.second) == value)
+            continue;
+        *(enabled_profile.second) = value;
+        // Keep the ROS parameter in line; the parameter callback (sensor update request) is not called for this set.
+        _params.getParameters()->setRosParamValue(applyTemplateName("enable_%s", sip), &value);
+        ROS_INFO_STREAM((value ? "Enabling " : "Disabling ") << ros_stream_to_string(sip.first) << ":" << sip.second << " stream.");
+    }
+    return true;
 }
 
 rmw_qos_profile_t ProfilesManager::getQOS(const stream_index_pair& sip) const
