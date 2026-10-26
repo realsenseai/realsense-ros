@@ -252,6 +252,16 @@ namespace realsense2_camera
                 double          m_time_ns;
         };
 
+        struct SensorChanges
+        {
+            bool align_depth_changed = false;
+    #if defined (ACCELERATE_GPU_WITH_GLSL)
+            bool gpu_acceleration_changed = false;
+            bool gpu_acceleration_enabled = false;
+    #endif
+        };
+
+
         void getParameters();
         void setDynamicParams();
         void clearParameters();
@@ -334,9 +344,9 @@ namespace realsense2_camera
         void publish_temperature();
         void setAvailableSensors();
         void setCallbackFunctions();
-        void updateSensors();
-        void startUpdatedSensors();
-        void stopRequiredSensors();
+        void updateSensors(const SensorChanges& changes);
+        void startUpdatedSensors(const SensorChanges& changes);
+        void stopRequiredSensors(const SensorChanges& changes);
         void publishServices();
         void publishActions();
         void startPublishers(const std::vector<rs2::stream_profile>& profiles, const RosSensor& sensor);
