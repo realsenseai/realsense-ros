@@ -96,10 +96,10 @@ aluminum peripherial evaluation case.
         </geometry>
       </collision>
       <inertial>
-        <!-- The following are not reliable values, and should not be used for modeling -->
-        <mass value="0.072" />
+        <!-- Mass from the RealSense D400 Series Datasheet, Rev 023 (Mar 2026), D455 (Table 3-53). Inertia: uniform solid box of the collision size. -->
+        <mass value="0.116" />
         <origin xyz="0 0 0" />
-        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257" />
+        <inertia ixx="0.000156764" ixy="0.0" ixz="0.0" iyy="0.000014664" iyz="0.0" izz="0.000155169" />
       </inertial>
     </link>
 
