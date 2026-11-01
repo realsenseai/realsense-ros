@@ -103,11 +103,13 @@ void BaseRealSenseNode::getParameters()
                     [this](const rclcpp::Parameter& parameter)
                     {
                         bool temp_value = parameter.get_value<bool>();
-                        if (_accelerate_gpu_with_glsl != temp_value)
                         {
-                            _accelerate_gpu_with_glsl = temp_value;
                             std::lock_guard<std::mutex> lock_guard(_profile_changes_mutex);
-                            _is_accelerate_gpu_with_glsl_changed = true;
+                            if (_accelerate_gpu_with_glsl != temp_value)
+                            {
+                                _accelerate_gpu_with_glsl = temp_value;
+                                _is_accelerate_gpu_with_glsl_changed = true;
+                            }
                         }
                         _cv_mpc.notify_one();
                     });
