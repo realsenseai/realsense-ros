@@ -93,9 +93,9 @@ aluminum peripheral evaluation case.
         </geometry>
       </collision>
       <inertial>
-        <!-- Mass from the RealSense D400 Series Datasheet, Rev 023 (Mar 2026), D43x (Table 3-52). Inertia: uniform solid box of the collision size. -->
+        <!-- Mass from the RealSense D400 Series Datasheet, Rev 023 (Mar 2026), D43x (Table 3-52). Inertia: uniform solid box of the collision size, about the box center. -->
         <mass value="0.075" />
-        <origin xyz="0 0 0" />
+        <origin xyz="0 ${-d436_cam_depth_py} 0" />
         <inertia ixx="0.000054531" ixy="0.0" ixz="0.0" iyy="0.000007828" iyz="0.0" izz="0.000054547" />
       </inertial>
     </link>
