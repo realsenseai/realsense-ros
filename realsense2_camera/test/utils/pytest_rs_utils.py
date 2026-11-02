@@ -981,9 +981,16 @@ class RsTestBaseClass():
                 if data_not_expected1 == []:
                     timeout = 50.0 #high value due to resource constraints in CI
 
-            if initial_wait_time != 0.0: 
+            if initial_wait_time != 0.0:
+                '''
+                let the node settle (e.g. a sensor being stopped after a param change may still
+                publish in-flight frames) and then drop everything received during the settle
+                time, so that only data arriving afterwards is counted
+                '''
                 self.spin_for_time(initial_wait_time)
-            self.flag = self.spin_for_data(themes, timeout)     
+                for theme in themes:
+                    self.node.reset_data(theme['topic'])
+            self.flag = self.spin_for_data(themes, timeout)
         except  Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

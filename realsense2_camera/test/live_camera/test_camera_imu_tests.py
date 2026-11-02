@@ -48,6 +48,13 @@ test_params_all_profiles_d455 = {
     'unite_imu_method':1,
     }
 
+'''
+Setting a stream param returns before the sensor is actually stopped/restarted (the update is
+done asynchronously by the node), and stopping the motion module can take ~2s. Wait this long
+after a param change before counting data, so in-flight frames of a disabled stream are ignored.
+'''
+SENSOR_SETTLE_TIME = 3.0
+
 @pytest.mark.parametrize("launch_descr_with_parameters", [
     pytest.param(test_params_all_profiles_d455, marks=pytest.mark.d455)
     ],indirect=True)
@@ -87,7 +94,7 @@ class TestLiveCamera_TestMotionSensor(pytest_rs_utils.RsTestBaseClass):
             themes[ACCEL_TOPIC]['expected_data_chunks'] = 0
             themes[IMU_TOPIC]['expected_data_chunks'] = 0
             print(msg)
-            ret = self.run_test(themes)
+            ret = self.run_test(themes, initial_wait_time=SENSOR_SETTLE_TIME)
             assert ret[0], msg + str(ret[1])
             assert self.process_data(themes), msg + " failed"
 
@@ -98,8 +105,7 @@ class TestLiveCamera_TestMotionSensor(pytest_rs_utils.RsTestBaseClass):
             themes[ACCEL_TOPIC]['expected_data_chunks'] = 1
             themes[GYRO_TOPIC]['expected_data_chunks'] = 0
             print(msg)
-            self.spin_for_time(wait_time=1.0)
-            ret = self.run_test(themes)
+            ret = self.run_test(themes, initial_wait_time=SENSOR_SETTLE_TIME)
             assert ret[0], msg + str(ret[1])
             assert self.process_data(themes), msg + " failed"
 
@@ -107,12 +113,11 @@ class TestLiveCamera_TestMotionSensor(pytest_rs_utils.RsTestBaseClass):
             self.set_bool_param('enable_accel', False)
             self.set_bool_param('enable_gyro', False)
             self.set_integer_param('unite_imu_method', 1)
-            self.spin_for_time(wait_time=1.0)
             themes[ACCEL_TOPIC]['expected_data_chunks'] = 0
             themes[GYRO_TOPIC]['expected_data_chunks'] = 0
             themes[IMU_TOPIC]['expected_data_chunks'] = 0
             print(msg)
-            ret = self.run_test(themes, initial_wait_time=1.0) 
+            ret = self.run_test(themes, initial_wait_time=SENSOR_SETTLE_TIME)
             assert ret[0], msg + " failed"
             assert self.process_data(themes), msg +" failed"
         finally:
