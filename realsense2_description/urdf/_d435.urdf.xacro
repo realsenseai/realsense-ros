@@ -40,6 +40,7 @@ aluminum peripherial evaluation case.
   	peripherial camera tripod mount -->
     <xacro:property name="d435_cam_width" value="0.090"/>
     <xacro:property name="d435_cam_height" value="0.025"/>
+    <xacro:property name="d435_mass" value="0.075"/>
     <xacro:property name="d435_cam_depth" value="0.02505"/>
     <xacro:property name="d435_cam_mount_from_center_offset" value="0.0149"/>
     <!-- glass cover is 0.1 mm inwards from front aluminium plate -->
@@ -79,7 +80,7 @@ aluminum peripherial evaluation case.
           </geometry>
         </xacro:if>
         <xacro:unless value="${use_mesh}">
-          <origin xyz="0 ${-d435_cam_depth_py} 0" rpy="0 0 0"/>
+          <origin xyz="${d435_cam_mount_from_center_offset - d435_cam_depth/2 - d435_mesh_x_offset} ${-d435_cam_depth_py} 0" rpy="0 0 0"/>
           <geometry>
             <box size="${d435_cam_depth} ${d435_cam_width} ${d435_cam_height}"/>
           </geometry>
@@ -87,16 +88,18 @@ aluminum peripherial evaluation case.
         </xacro:unless>     
       </visual>
       <collision>
-        <origin xyz="0 ${-d435_cam_depth_py} 0" rpy="0 0 0"/>
+        <origin xyz="${d435_cam_mount_from_center_offset - d435_cam_depth/2 - d435_mesh_x_offset} ${-d435_cam_depth_py} 0" rpy="0 0 0"/>
         <geometry>
           <box size="${d435_cam_depth} ${d435_cam_width} ${d435_cam_height}"/>
         </geometry>
       </collision>
       <inertial>
-        <!-- The following are not reliable values, and should not be used for modeling -->
-        <mass value="0.072" />
-        <origin xyz="0 0 0" />
-        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257" />
+        <!-- Nominal mass per D400 Series Datasheet, Rev 023 (Mar 2026), D43x (Table 3-52) (±10%, excludes the ~2.3 g USB cap). Inertia: uniform solid box of the collision size, about the box center. -->
+        <mass value="${d435_mass}" />
+        <origin xyz="${d435_cam_mount_from_center_offset - d435_cam_depth/2 - d435_mesh_x_offset} ${-d435_cam_depth_py} 0" />
+        <inertia ixx="${d435_mass/12*(d435_cam_width*d435_cam_width + d435_cam_height*d435_cam_height)}" ixy="0.0" ixz="0.0"
+                 iyy="${d435_mass/12*(d435_cam_depth*d435_cam_depth + d435_cam_height*d435_cam_height)}" iyz="0.0"
+                 izz="${d435_mass/12*(d435_cam_depth*d435_cam_depth + d435_cam_width*d435_cam_width)}" />
       </inertial>
     </link>
 
