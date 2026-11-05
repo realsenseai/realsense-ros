@@ -79,7 +79,7 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'pointcloud.stream_index_filter','default': '0', 'description': 'texture stream index for pointcloud'},
                            {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': ''},
                            {'name': 'pointcloud.allow_no_texture_points', 'default': 'false', 'description': "''"},
-                           {'name': 'pointcloud.source',            'default': 'host', 'description': "'pointcloud source: host (build on the host from depth) or device (device generated, D585; needs pointcloud.enable:=true and enable_depth:=false)'"},
+                           {'name': 'pointcloud.source',            'default': 'host', 'description': "'pointcloud source: host (build on the host from depth) or device (device generated, D585; needs pointcloud.enable:=true and enable_depth:=false, enable_color:=false recommended)'"},
                            {'name': 'align_depth.enable',           'default': 'false', 'description': 'enable align depth filter'},
                            {'name': 'colorizer.enable',             'default': 'false', 'description': 'enable colorizer filter'},
                            {'name': 'decimation_filter.enable',     'default': 'false', 'description': 'enable_decimation_filter'},
