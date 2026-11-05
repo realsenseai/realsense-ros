@@ -957,6 +957,28 @@ class RsTestBaseClass():
             print('Spun for time once... ' )
             rclpy.spin_once(self.node, timeout_sec=wait_time)
  
+    def wait_for_quiet(self, themes, quiet_time=1.0, max_wait=10.0):
+        '''
+        spin until none of the topics that are not expected to carry data has received
+        anything for quiet_time seconds (bounded by max_wait). Used after a stream was
+        disabled: the node stops the sensor asynchronously, so in-flight frames may still
+        arrive for a while after set_parameters returned
+        '''
+        topics = [theme['topic'] for theme in themes if theme['expected_data_chunks'] == 0]
+        if topics == []:
+            return True
+        start = time.time()
+        while (time.time() - start) < max_wait:
+            before = [self.node.get_num_chunks(topic) for topic in topics]
+            quiet_end = time.time() + quiet_time
+            while time.time() < quiet_end:
+                rclpy.spin_once(self.node, timeout_sec=quiet_time)
+            after = [self.node.get_num_chunks(topic) for topic in topics]
+            if before == after:
+                return True
+        print('Topics still publishing after ' + str(max_wait) + 's: ' + str(topics))
+        return False
+
     def run_test(self, themes, initial_wait_time=0.0, timeout=0):
         try:
             for theme in themes:
@@ -981,9 +1003,18 @@ class RsTestBaseClass():
                 if data_not_expected1 == []:
                     timeout = 50.0 #high value due to resource constraints in CI
 
-            if initial_wait_time != 0.0: 
+            if initial_wait_time != 0.0:
+                '''
+                let the node settle (e.g. a sensor being stopped after a param change may still
+                publish in-flight frames), keep waiting while the topics expected to be silent
+                are still publishing, and then drop everything received so far, so that only
+                data arriving afterwards is counted
+                '''
                 self.spin_for_time(initial_wait_time)
-            self.flag = self.spin_for_data(themes, timeout)     
+                self.wait_for_quiet(themes)
+                for theme in themes:
+                    self.node.reset_data(theme['topic'])
+            self.flag = self.spin_for_data(themes, timeout)
         except  Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

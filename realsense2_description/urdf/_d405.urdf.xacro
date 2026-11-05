@@ -41,6 +41,7 @@ aluminum peripherial evaluation case.
   	peripherial camera tripod mount -->
     <xacro:property name="d405_cam_width" value="0.042"/>
     <xacro:property name="d405_cam_height" value="0.042"/>
+    <xacro:property name="d405_mass" value="0.058"/>
     <xacro:property name="d405_cam_depth" value="0.023"/>
     <xacro:property name="d405_cam_mount_from_center_offset" value="0.01465"/>
     <!-- glass cover is 0.1 mm inwards from front aluminium plate -->
@@ -86,10 +87,12 @@ aluminum peripherial evaluation case.
         </geometry>
       </collision>
       <inertial>
-        <!-- The following are not reliable values, and should not be used for modeling -->
-        <mass value="0.072" />
-        <origin xyz="0 0 0" />
-        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257" />
+        <!-- Nominal mass per D400 Series Datasheet, Rev 023 (Mar 2026), D405 (Table 3-54) (±10%, excludes the ~2.3 g USB cap). Inertia: uniform solid box of the collision size, about the box center. -->
+        <mass value="${d405_mass}" />
+        <origin xyz="${d405_zero_depth_to_glass-d405_cam_depth/2} ${-d405_cam_depth_py} 0" />
+        <inertia ixx="${d405_mass/12*(d405_cam_width*d405_cam_width + d405_cam_height*d405_cam_height)}" ixy="0.0" ixz="0.0"
+                 iyy="${d405_mass/12*(d405_cam_depth*d405_cam_depth + d405_cam_height*d405_cam_height)}" iyz="0.0"
+                 izz="${d405_mass/12*(d405_cam_depth*d405_cam_depth + d405_cam_width*d405_cam_width)}" />
       </inertial>
     </link>
 

@@ -35,8 +35,8 @@ void BaseRealSenseNode::setup()
     setupFilters();
     setupDevicePointCloud();
     setCallbackFunctions();
+    updateSensors(SensorChanges{});
     monitoringProfileChanges();
-    updateSensors();
     publishServices();
     publishActions();
 }
@@ -63,20 +63,36 @@ void BaseRealSenseNode::monitoringProfileChanges()
                                 ))
             {
                 ROS_DEBUG("Profile has changed");
+
+                // Consume only this batch under the lock. Changes arriving during the
+                // sensor update remain pending for the next iteration.
+                const SensorChanges changes{
+                    _is_align_depth_changed,
+                    #if defined (ACCELERATE_GPU_WITH_GLSL)
+                        _is_accelerate_gpu_with_glsl_changed,
+                        _accelerate_gpu_with_glsl,
+                    #endif
+                };
+                _is_profile_changed = false;
+                _is_align_depth_changed = false;
+                #if defined (ACCELERATE_GPU_WITH_GLSL)
+                    _is_accelerate_gpu_with_glsl_changed = false;
+                #endif
+
+                lock.unlock();
                 try
                 {
-                    updateSensors();
+                    updateSensors(changes);
                 }
                 catch(const std::exception& e)
                 {
                     ROS_ERROR_STREAM("Error updating the sensors: " << e.what());
                 }
-                _is_profile_changed = false;
-                _is_align_depth_changed = false;
-
-                #if defined (ACCELERATE_GPU_WITH_GLSL)
-                    _is_accelerate_gpu_with_glsl_changed = false;
-                #endif
+                catch(...)
+                {
+                    ROS_ERROR_STREAM("Unknown error updating the sensors!");
+                }
+                lock.lock();
             }
         }
     };
@@ -423,22 +439,23 @@ void BaseRealSenseNode::startRGBDPublisherIfNeeded()
     }
 }
 
-void BaseRealSenseNode::updateSensors()
+void BaseRealSenseNode::updateSensors(const SensorChanges& changes)
 {
     std::lock_guard<std::mutex> lock_guard(_update_sensor_mutex);
+
     try{
-        stopRequiredSensors();
+        stopRequiredSensors(changes);
 
         #if defined (ACCELERATE_GPU_WITH_GLSL)
-            if (_is_accelerate_gpu_with_glsl_changed)
+            if (changes.gpu_acceleration_changed)
             {
                 shutdownOpenGLProcessing();
 
-                initOpenGLProcessing(_accelerate_gpu_with_glsl);
+                initOpenGLProcessing(changes.gpu_acceleration_enabled);
             }
         #endif
 
-        startUpdatedSensors();
+        startUpdatedSensors(changes);
     }
     catch(const std::exception& ex)
     {
@@ -452,7 +469,7 @@ void BaseRealSenseNode::updateSensors()
     }
 }
 
-void BaseRealSenseNode::stopRequiredSensors()
+void BaseRealSenseNode::stopRequiredSensors(const SensorChanges& changes)
 {
     try{
         for(auto&& sensor : _available_ros_sensors)
@@ -467,16 +484,16 @@ void BaseRealSenseNode::stopRequiredSensors()
             // do all updates if profile has been changed, or if the align depth filter or gpu acceleration status has been changed
             // and we are on a video sensor. TODO: explore better options to monitor and update changes
             // without resetting the whole sensors and topics.
-            if (is_profile_changed || (is_video_sensor && (_is_align_depth_changed
+            if (is_profile_changed || (is_video_sensor && (changes.align_depth_changed
                                                                 #if defined (ACCELERATE_GPU_WITH_GLSL)
-                                                                    || _is_accelerate_gpu_with_glsl_changed
+                                                                    || changes.gpu_acceleration_changed
                                                                 #endif
                                                             )))
             {
                 std::vector<stream_profile> active_profiles = sensor->get_active_streams();
                 if (is_profile_changed
                         #if defined (ACCELERATE_GPU_WITH_GLSL)
-                            || _is_accelerate_gpu_with_glsl_changed
+                            || changes.gpu_acceleration_changed
                         #endif
                     )
                 {
@@ -501,7 +518,7 @@ void BaseRealSenseNode::stopRequiredSensors()
     }
 }
 
-void BaseRealSenseNode::startUpdatedSensors()
+void BaseRealSenseNode::startUpdatedSensors(const SensorChanges& changes)
 {
     try{
         for(auto&& sensor : _available_ros_sensors)
@@ -513,9 +530,9 @@ void BaseRealSenseNode::startUpdatedSensors()
             bool is_profile_changed(sensor->getUpdatedProfiles(wanted_profiles));
             bool is_video_sensor = (sensor->is<rs2::depth_sensor>() || sensor->is<rs2::color_sensor>());
 
-            if (is_profile_changed || (is_video_sensor && (_is_align_depth_changed
+            if (is_profile_changed || (is_video_sensor && (changes.align_depth_changed
                                                                 #if defined (ACCELERATE_GPU_WITH_GLSL)
-                                                                    || _is_accelerate_gpu_with_glsl_changed
+                                                                    || changes.gpu_acceleration_changed
                                                                 #endif
                                                             )))
             {
@@ -536,7 +553,7 @@ void BaseRealSenseNode::startUpdatedSensors()
 
                     if (is_profile_changed
                             #if defined (ACCELERATE_GPU_WITH_GLSL)
-                                || _is_accelerate_gpu_with_glsl_changed
+                                || changes.gpu_acceleration_changed
                             #endif
                         )
                     {
