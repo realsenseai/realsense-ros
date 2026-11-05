@@ -430,7 +430,7 @@ User can set the camera name and camera namespace, to distinguish between camera
     - Note: The param **depth_module.infra_profile** is common for all infra streams. i.e., infra 0, 1 & 2.
     - If the specified combination of parameters is not available by the device, the default or previously set configuration will be used.
       - Run ```ros2 param describe <your_node_name> <param_name>``` to get the list of supported profiles.
-    - Note: Should re-enable the stream for the change to take effect.
+    - The change is applied immediately; the stream is restarted with the new profile.
   - ***<stream_name>*_format**
     - This parameter is a string used to select the stream format.
     - <stream_name> can be any of *infra, infra1, infra2, color, depth*.
