@@ -306,7 +306,7 @@ void VideoProfilesManager::registerProfileParameters(std::vector<stream_profile>
             ROS_DEBUG_STREAM(__LINE__ << ": _enabled_profiles[" << ros_stream_to_string(sip.first) << ":" << sip.second << "]: " << *(_enabled_profiles[sip]));
         }
 
-        registerVideoSensorParams(checked_sips);
+        registerVideoSensorParams(checked_sips, update_sensor_func);
     }
 }
 
@@ -374,7 +374,7 @@ void VideoProfilesManager::registerVideoSensorProfileFormat(stream_index_pair si
         _formats[sip] = RS2_FORMAT_ANY;
 }
 
-void VideoProfilesManager::registerVideoSensorParams(std::set<stream_index_pair> sips)
+void VideoProfilesManager::registerVideoSensorParams(std::set<stream_index_pair> sips, std::function<void()> update_sensor_func)
 {
     std::set<rs2_stream> available_streams;
 
@@ -452,7 +452,7 @@ void VideoProfilesManager::registerVideoSensorParams(std::set<stream_index_pair>
         crnt_descriptor.description = "Available options are:\n" + get_profiles_descriptions(stream_type);
         std::stringstream crnt_profile_str;
         crnt_profile_str << _width[stream_type] << "x" << _height[stream_type] << "x" << _fps[stream_type];
-        _params.getParameters()->setParam<std::string>(param_name_str.str(), crnt_profile_str.str(), [this, stream_type](const rclcpp::Parameter& parameter)
+        _params.getParameters()->setParam<std::string>(param_name_str.str(), crnt_profile_str.str(), [this, stream_type, update_sensor_func](const rclcpp::Parameter& parameter)
                 {
                     std::regex self_regex("\\s*([0-9]+)\\s*[xX,]\\s*([0-9]+)\\s*[xX,]\\s*([0-9]+)\\s*", std::regex_constants::ECMAScript);
                     std::smatch match;
@@ -478,7 +478,7 @@ void VideoProfilesManager::registerVideoSensorParams(std::set<stream_index_pair>
                                     _height[stream_type] = temp_height;
                                     _fps[stream_type] = temp_fps;
                                     found = true;
-                                    ROS_WARN_STREAM("re-enable the stream for the change to take effect.");
+                                    update_sensor_func();
                                     break;
                                 }
                             }
