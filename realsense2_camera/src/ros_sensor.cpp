@@ -388,6 +388,32 @@ bool RosSensor::getUpdatedProfiles(std::vector<stream_profile>& wanted_profiles)
     return true;
 }
 
+bool RosSensor::isStreamEnabled(rs2_stream stream_type) const
+{
+    for (const auto& profile_manager : _profile_managers)
+    {
+        if (profile_manager->isStreamEnabled(stream_type))
+            return true;
+    }
+    return false;
+}
+
+void RosSensor::setEnableBlocker(const std::function<std::string(rs2_stream)>& blocker)
+{
+    for (auto& profile_manager : _profile_managers)
+        profile_manager->setEnableBlocker(blocker);
+}
+
+bool RosSensor::enableOnlyStream(rs2_stream stream_type)
+{
+    for (auto& profile_manager : _profile_managers)
+    {
+        if (profile_manager->enableOnlyStream(stream_type))
+            return true;
+    }
+    return false;
+}
+
 void RosSensor::set_sensor_auto_exposure_roi()
 {
     try

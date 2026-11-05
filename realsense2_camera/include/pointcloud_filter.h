@@ -31,6 +31,10 @@ namespace realsense2_camera
         
             void setPublisher();
             void Publish(rs2::points pc, const rclcpp::Time& t, const rs2::frameset& frameset, const std::string& frame_id);
+            // pointcloud.source=device: publish the device point cloud (RS2_STREAM_POINT_CLOUD, XYZ only) on the same topic.
+            void PublishDevice(rs2::points pc, const rclcpp::Time& t, const std::string& frame_id, float clip_distance);
+            const std::string& getSource() const { return _source; }
+            bool isDeviceSource() const { return _source == POINTCLOUD_SOURCE_DEVICE; }
 
         private:
             void setParameters();
@@ -40,6 +44,7 @@ namespace realsense2_camera
             RosNodeBase& _node;
             bool _allow_no_texture_points;
             bool _ordered_pc;
+            std::string _source;
             std::mutex _mutex_publisher;
             rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr _pointcloud_publisher;
             std::string _pointcloud_qos;

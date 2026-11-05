@@ -464,6 +464,12 @@ void RealSenseNodeFactory::startDevice()
         _realSenseNode = std::unique_ptr<BaseRealSenseNode>(new BaseRealSenseNode(*this, _device, _parameters, this->get_node_options().use_intra_process_comms()));
         _realSenseNode->publishTopics();
     }
+    catch(const InvalidConfigurationError& e)
+    {
+        // Raised before any sensor was opened: this parameter set can never run, so don't stay up half initialized.
+        ROS_ERROR_STREAM(e.what());
+        exit(1);
+    }
     catch(const rs2::backend_error& e)
     {
         std::cerr << "Failed to start device: " << e.what() << '\n';

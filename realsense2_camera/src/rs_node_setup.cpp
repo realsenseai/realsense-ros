@@ -33,6 +33,7 @@ void BaseRealSenseNode::setup()
     setAvailableSensors();
     SetBaseStream();
     setupFilters();
+    setupDevicePointCloud();
     setCallbackFunctions();
     updateSensors(SensorChanges{});
     monitoringProfileChanges();
@@ -242,7 +243,11 @@ void BaseRealSenseNode::stopPublishers(const std::vector<stream_profile>& profil
 
         if (_publish_tf)
         {
-            eraseTransformMsgs(sip, profile);
+            // The device point cloud is published in the depth optical frame: its TF is the depth one (see startUpdatedSensors).
+            if (profile.stream_type() == RS2_STREAM_POINT_CLOUD)
+                eraseTransformMsgs(DEPTH, _base_profile);
+            else
+                eraseTransformMsgs(sip, profile);
         }
     }
 }
@@ -281,6 +286,11 @@ void BaseRealSenseNode::startPublishers(const std::vector<stream_profile>& profi
                 // and not a normal image publisher
                  _labeled_pointcloud_publisher = _node.create_publisher<sensor_msgs::msg::PointCloud2>("~/labeled_point_cloud/points",
                     rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(qos),qos));
+            }
+            else if(profile.stream_type() == RS2_STREAM_POINT_CLOUD)
+            {
+                // device point cloud (pointcloud.source=device): published as PointCloud2 by the pointcloud filter
+                // on "~/depth/color/points", so there is no image / camera info publisher for it.
             }
             else
             {
@@ -535,7 +545,9 @@ void BaseRealSenseNode::startUpdatedSensors(const SensorChanges& changes)
                         std::lock_guard<std::mutex> lock_guard(_publish_tf_mutex);
                         for (auto &profile : wanted_profiles)
                         {
-                            calcAndAppendTransformMsgs(profile, _base_profile);
+                            // The device point cloud is published in the depth optical frame, which exists in TF even when
+                            // Depth is not streaming (enable_depth:=false).
+                            calcAndAppendTransformMsgs(profile.stream_type() == RS2_STREAM_POINT_CLOUD ? _base_profile : profile, _base_profile);
                         }
                     }
 

@@ -86,6 +86,9 @@ namespace realsense2_camera
             ~RosSensor();
             void registerSensorParameters();
             bool getUpdatedProfiles(std::vector<rs2::stream_profile>& wanted_profiles);
+            bool isStreamEnabled(rs2_stream stream_type) const;
+            bool enableOnlyStream(rs2_stream stream_type);
+            void setEnableBlocker(const std::function<std::string(rs2_stream)>& blocker);
             virtual bool start(const std::vector<rs2::stream_profile>& profiles);
             void stop();
             rmw_qos_profile_t getQOS(const stream_index_pair& sip) const;

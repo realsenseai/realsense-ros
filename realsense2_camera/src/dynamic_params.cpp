@@ -330,6 +330,7 @@ namespace realsense2_camera
 
     template void Parameters::queueSetRosValue<std::string>(const std::string& param_name, const std::string value);
     template void Parameters::queueSetRosValue<int>(const std::string& param_name, const int value);
+    template void Parameters::queueSetRosValue<bool>(const std::string& param_name, const bool value);
 
     template int Parameters::readAndDeleteParam<int>(std::string param_name, const int& initial_value);
 
