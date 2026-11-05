@@ -896,7 +896,19 @@ class RsTestBaseClass():
             return None
         else:
             return value.integer_value
-    
+
+    def wait_for_integer_param(self, param_name, expected, timeout=2.0):
+        '''
+        poll until param_name reads expected (or timeout); returns the last value read.
+        Used for params the node updates asynchronously, e.g. gain/exposure after a sequence_id change
+        '''
+        end = time.time() + timeout
+        value = self.get_integer_param(param_name)
+        while value != expected and time.time() < end:
+            time.sleep(0.1)
+            value = self.get_integer_param(param_name)
+        return value
+
     def get_deviceinfo(self):
         self.req = DeviceInfo.Request()
         self.future = self.get_device_info.call_async(self.req)

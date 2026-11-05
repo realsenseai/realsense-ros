@@ -144,12 +144,12 @@ class Test_D455_Seq_ID_Update(pytest_rs_utils.RsTestBaseClass):
             assert self.set_integer_param('depth_module.gain', params['gain_2'])
 
             assert self.set_integer_param('depth_module.sequence_id', 1)
-            assert self.get_integer_param('depth_module.exposure') == params['exposure_1']
-            assert self.get_integer_param('depth_module.gain') == params['gain_1']
+            assert self.wait_for_integer_param('depth_module.exposure', params['exposure_1']) == params['exposure_1']
+            assert self.wait_for_integer_param('depth_module.gain', params['gain_1']) == params['gain_1']
 
             assert self.set_integer_param('depth_module.sequence_id', 2)
-            assert self.get_integer_param('depth_module.exposure') == params['exposure_2']
-            assert self.get_integer_param('depth_module.gain') == params['gain_2']
+            assert self.wait_for_integer_param('depth_module.exposure', params['exposure_2']) == params['exposure_2']
+            assert self.wait_for_integer_param('depth_module.gain', params['gain_2']) == params['gain_2']
 
         finally:
             #this step is important because the test will fail next time
