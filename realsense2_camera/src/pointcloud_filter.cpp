@@ -275,6 +275,12 @@ void PointcloudFilter::PublishDevice(rs2::points pc, const rclcpp::Time& t, cons
 
     // The device cloud has no intrinsics and no texture coordinates: it is the bare W x H XYZ32F vertex array,
     // so the geometry comes from the stream profile.
+    if (!pc.get_profile().is<rs2::video_stream_profile>())
+    {
+        RCLCPP_WARN_THROTTLE(_logger, *_node.get_clock(), 5000,
+                             "Device point cloud frame dropped: its stream profile is not a video profile (no width x height)");
+        return;
+    }
     const rs2::video_stream_profile profile = pc.get_profile().as<rs2::video_stream_profile>();
     const size_t width = static_cast<size_t>(profile.width());
     const size_t height = static_cast<size_t>(profile.height());
