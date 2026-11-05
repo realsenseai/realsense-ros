@@ -8,6 +8,7 @@
 #
 # NOTE: This workflow is informational only — do not add to required branch protection checks.
 # It may fail due to outdated librealsense2 on the ROS package servers.
+# A failure therefore shows as a warning on the run and keeps the job green; check it before a release.
 # The main CI workflow (main.yml) is the authoritative build check.
 #
 # This config uses industrial_ci (https://github.com/ros-industrial/industrial_ci.git).
@@ -53,4 +54,10 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4
       - name: industrial_ci
+        id: industrial_ci
+        # Step level, not job level: a failed job with continue-on-error still shows a red X on the PR
+        continue-on-error: true
         uses: ros-industrial/industrial_ci@0f4bd2d1b926eac95fd6bc5bd1fcb3051a6e927d #master as of 2026-03-31
+      - name: Report pre-release result
+        if: steps.industrial_ci.outcome == 'failure'
+        run: echo "::warning title=pre-release ${{ matrix.ros_distro }}::Build against the released librealsense2 failed (expected while ros2-development uses unreleased SDK API). See the industrial_ci step."
