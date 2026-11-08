@@ -19,7 +19,6 @@ import sys
 import time
 
 import pytest
-import rclpy
 from rclpy import qos
 
 from realsense2_camera_msgs.msg import Metadata as msg_Metadata
@@ -68,19 +67,14 @@ exposure is only set (at runtime) and verified once the camera is in SERVICE mod
     ],indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
 class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
-    def camera_safety_mode(self, params, timeout=3):
+    def camera_safety_mode(self, params, timeout=1):
         '''
         the mode the camera reports in the safety stream's frame metadata (its XU value); the ROS param
         can't tell, since the node applies it asynchronously and keeps it even if the camera rejects it
         '''
         topic = get_node_heirarchy(params) + '/safety/metadata'
-        if topic not in self.node.data:
-            self.node.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data, store_raw_data=True, measure_hz=False)
-        self.node.reset_data(topic)
-        end = time.time() + timeout
-        while self.node.get_num_chunks(topic) == 0 and time.time() < end:
-            rclpy.spin_once(self.node, timeout_sec=0.1)
-        if self.node.get_num_chunks(topic) == 0:
+        self.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data)
+        if not self.spin_for_data([{'topic': topic, 'expected_data_chunks': 1}], timeout)[0]:
             return None
         return json.loads(self.node.data[topic][-1].json_data).get('safety_operational_mode')
 
@@ -92,7 +86,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
         end = time.time() + timeout
         while True:
             self.set_integer_param('safety_camera.safety_mode', mode)
-            current = self.camera_safety_mode(params, timeout=1)
+            current = self.camera_safety_mode(params)
             if current == mode:
                 return True
             if time.time() > end:
