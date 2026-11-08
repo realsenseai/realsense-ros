@@ -67,26 +67,19 @@ exposure is only set (at runtime) and verified once the camera is in SERVICE mod
     ],indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
 class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
-    def camera_safety_mode(self, params, timeout=1):
-        '''
-        the mode the camera reports in the safety stream's frame metadata (its XU value); the ROS param
-        can't tell, since the node applies it asynchronously and keeps it even if the camera rejects it
-        '''
-        topic = get_node_heirarchy(params) + '/safety/metadata'
-        self.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data)
-        if not self.spin_for_data([{'topic': topic, 'expected_data_chunks': 1}], timeout)[0]:
-            return None
-        return json.loads(self.node.data[topic][-1].json_data).get('safety_operational_mode')
-
     def set_safety_mode(self, params, mode, timeout=8, interval=0.5):
         '''
         same as LibCI's tests_wrapper.set_safety_mode: the FW may refuse a switch for a few seconds,
-        so retry until the camera reports the mode
+        so retry until the camera reports the mode in the safety stream's frame metadata
         '''
+        topic = get_node_heirarchy(params) + '/safety/metadata'
         end = time.time() + timeout
         while True:
             self.set_integer_param('safety_camera.safety_mode', mode)
-            current = self.camera_safety_mode(params)
+            self.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data)
+            current = None
+            if self.spin_for_data([{'topic': topic, 'expected_data_chunks': 1}], 1)[0]:
+                current = json.loads(self.node.data[topic][-1].json_data).get('safety_operational_mode')
             if current == mode:
                 return True
             if time.time() > end:
