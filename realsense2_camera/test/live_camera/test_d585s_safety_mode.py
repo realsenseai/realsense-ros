@@ -75,7 +75,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
         '''
         topic = get_node_heirarchy(params) + '/safety/metadata'
         if topic not in self.node.data:
-            self.node.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data, True, False)
+            self.node.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data, store_raw_data=True, measure_hz=False)
         self.node.reset_data(topic)
         end = time.time() + timeout
         while self.node.get_num_chunks(topic) == 0 and time.time() < end:
@@ -92,7 +92,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
         end = time.time() + timeout
         while True:
             self.set_integer_param('safety_camera.safety_mode', mode)
-            current = self.camera_safety_mode(params)
+            current = self.camera_safety_mode(params, timeout=1)
             if current == mode:
                 return True
             if time.time() > end:
