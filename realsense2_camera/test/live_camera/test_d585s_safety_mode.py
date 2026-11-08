@@ -13,11 +13,14 @@
 # limitations under the License.
 
 
+import json
 import os
 import sys
 import time
 
 import pytest
+import rclpy
+from rclpy import qos
 
 from realsense2_camera_msgs.msg import Metadata as msg_Metadata
 from sensor_msgs.msg import Image as msg_Image
@@ -37,16 +40,19 @@ test_params_test_default_run_mode = {
     'device_type': 'D585S',
     'initial_reset': 'true',
     'safety_mode': 0,
+    'enable_safety': 'true',
     }
 test_params_test_run_to_standby_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
     'safety_mode': 1,
+    'enable_safety': 'true',
     }
 test_params_test_standby_to_service_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
     'safety_mode': 2,
+    'enable_safety': 'true',
     }
 '''
 Switches the camera to each safety mode (in one session, so it also covers the mode transitions) and
@@ -62,18 +68,37 @@ exposure is only set (at runtime) and verified once the camera is in SERVICE mod
     ],indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
 class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
-    def set_safety_mode(self, mode, timeout=8, interval=0.5):
+    def camera_safety_mode(self, params, timeout=3):
+        '''
+        the mode the camera reports in the safety stream's frame metadata (its XU value); the ROS param
+        can't tell, since the node applies it asynchronously and keeps it even if the camera rejects it
+        '''
+        topic = get_node_heirarchy(params) + '/safety/metadata'
+        if topic not in self.node.data:
+            self.node.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data, True, False)
+        self.node.reset_data(topic)
+        end = time.time() + timeout
+        while self.node.get_num_chunks(topic) == 0 and time.time() < end:
+            rclpy.spin_once(self.node, timeout_sec=0.1)
+        if self.node.get_num_chunks(topic) == 0:
+            return None
+        return json.loads(self.node.data[topic][-1].json_data).get('safety_operational_mode')
+
+    def set_safety_mode(self, params, mode, timeout=8, interval=0.5):
         '''
         same as LibCI's tests_wrapper.set_safety_mode: the FW may refuse a switch for a few seconds,
-        so retry until the mode reads back
+        so retry until the camera reports the mode
         '''
         end = time.time() + timeout
-        while not (self.set_integer_param('safety_camera.safety_mode', mode) and
-                   self.get_integer_param('safety_camera.safety_mode') == mode):
+        while True:
+            self.set_integer_param('safety_camera.safety_mode', mode)
+            current = self.camera_safety_mode(params)
+            if current == mode:
+                return True
             if time.time() > end:
+                print(f"camera reports safety mode {current}, expected {mode}")
                 return False
             time.sleep(interval)
-        return True
 
     def test_d585s_test_safety_mode(self,launch_descr_with_parameters):
         params = launch_descr_with_parameters[1]
@@ -96,7 +121,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
             else:
                 self.spin_for_time(wait_time=5)
 
-            assert self.set_safety_mode(params['safety_mode'])
+            assert self.set_safety_mode(params, params['safety_mode'])
 
             themes = [
                 {'topic':get_node_heirarchy(params)+'/depth/metadata',
