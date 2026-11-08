@@ -70,6 +70,7 @@ def run_test(cmd, log_name, junit_name, dev_name):
     collected) is not a failure; anything else non-zero, or a timeout, is.
     """
     handle = None
+    error = None
     try:
         handle = open( os.path.join( logdir, log_name ), "w" )
         result = subprocess.run( cmd,
@@ -82,6 +83,7 @@ def run_test(cmd, log_name, junit_name, dev_name):
         else:
             raise RuntimeError( f"pytest exited with status {result.returncode}" )
     except Exception as e:
+            error = str( e )
             log.e("---Test Failed---")
             log.w( "Error Exception:\n ",e )
             if dev_name not in failed_devices:
@@ -89,9 +91,9 @@ def run_test(cmd, log_name, junit_name, dev_name):
     finally:
         if handle:
             handle.close()
-        junit_xml_parsing( junit_name )
+        junit_xml_parsing( junit_name, error )
 
-def junit_xml_parsing(xml_file):
+def junit_xml_parsing(xml_file, error=None):
     '''
     - remove redundant hierarchy from testcase 'classname', and 'name' attributes \
     - running pytest-3 w/ --junit-xml={logdir}/{dev_name}_pytest.xml results in classname w/ \
@@ -101,8 +103,15 @@ def junit_xml_parsing(xml_file):
     import xml.etree.ElementTree as ET
     global logdir
 
+    new_xml = xml_file.split('.')[0]
     if not os.path.isfile( os.path.join(logdir, f'{xml_file}' )):
-        log.e(f'{xml_file} not found, test resutls can\'t be generated')
+        # pytest was killed (e.g. timeout) before writing results: report the run as one failed test
+        log.e(f'{xml_file} not found, reporting the run as a failed test')
+        root = ET.Element( 'testsuites' )
+        suite = ET.SubElement( root, 'testsuite', name='pytest', tests='1', failures='1' )
+        case = ET.SubElement( suite, 'testcase', classname=new_xml, name='pytest_run' )
+        ET.SubElement( case, 'failure', message=error or 'pytest wrote no results' )
+        ET.ElementTree( root ).write( f'{logdir}/{new_xml}_refined.xml' )
     else:
         tree = ET.parse(os.path.join(logdir,xml_file))
         root = tree.getroot()
@@ -110,7 +119,6 @@ def junit_xml_parsing(xml_file):
             for testcase in testsuite.findall('testcase'):
                 testcase.set('classname', testcase.attrib['classname'].split('.')[-2])
                 testcase.set('name', re.sub('launch_.*parameters','',testcase.attrib['name']))
-        new_xml = xml_file.split('.')[0]
         tree.write(f'{logdir}/{new_xml}_refined.xml')
 
 def build_device_port_mapping():
