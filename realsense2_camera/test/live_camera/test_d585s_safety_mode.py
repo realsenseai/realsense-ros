@@ -13,10 +13,13 @@
 # limitations under the License.
 
 
+import json
 import os
 import sys
+import time
 
 import pytest
+from rclpy import qos
 
 from realsense2_camera_msgs.msg import Metadata as msg_Metadata
 from sensor_msgs.msg import Image as msg_Image
@@ -35,22 +38,26 @@ test_params_test_default_run_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
     'initial_reset': 'true',
-    'safety_camera.safety_mode': 0,
+    'safety_mode': 0,
+    'enable_safety': 'true',
     }
 test_params_test_run_to_standby_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
-    'safety_camera.safety_mode': 1,
+    'safety_mode': 1,
+    'enable_safety': 'true',
     }
 test_params_test_standby_to_service_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
-    'safety_camera.safety_mode': 2,
+    'safety_mode': 2,
+    'enable_safety': 'true',
     }
 '''
-Launches the node in each safety mode (in one session, so it also covers the mode transitions) and
-checks the mode and that depth data flows. Depth controls can only be written in SERVICE mode -- in
-RUN/STANDBY the safety pipeline drives the depth exposure -- so, like LibCI's tests wrapper, the
+Switches the camera to each safety mode (in one session, so it also covers the mode transitions) and
+checks the mode and that depth data flows. Like LibCI, the mode is switched at runtime once the camera
+has settled, with retries: a switch requested in the node's startup burst can hang the FW.
+Depth controls can only be written in SERVICE mode -- in RUN/STANDBY the safety pipeline drives the depth exposure -- so, like LibCI's tests wrapper, the
 exposure is only set (at runtime) and verified once the camera is in SERVICE mode.
 '''
 @pytest.mark.parametrize("launch_descr_with_parameters", [    
@@ -60,6 +67,26 @@ exposure is only set (at runtime) and verified once the camera is in SERVICE mod
     ],indirect=True)
 @pytest.mark.launch(fixture=launch_descr_with_parameters)
 class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
+    def set_safety_mode(self, params, mode, timeout=8, interval=0.5):
+        '''
+        same as LibCI's tests_wrapper.set_safety_mode: the FW may refuse a switch for a few seconds,
+        so retry until the camera reports the mode in the safety stream's frame metadata
+        '''
+        topic = get_node_heirarchy(params) + '/safety/metadata'
+        end = time.time() + timeout
+        while True:
+            self.set_integer_param('safety_camera.safety_mode', mode)
+            self.create_subscription(msg_Metadata, topic, qos.qos_profile_sensor_data)
+            current = None
+            if self.spin_for_data([{'topic': topic, 'expected_data_chunks': 1}], 1)[0]:
+                current = json.loads(self.node.data[topic][-1].json_data).get('safety_operational_mode')
+            if current == mode:
+                return True
+            if time.time() > end:
+                print(f"camera reports safety mode {current}, expected {mode}")
+                return False
+            time.sleep(interval)
+
     def test_d585s_test_safety_mode(self,launch_descr_with_parameters):
         params = launch_descr_with_parameters[1]
         if pytest_live_camera_utils.check_if_camera_connected(params['device_type']) == False:
@@ -81,7 +108,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
             else:
                 self.spin_for_time(wait_time=5)
 
-            assert self.get_integer_param('safety_camera.safety_mode') == params['safety_camera.safety_mode']
+            assert self.set_safety_mode(params, params['safety_mode'])
 
             themes = [
                 {'topic':get_node_heirarchy(params)+'/depth/metadata',
@@ -91,7 +118,7 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
             ]
             # Depth controls are writable only in SERVICE mode, so set and verify the exposure
             # there; in RUN/STANDBY only check that depth data flows.
-            if params['safety_camera.safety_mode'] == SAFETY_MODE_SERVICE:
+            if params['safety_mode'] == SAFETY_MODE_SERVICE:
                 assert self.set_bool_param('depth_module.enable_auto_exposure', False)
                 assert self.set_integer_param('depth_module.exposure', SERVICE_MODE_EXPOSURE)
                 self.spin_for_time(wait_time=2)
