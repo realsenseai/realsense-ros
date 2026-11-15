@@ -190,7 +190,7 @@ aluminum peripherial evaluation case.
 
 
       <!-- IMU -->
-      <xacro:property name="d585_imu_px" value="0.0114"/> <!-- TODO: Not final numbers, still require refinements -->
+      <xacro:property name="d585_imu_px" value="-0.0135"/> <!-- TODO: Not final numbers, still require refinements -->
       <xacro:property name="d585_imu_py" value="-0.0195"/> <!-- TODO: Not final numbers, still require refinements -->
       <xacro:property name="d585_imu_pz" value="0"/> <!-- TODO: Not final numbers, still require refinements -->
 
