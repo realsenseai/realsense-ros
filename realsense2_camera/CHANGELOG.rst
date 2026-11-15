@@ -2,8 +2,8 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.59.2 (2026-11-15)
+-------------------
 * Push 4.59.2 release into ros2-master (`#3596 <https://github.com/realsenseai/realsense-ros/issues/3596>`_)
 * Freeze 4.59.2: bump version (`#3586 <https://github.com/realsenseai/realsense-ros/issues/3586>`_)
 * Update version to 4.59.2
