@@ -2,6 +2,16 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.59.2 (2026-11-15)
+-------------------
+* Push 4.59.2 release into ros2-master (`#3596 <https://github.com/realsenseai/realsense-ros/issues/3596>`_)
+* Freeze 4.59.2: bump version (`#3586 <https://github.com/realsenseai/realsense-ros/issues/3586>`_)
+* Update version to 4.59.2
+* Merge branch 'ros2-development' into destructor-clean-up
+* Merge ros2-master into ros2-development (4.59.1 release sync) (`#3576 <https://github.com/realsenseai/realsense-ros/issues/3576>`_)
+* Merge ros2-master (4.59.1 release) into ros2-development
+* Contributors: Nir Azkiel
+
 4.59.1 (2026-10-11)
 -------------------
 * Push 4.59.1 release into ros2-master (`#3574 <https://github.com/realsenseai/realsense-ros/issues/3574>`_)
