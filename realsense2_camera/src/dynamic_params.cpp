@@ -64,7 +64,10 @@ namespace realsense2_camera
     // This function is used by the parameter callback function to update other ros parameters.
     void Parameters::pushUpdateFunctions(std::vector<std::function<void()> > funcs)
     {
-        _update_functions_v.insert(_update_functions_v.end(), funcs.begin(), funcs.end());
+        {
+            std::lock_guard<std::mutex> lock(_mu);
+            _update_functions_v.insert(_update_functions_v.end(), funcs.begin(), funcs.end());
+        }
         _update_functions_cv.notify_one();
     }
 
@@ -77,8 +80,11 @@ namespace realsense2_camera
                 _update_functions_cv.wait_for(lock, std::chrono::milliseconds(time_interval), [&]{return !_is_running || !_update_functions_v.empty();});
                 while (!_update_functions_v.empty())
                 {
-                    _update_functions_v.front()();
+                    auto update_func = std::move(_update_functions_v.front());
                     _update_functions_v.pop_front();
+                    lock.unlock(); // update_func may call pushUpdateFunctions()
+                    update_func();
+                    lock.lock();
                 }
             }
         };
@@ -87,7 +93,11 @@ namespace realsense2_camera
 
     Parameters::~Parameters()
     {
-        _is_running = false;
+        {
+            std::lock_guard<std::mutex> lock(_mu);
+            _is_running = false;
+        }
+        _update_functions_cv.notify_one();
         if (_update_functions_t && _update_functions_t->joinable())
             _update_functions_t->join();
         for (auto const& param : _param_functions)

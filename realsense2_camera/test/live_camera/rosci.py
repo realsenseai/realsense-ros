@@ -38,6 +38,7 @@ regex = None
 handle = None
 test_ran = False
 device_set = list()
+failed_devices = list()   # devices whose test run failed or timed out; drives the exit code
 
 def usage():
     ourname = os.path.basename( sys.argv[0] )
@@ -52,51 +53,43 @@ def usage():
 
     sys.exit( 2 )
 
-def command(dev_name, test=None):
+def command(dev_name, test_file, junit_name, test=None):
     cmd =  ['pytest-3']
     cmd += ['-s']
     cmd += ['-m', ''.join(dev_name)]
     if test:
         cmd += ['-k', f'{test}']
-    cmd += [''.join(dir_live_tests)]
+    cmd += [test_file]
     cmd += ['--debug']
-    cmd += [f'--junit-xml={logdir}/{dev_name.upper()}_pytest.xml']
+    cmd += [f'--junit-xml={logdir}/{junit_name}']
     return cmd
 
-def run_test(cmd, test=None, dev_name=None, stdout=None, append =False):
+def run_test(cmd, log_name, junit_name, dev_name):
+    """
+    Run one pytest invocation (one test file on one device). Exit code 5 (no tests
+    collected) is not a failure; anything else non-zero, or a timeout, is.
+    """
     handle = None
     try:
-        if test:
-            stdout = stdout + os.sep + str(dev_name.upper()) + '_' + test + '.log'
-        else:
-            stdout = stdout + os.sep + str(dev_name.upper()) + '_' + 'full.log'
-        if stdout is None:
-            sys.stdout.flush()
-        elif stdout and stdout != subprocess.PIPE:
-            if append:
-                handle = open( stdout, "a" )
-                handle.write(
-                    "\n----------TEST-SEPARATOR----------\n\n" )
-                handle.flush()
-            else:
-                handle = open( stdout, "w" )
-
+        handle = open( os.path.join( logdir, log_name ), "w" )
         result = subprocess.run( cmd,
                 stdout=handle,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
-                timeout=200,
-                check=True )
-        if not result.returncode:
-                log.i("---Test Passed---")
+                timeout=200 )
+        if result.returncode in (0, 5):
+            log.i("---Test Passed---")
+        else:
+            raise RuntimeError( f"pytest exited with status {result.returncode}" )
     except Exception as e:
             log.e("---Test Failed---")
             log.w( "Error Exception:\n ",e )
-
+            if dev_name not in failed_devices:
+                failed_devices.append( dev_name )
     finally:
         if handle:
             handle.close()
-        junit_xml_parsing(f'{dev_name.upper()}_pytest.xml')
+        junit_xml_parsing( junit_name )
 
 def junit_xml_parsing(xml_file):
     '''
@@ -143,21 +136,62 @@ def build_device_port_mapping():
     return mapping
 
 
+def device_test_files(device, testname):
+    """
+    Test files under the live-camera folder that hold tests for the given device marker.
+    """
+    cmd = ['pytest-3', '--collect-only', '-q', '-m', device.lower(), dir_live_tests]
+    if testname:
+        cmd += ['-k', testname]
+    result = subprocess.run( cmd, capture_output=True, universal_newlines=True, timeout=120 )   # may raise TimeoutExpired
+    # 0 = collected, 5 = nothing collected for this device; anything else (import/syntax errors,
+    # bad markers, ...) is a real collection failure and must not look like "no tests".
+    if result.returncode not in (0, 5):
+        raise RuntimeError( f"test collection exited with status {result.returncode}:\n{result.stdout[-2000:]}{result.stderr[-2000:]}" )
+    out = result.stdout
+    files = sorted( { line.split('::')[0] for line in out.splitlines() if '::' in line } )
+    return [ f if os.path.isabs(f) else os.path.join( os.getcwd(), f ) for f in files ]
+
+
 def run_tests_for_device(device, port, testname):
     """
-    Enable only the target device's YKUSH port (through rspy's hub) and run its
-    tests. rspy owns the hub, so there are no direct ykushcmd calls.
+    Run the device's tests one test file at a time, each on a freshly powered camera --
+    like LibCI, which power-cycles the device (rspy enable_only(recycle=True)) per test
+    file -- so a file never inherits the state (e.g. D585S safety mode) the previous one
+    left behind. rspy owns the hub, so there are no direct ykushcmd calls.
     """
     from rspy import devices
     if port is None:
         log.e(f"No port mapping found for device {device.upper()}")
         return
 
-    if devices.hub:
-        devices.hub.enable_ports([port], disable_other_ports=True, sleep_on_change=5)
+    def fail( msg ):
+        log.e( msg )
+        if device not in failed_devices:
+            failed_devices.append( device )
 
-    cmd = command(device.lower(), testname)
-    run_test(cmd, testname, device, stdout=logdir, append=False)
+    serials = [ sn for sn in devices.all() if devices.get( sn ).name.upper() == device.upper() ]
+    if devices.hub and not serials:
+        fail( f"No serial number found for {device}; cannot power-cycle it between test files" )
+        return
+    try:
+        test_files = device_test_files( device, testname )
+    except Exception as e:
+        fail( f"Collecting tests for {device} failed: {e}" )
+        return
+    if not test_files:
+        log.w( f"No tests found for {device}" )
+        return
+
+    for test_file in test_files:
+        stem = os.path.splitext( os.path.basename( test_file ) )[0]
+        log.i( f"Running {stem} on {device} (fresh power cycle)" )
+        if devices.hub and serials:
+            devices.enable_only( serials, recycle=True, disable_other_ports=True )
+            time.sleep( 5 )   # let the FW settle after enumeration before the node talks to it
+        junit_name = f'{device.upper()}_{stem}_pytest.xml'
+        cmd = command( device.lower(), test_file, junit_name, testname )
+        run_test( cmd, f'{device.upper()}_{stem}.log', junit_name, device )
 
 
 def find_devices_run_tests():
@@ -238,4 +272,9 @@ if __name__ == '__main__':
 
     find_devices_run_tests()
 
+# Like LibCI's pytest stage: a non-zero exit tells the pipeline that tests failed,
+# including a device whose run timed out and so produced no JUnit XML.
+if failed_devices:
+    log.e( "Test failures on:", failed_devices )
+    sys.exit( 1 )
 sys.exit( 0 )

@@ -28,31 +28,30 @@ from pytest_rs_utils import launch_descr_with_parameters, get_node_heirarchy
 
 import pytest_live_camera_utils
 
+SAFETY_MODE_SERVICE = 2   # rs2_safety_mode: 0=RUN, 1=STANDBY, 2=SERVICE
+SERVICE_MODE_EXPOSURE = 3000
+
 test_params_test_default_run_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
     'initial_reset': 'true',
     'safety_camera.safety_mode': 0,
-    'depth_module.exposure': 1000,
-    'depth_module.enable_auto_exposure': 'false',
     }
 test_params_test_run_to_standby_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
     'safety_camera.safety_mode': 1,
-    'depth_module.exposure': 2000,
-    'depth_module.enable_auto_exposure': 'false',
     }
 test_params_test_standby_to_service_mode = {
     'camera_name': 'D585S',
     'device_type': 'D585S',
     'safety_camera.safety_mode': 2,
-    'depth_module.exposure': 3000,
-    'depth_module.enable_auto_exposure': 'false',
     }
 '''
-The test was implemented to check whether ROS wrapper can automatically switch to service mode during
-launch of the node and configure the launch params and again switch back to user requested mode.
+Launches the node in each safety mode (in one session, so it also covers the mode transitions) and
+checks the mode and that depth data flows. Depth controls can only be written in SERVICE mode -- in
+RUN/STANDBY the safety pipeline drives the depth exposure -- so, like LibCI's tests wrapper, the
+exposure is only set (at runtime) and verified once the camera is in SERVICE mode.
 '''
 @pytest.mark.parametrize("launch_descr_with_parameters", [    
     pytest.param(test_params_test_default_run_mode, marks=pytest.mark.d585s),
@@ -83,18 +82,23 @@ class TestD585s_TestSafetyMode(pytest_rs_utils.RsTestBaseClass):
                 self.spin_for_time(wait_time=5)
 
             assert self.get_integer_param('safety_camera.safety_mode') == params['safety_camera.safety_mode']
-            assert self.get_integer_param('depth_module.exposure') == params['depth_module.exposure']
-
-            depth_metadata = msg_Metadata()
-            depth_metadata.json_data = '{"actual_exposure":'+str(params['depth_module.exposure']) +'}'
 
             themes = [
                 {'topic':get_node_heirarchy(params)+'/depth/metadata',
                 'msg_type':msg_Metadata,
                 'expected_data_chunks':1,
-                'data':depth_metadata
                 }
             ]
+            # Depth controls are writable only in SERVICE mode, so set and verify the exposure
+            # there; in RUN/STANDBY only check that depth data flows.
+            if params['safety_camera.safety_mode'] == SAFETY_MODE_SERVICE:
+                assert self.set_bool_param('depth_module.enable_auto_exposure', False)
+                assert self.set_integer_param('depth_module.exposure', SERVICE_MODE_EXPOSURE)
+                self.spin_for_time(wait_time=2)
+                assert self.get_integer_param('depth_module.exposure') == SERVICE_MODE_EXPOSURE
+                depth_metadata = msg_Metadata()
+                depth_metadata.json_data = '{"actual_exposure":'+str(SERVICE_MODE_EXPOSURE) +'}'
+                themes[0]['data'] = depth_metadata
 
             ret = self.run_test(themes)
             assert ret[0], ret[1]
