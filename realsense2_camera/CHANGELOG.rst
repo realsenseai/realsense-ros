@@ -2,6 +2,46 @@
 Changelog for package realsense2_camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Push 4.59.2 release into ros2-master (`#3596 <https://github.com/realsenseai/realsense-ros/issues/3596>`_)
+* Freeze 4.59.2: bump version (`#3586 <https://github.com/realsenseai/realsense-ros/issues/3586>`_)
+* Update version to 4.59.2
+* Merge branch 'ros2-development' into remove-rgbd-plugin-catkin-ignore
+* Proper cleanup in the driver's destructor (`#3564 <https://github.com/realsenseai/realsense-ros/issues/3564>`_)
+* Fix IMU synchronization mode forwarding in motion callback (`#3581 <https://github.com/realsenseai/realsense-ros/issues/3581>`_)
+* Merge branch 'ros2-development' into destructor-clean-up
+* Clear devices-changed callback before stopping the device
+* move callback clean out of if block
+* Fix IMU synchronization mode forwarding in motion callback
+* Jetson NEON - Map pointcloud and align filter names to their ROS parameter names (`#3577 <https://github.com/realsenseai/realsense-ros/issues/3577>`_)
+* Map NEON pointcloud and align filter names to their ROS parameter names
+* Fix data race on the deferred parameter update queue (`#3573 <https://github.com/realsenseai/realsense-ros/issues/3573>`_)
+* Merge ros2-master into ros2-development (4.59.1 release sync) (`#3576 <https://github.com/realsenseai/realsense-ros/issues/3576>`_)
+* Merge ros2-master (4.59.1 release) into ros2-development
+* Stop the update worker under the lock and wake it on shutdown
+* Lock the update queue when pushing deferred parameter updates
+* Update realsense2_camera/src/realsense_node_factory.cpp
+* D585S test: set depth exposure in service mode, like LibCI (`#3571 <https://github.com/realsenseai/realsense-ros/issues/3571>`_)
+* D585S test: set depth exposure in service mode, like LibCI
+* rosci: exit non-zero on failed tests; power-cycle the camera per test file (`#3570 <https://github.com/realsenseai/realsense-ros/issues/3570>`_)
+* rosci: fail the device on real test-collection errors
+* rosci: handle open/collection failures, public rspy API, flag missing serials
+* rosci: run each test file on a freshly power-cycled camera, like LibCI
+* rosci: exit non-zero when a device's tests fail
+* Consume pure-payload occupancy, drop MAP1 header (`#3568 <https://github.com/realsenseai/realsense-ros/issues/3568>`_)
+* Log pure-payload occupancy dims as cols x rows (width x height)
+* Verify occupancy payload CRC when the metadata carries it
+* Address review: validate cell size, extract pure-payload helper
+* Extract occupancy geometry validation into a testable helper + tests
+* Harden occupancy metadata guards against partial metadata (review)
+* Log (throttled) and drop frame when occupancy metadata is absent
+* Consume pure-payload occupancy, drop MAP1 header
+* Update package.xml to 4.59
+* Update CMakeLists.txt
+* Proper cleanup in the driver's destructor
+* Contributors: JakukuR, Natesh Narain, Nir Azkiel, Niv Goren, Remi Bettan, ashrafk93, remibettan
+
 4.59.1 (2026-10-11)
 -------------------
 * Push 4.59.1 release into ros2-master (`#3574 <https://github.com/realsenseai/realsense-ros/issues/3574>`_)
