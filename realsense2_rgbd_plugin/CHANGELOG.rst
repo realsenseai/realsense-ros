@@ -2,6 +2,13 @@
 Changelog for package realsense2_rviz_plugin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Push 4.59.2 release into ros2-master (`#3596 <https://github.com/realsenseai/realsense-ros/issues/3596>`_)
+* Remove CATKIN_IGNORE from realsense2_rgbd_plugin (`#3579 <https://github.com/realsenseai/realsense-ros/issues/3579>`_)
+* Remove CATKIN_IGNORE from realsense2_rgbd_plugin so colcon can build it
+* Contributors: Nir Azkiel, Remi Bettan
+
 4.57.4 (2025-11-02)
 -------------------
 * Update realsense2_rgbd_plugin package.xml to 4.57.4
