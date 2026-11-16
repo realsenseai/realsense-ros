@@ -19,6 +19,10 @@
   <depend>cv_bridge</depend>
   <depend>image_transport</depend>
   <depend>librealsense2</depend>
+  <!-- Optional NITROS GPU zero-copy publishing (-DBUILD_WITH_NITROS=ON), like the optional
+       realsense2-gl dep these are not declared here: they are provided by an Isaac ROS
+       workspace (isaac_ros_nitros, isaac_ros_managed_nitros, isaac_ros_nitros_image_type)
+       and only needed for that build. -->
   <depend>rclcpp</depend>
 
   <!-- Lifecycle dependencies are optional -DUSE_LIFECYCLE_NODE -->
