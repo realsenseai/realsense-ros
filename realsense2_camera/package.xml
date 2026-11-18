@@ -7,12 +7,12 @@
   <maintainer email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense ROS Team</maintainer>
   <maintainer email="nir.azkiel@realsenseai.com">Nir Azkiel</maintainer>
   <license>Apache License 2.0</license>
-  
+
   <url type="website">http://www.ros.org/wiki/RealSense</url>
   <url type="bugtracker">https://github.com/intel-ros/realsense/issues</url>
 
   <author email="rsswsdk@realsensecloud.onmicrosoft.com">LibRealSense Team</author>
- 
+
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>eigen</depend>
   <depend>builtin_interfaces</depend>
@@ -36,7 +36,6 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>diagnostic_updater</depend>
-
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_gtest</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">launch_testing</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">ament_cmake_pytest</test_depend>
@@ -52,7 +51,7 @@
   <test_depend condition="$ROS_DISTRO != foxy">rosbag2_storage_default_plugins</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">rosbag2_py</test_depend>
   <test_depend condition="$ROS_DISTRO != foxy">python3-pil</test_depend>
-  
+
   <exec_depend>launch_ros</exec_depend>
   <build_depend>ros_environment</build_depend>
 

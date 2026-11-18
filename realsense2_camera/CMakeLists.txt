@@ -116,6 +116,7 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(point_cloud_transport REQUIRED)
 
 find_package(rclcpp_components REQUIRED)
 if(TARGET rclcpp_components::component)
@@ -294,6 +295,7 @@ set(dependencies
   tf2
   tf2_ros
   diagnostic_updater
+  point_cloud_transport
 )
 
 set (targets
@@ -309,6 +311,7 @@ set (targets
   tf2::tf2
   tf2_ros::tf2_ros
   diagnostic_updater::diagnostic_updater
+  point_cloud_transport::point_cloud_transport
 )
 
 if (BUILD_ACCELERATE_GPU_WITH_GLSL)
