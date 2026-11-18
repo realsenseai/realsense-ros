@@ -49,7 +49,11 @@ RealSenseNodeFactory::on_configure(const rclcpp_lifecycle::State & state)
     RCLCPP_INFO(get_logger(), "🚀 Lifecycle Transition | FROM: %s (%d) → TO: CONFIGURING",
                 state.label().c_str(), state.id());
     init();
-    return CallbackReturn::SUCCESS;
+    if (_query_thread.joinable())
+    {
+        _query_thread.join();
+    }
+    return _device ? CallbackReturn::SUCCESS : CallbackReturn::FAILURE;
 }
 
 RealSenseNodeFactory::CallbackReturn
@@ -393,7 +397,7 @@ void RealSenseNodeFactory::init()
             {
                 std::chrono::milliseconds timespan(static_cast<int>(_reconnect_timeout*1e3));
                 rclcpp::Time first_try_time = this->get_clock()->now();
-                while (_is_alive && !_device)
+                while (_is_alive && !_device && rclcpp::ok())
                 {
                     try
                     {
@@ -416,7 +420,11 @@ void RealSenseNodeFactory::init()
                                 if (time_to_timeout < 0)
                                 {
                                     ROS_ERROR_STREAM("wait for device timeout of " << _wait_for_device_timeout << " secs expired");
+                                    #ifndef USE_LIFECYCLE_NODE
                                     exit(1);
+                                    #else
+                                    break;
+                                    #endif
                                 }
                                 else
                                 {
